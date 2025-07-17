@@ -35,11 +35,21 @@ jobs:
       run: npm ci
       
     - name: Build
-      run: npm run build:github
+      run: npm run build
       
-    - name: List build output
-      run: ls -la dist/
-      
+    - name: Fix MIME types
+      run: |
+        echo "Setting up MIME type fixes..."
+        cd dist
+        # Create .nojekyll file
+        touch .nojekyll
+        # Create custom headers for GitHub Pages
+        echo "Content-Type: application/javascript; charset=utf-8" > .htaccess
+        echo "AddType application/javascript .js" >> .htaccess
+        echo "AddType text/css .css" >> .htaccess
+        echo "AddType text/html .html" >> .htaccess
+        ls -la
+        
     - name: Setup Pages
       uses: actions/configure-pages@v4
       
