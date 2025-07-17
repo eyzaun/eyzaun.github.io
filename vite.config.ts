@@ -7,10 +7,15 @@ export default defineConfig({
   base: '/',
   build: {
     target: 'es2015',
+    outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: undefined,
-        format: 'es'
+        format: 'iife',
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       }
     }
   }
