@@ -1,9 +1,9 @@
 {
-  "name": "portfolyo_site",
+  "name": "eyzaun.github.io",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://eyupzaferunal.github.io/portfolyo_site",
+  "homepage": "https://eyzaun.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

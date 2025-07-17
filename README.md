@@ -68,12 +68,12 @@ src/
 
 Site GitHub Pages üzerinde otomatik olarak deploy edilir:
 - `main` branch'e push yapıldığında otomatik deploy
-- Site URL: `https://eyupzaferunal.github.io/portfolyo_site`
+- Site URL: `https://eyzaun.github.io/`
 
 ## 📧 İletişim
 
 - **Email**: eyzaun@gmail.com
-- **GitHub**: [@eyupzaferunal](https://github.com/eyupzaferunal)
+- **GitHub**: [@eyzaun](https://github.com/eyzaun)
 - **LinkedIn**: [LinkedIn Profil](https://linkedin.com/in/eyupzaferunal)
 
 ---
