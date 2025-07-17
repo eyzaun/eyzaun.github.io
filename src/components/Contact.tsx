@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Github, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Github, Linkedin, Send } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 
 const Contact = () => {
@@ -84,30 +84,85 @@ const Contact = () => {
             </div>
           </div>
           
-          {/* Contact Info Card */}
+          {/* Contact Form */}
           <div className="card">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">İletişim Bilgileri</h3>
-            <div className="space-y-4">
-              <p className="text-gray-700">
-                Projeleriniz, iş fırsatları veya işbirliği önerileri için benimle iletişime geçebilirsiniz.
-              </p>
-              <div className="flex flex-col space-y-3">
-                <a 
-                  href={`mailto:${personalInfo.email}`}
-                  className="flex items-center space-x-3 text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  <Mail size={20} />
-                  <span>Email Gönder</span>
-                </a>
-                <a 
-                  href={`tel:${personalInfo.phone}`}
-                  className="flex items-center space-x-3 text-green-600 hover:text-green-700 transition-colors"
-                >
-                  <Phone size={20} />
-                  <span>Telefon Et</span>
-                </a>
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Mesaj Gönder</h3>
+            
+            <form 
+              action="https://formspree.io/f/xqalaadl"
+              method="POST"
+              className="space-y-6"
+            >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  Adınız
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Adınızı girin"
+                />
               </div>
-            </div>
+              
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Email adresinizi girin"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  Konu
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Mesaj konusu"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  Mesaj
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Mesajınızı buraya yazın..."
+                ></textarea>
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full btn-primary flex items-center justify-center space-x-2"
+              >
+                <Send size={18} />
+                <span>Mesaj Gönder</span>
+              </button>
+              
+              <div className="bg-green-50 p-4 rounded-lg">
+                <p className="text-sm text-green-700">
+                  Form aktif! Mesajınız doğrudan email adresime iletilecektir.
+                </p>
+              </div>
+            </form>
           </div>
         </div>
       </div>
