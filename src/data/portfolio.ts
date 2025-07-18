@@ -99,6 +99,18 @@ export const projects: Project[] = [
       "Continuous model improvement pipeline",
       "Multi-language support with Turkish focus"
     ]
+  },
+  {
+    name: "GoDash",
+    description: "System Monitoring Tool - Real-time system monitoring dashboard with automated alerts.",
+    technologies: ["Go", "Gin Framework", "WebSocket", "PostgreSQL", "GORM", "Docker"],
+    features: [
+      "Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections",
+      "Implemented CPU, memory, and disk usage tracking with automated alert system via email/webhook",
+      "Designed REST API with PostgreSQL storage using GORM for historical data analysis",
+      "Created responsive web interface and Docker containerization for cross-platform deployment"
+    ],
+    github: "https://github.com/eyzaun/godash"
   }
 ];
 
