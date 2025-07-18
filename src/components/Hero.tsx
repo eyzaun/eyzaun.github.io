@@ -16,7 +16,9 @@ const Hero = () => {
           {/* Main Content */}
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
             Merhaba, Ben{' '}
-            <span className="text-blue-600">{personalInfo.name}</span>
+            <span className="text-blue-600">Ey</span>
+            <span className="text-blue-600">Za</span>
+            <span className="text-blue-600">Ün</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-6">

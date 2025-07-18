@@ -29,13 +29,13 @@ export interface Certification {
 
 export const personalInfo = {
   name: "Eyüp Zafer Ünal",
-  title: "Software Engineering Student",
+  title: "Software Engineer",
   email: "eyzaun@gmail.com",
   phone: "+905426999881",
   location: "Ankara, Turkey",
-  about: "Computer Engineering student at Hacettepe University with expertise in software development, AI/ML, and full-stack development. Passionate about creating innovative solutions and working with cutting-edge technologies.",
-  github: "https://github.com/eyupzaferunal",
-  linkedin: "https://linkedin.com/in/eyupzaferunal"
+  about: "Computer Engineering graduate from Hacettepe University with expertise in software development, AI/ML, and full-stack development. Passionate about creating innovative solutions and working with cutting-edge technologies.",
+  github: "https://github.com/eyzaun",
+  linkedin: "https://www.linkedin.com/in/eyzaun/"
 };
 
 export const experiences: Experience[] = [
@@ -75,7 +75,7 @@ export const projects: Project[] = [
       "Animated visualization of algorithmic solutions",
       "Score calculation system based on optimization results"
     ],
-    github: "https://github.com/eyupzaferunal/journey-of-crops"
+    github: "https://github.com/eyzaun/journey-of-crops"
   },
   {
     name: "LinkedHU",
@@ -87,7 +87,7 @@ export const projects: Project[] = [
       "RESTful APIs for university networking features",
       "Code quality and performance optimization with CI/CD integration"
     ],
-    github: "https://github.com/eyupzaferunal/linkedhu"
+    github: "https://github.com/eyzaun/linkedhu"
   },
   {
     name: "AvukatLLM",
@@ -105,7 +105,7 @@ export const projects: Project[] = [
 export const education: Education[] = [
   {
     institution: "Hacettepe University",
-    degree: "Computer Engineering",
+    degree: "Computer Engineering - Graduate",
     year: "2021-2025"
   },
   {
