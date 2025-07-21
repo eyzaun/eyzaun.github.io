@@ -93,11 +93,14 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center space-y-2">
           <p className="text-gray-300 flex items-center justify-center">
             © {currentYear} {personalInfo.name}. Made with{' '}
             <Heart className="mx-1 text-red-500" size={16} fill="currentColor" />{' '}
             using React & Tailwind CSS
+          </p>
+          <p className="text-gray-400 text-sm">
+            Son güncelleme: {__BUILD_TIME__}
           </p>
         </div>
       </div>

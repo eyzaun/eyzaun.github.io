@@ -19,14 +19,19 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="text-2xl font-bold text-gray-900">
-            <a href="#home" className="hover:text-blue-600 transition-colors">
-              {personalInfo.name.split(' ').map((word, index) => (
-                <span key={index} className={index === 0 ? 'text-blue-600' : ''}>
-                  {word}{index < personalInfo.name.split(' ').length - 1 ? ' ' : ''}
-                </span>
-              ))}
-            </a>
+          <div className="flex flex-col">
+            <div className="text-2xl font-bold text-gray-900">
+              <a href="#home" className="hover:text-blue-600 transition-colors">
+                {personalInfo.name.split(' ').map((word, index) => (
+                  <span key={index} className={index === 0 ? 'text-blue-600' : ''}>
+                    {word}{index < personalInfo.name.split(' ').length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </a>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              Test: Statik zaman gösterimi
+            </div>
           </div>
 
           {/* Desktop Navigation */}
