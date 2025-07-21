@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -10,20 +11,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: undefined,
-        assetFileNames: 'assets/[name].[ext]',
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js'
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js'
       }
     },
     target: ['es2015', 'chrome58', 'firefox57'],
     minify: 'terser'
-  },
-  server: {
-    port: 3000,
-    host: true
-  },
-  preview: {
-    port: 3000,
-    host: true
   }
 })
