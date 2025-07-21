@@ -38,12 +38,12 @@ jobs:
       - name: Set build time
         run: |
           export TZ='Europe/Istanbul'
-          export BUILD_TIME=$(date '+%d.%m.%Y, %H:%M')
+          export BUILD_TIME=$(date '+%d.%m.%Y, %H:%M:%S')
           echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
           
       - name: Update build time in source
         run: |
-          sed -i "s/21\.07\.2025, 16:55/$BUILD_TIME/g" src/components/Header.tsx
+          sed -i "s/21\.07\.2025, 16:55:30/$BUILD_TIME/g" src/components/Header.tsx
           
       - name: Build
         run: npm run build
