@@ -10,7 +10,7 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        format: 'umd',
+        format: 'iife',
         name: 'Portfolio',
         manualChunks: undefined,
         assetFileNames: 'assets/[name].[ext]',
