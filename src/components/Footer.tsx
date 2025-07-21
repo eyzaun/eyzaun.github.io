@@ -3,6 +3,7 @@ import { personalInfo } from '../data/portfolio';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const buildTime = "21.07.2025, 16:55"; // Manuel build time
 
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -100,7 +101,7 @@ const Footer = () => {
             using React & Tailwind CSS
           </p>
           <p className="text-gray-400 text-sm">
-            Son güncelleme: {__BUILD_TIME__}
+            Son güncelleme: {buildTime}
           </p>
         </div>
       </div>
