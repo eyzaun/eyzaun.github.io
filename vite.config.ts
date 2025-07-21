@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/eyzaun.github.io/', // GitHub Actions için repo ismi
+  base: '/', // username.github.io repoları için root path
   build: {
     outDir: 'dist',
     sourcemap: false,
