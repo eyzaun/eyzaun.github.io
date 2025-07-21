@@ -3,19 +3,11 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Relative base için değiştirildi
+  base: '/eyzaun.github.io/', // GitHub Actions için repo ismi
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        format: 'umd', // IIFE yerine UMD format (daha stabil)
-        name: 'Portfolio',
-        inlineDynamicImports: true,
-        assetFileNames: 'assets/[name].[ext]',
-        entryFileNames: 'app.js', // .txt yerine .js (daha güvenli)
-        chunkFileNames: 'assets/[name].js'
-      }
-    }
+    sourcemap: false,
+    target: 'esnext',
+    minify: 'terser'
   }
 })
