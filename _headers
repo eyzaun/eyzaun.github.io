@@ -13,6 +13,10 @@
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=31536000
 
+/*.mjs
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000
+
 /*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: public, max-age=31536000
