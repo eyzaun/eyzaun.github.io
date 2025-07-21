@@ -1,7 +1,10 @@
 import { ArrowDown, Github, Linkedin, Mail } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Hero = () => {
+  const { t } = useLanguage();
+  
   return (
     <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-20">
@@ -15,10 +18,7 @@ const Hero = () => {
 
           {/* Main Content */}
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-            Merhaba, Ben{' '}
-            <span className="text-blue-600">Ey</span>
-            <span className="text-blue-600">Za</span>
-            <span className="text-blue-600">Ün</span>
+            {t('hero.greeting')}
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-6">
@@ -47,7 +47,7 @@ const Hero = () => {
               href="#projects"
               className="btn-primary flex items-center space-x-2"
             >
-              <span>Projelerimi Gör</span>
+              <span>{t('hero.viewProjects')}</span>
               <ArrowDown size={18} />
             </a>
             
@@ -55,7 +55,7 @@ const Hero = () => {
               href="#contact"
               className="btn-secondary flex items-center space-x-2"
             >
-              <span>İletişime Geç</span>
+              <span>{t('hero.contact')}</span>
               <Mail size={18} />
             </a>
           </div>

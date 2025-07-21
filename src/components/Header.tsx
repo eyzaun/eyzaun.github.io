@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   const navItems = [
-    { name: 'Ana Sayfa', href: '#home' },
-    { name: 'Hakkımda', href: '#about' },
-    { name: 'Deneyim', href: '#experience' },
-    { name: 'Projeler', href: '#projects' },
-    { name: 'Yetenekler', href: '#skills' },
-    { name: 'İletişim', href: '#contact' }
+    { name: t('nav.home'), href: '#home' },
+    { name: t('nav.about'), href: '#about' },
+    { name: t('nav.experience'), href: '#experience' },
+    { name: t('nav.projects'), href: '#projects' },
+    { name: t('nav.skills'), href: '#skills' },
+    { name: t('nav.contact'), href: '#contact' }
   ];
 
   return (
@@ -50,8 +53,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Social Links */}
+          {/* Social Links & Language Switcher */}
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageSwitcher />
             <a
               href={personalInfo.github}
               target="_blank"
@@ -99,29 +103,32 @@ const Header = () => {
                   {item.name}
                 </a>
               ))}
-              <div className="flex space-x-4 pt-4">
-                <a
-                  href={personalInfo.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <Github size={20} />
-                </a>
-                <a
-                  href={personalInfo.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <Linkedin size={20} />
-                </a>
-                <a
-                  href={`mailto:${personalInfo.email}`}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <Mail size={20} />
-                </a>
+              <div className="flex items-center justify-between pt-4">
+                <LanguageSwitcher />
+                <div className="flex space-x-4">
+                  <a
+                    href={personalInfo.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    <Github size={20} />
+                  </a>
+                  <a
+                    href={personalInfo.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    <Linkedin size={20} />
+                  </a>
+                  <a
+                    href={`mailto:${personalInfo.email}`}
+                    className="text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    <Mail size={20} />
+                  </a>
+                </div>
               </div>
             </div>
           </nav>

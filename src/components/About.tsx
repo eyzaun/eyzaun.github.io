@@ -1,11 +1,14 @@
 import { BookOpen, Award, Code, User } from 'lucide-react';
 import { education, certifications, courses } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const About = () => {
+  const { t } = useLanguage();
+  
   return (
     <section id="about" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Hakkımda</h2>
+        <h2 className="section-title">{t('about.title')}</h2>
         
         <div className="grid md:grid-cols-2 gap-12">
           {/* Personal Info */}

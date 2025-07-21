@@ -1,5 +1,6 @@
 import { Code, Database, Globe, Wrench, Brain } from 'lucide-react';
 import { skills } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Skills = () => {
   const skillCategories = [

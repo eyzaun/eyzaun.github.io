@@ -1,11 +1,14 @@
 import { ExternalLink, Github, Folder, Star } from 'lucide-react';
 import { projects } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects = () => {
+  const { t } = useLanguage();
+  
   return (
     <section id="projects" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Projeler</h2>
+        <h2 className="section-title">{t('projects.title')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
@@ -66,13 +69,13 @@ const Projects = () => {
         
         <div className="text-center mt-12">
           <a
-            href="https://github.com/eyupzaferunal"
+            href="https://github.com/eyzaun"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary inline-flex items-center space-x-2"
           >
             <Github size={20} />
-            <span>Daha Fazla Proje</span>
+            <span>{t('projects.moreProjects')}</span>
           </a>
         </div>
       </div>

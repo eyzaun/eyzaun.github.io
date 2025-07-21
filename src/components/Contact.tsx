@@ -1,11 +1,14 @@
 import { Mail, Phone, MapPin, Github, Linkedin, Send } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Contact = () => {
+  const { t } = useLanguage();
+  
   return (
     <section id="contact" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">İletişim</h2>
+        <h2 className="section-title">{t('contact.title')}</h2>
         
         <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
           {/* Contact Info */}
