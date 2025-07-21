@@ -8,21 +8,20 @@ let html = fs.readFileSync(htmlPath, 'utf8');
 // Remove type="module" attribute to avoid MIME type issues on GitHub Pages
 html = html.replace(/type="module"\s+/g, '');
 
-// Move script to end of body and add defer for better loading
-html = html.replace(/<script([^>]*crossorigin[^>]*)><\/script>/g, function(match, attributes) {
-  return '';
-});
+// Look for the JavaScript file (should be app.txt)
+const distPath = path.join(__dirname, 'dist');
+const files = fs.readdirSync(distPath);
+const jsFile = files.find(file => file.endsWith('.txt') && file.startsWith('app'));
 
-// Add script to end of body with defer
-html = html.replace(/<\/body>/, function(match) {
-  const scriptMatch = html.match(/<script[^>]*src="([^"]*)"[^>]*>/);
-  if (scriptMatch) {
-    return `    <script defer crossorigin src="${scriptMatch[1]}"></script>\n  </body>`;
-  }
-  return match;
-});
+if (jsFile) {
+  // Add script to end of body with .txt extension
+  html = html.replace(/<\/body>/, `    <script defer crossorigin src="/${jsFile}"></script>\n  </body>`);
+  console.log(`✅ Added script tag for ${jsFile}`);
+} else {
+  console.log('❌ No .txt JavaScript file found');
+}
 
 // Write back the modified HTML
 fs.writeFileSync(htmlPath, html);
 
-console.log('✅ Fixed GitHub Pages compatibility: removed type="module" and moved script to body');
+console.log('✅ Fixed GitHub Pages compatibility with .txt extension');

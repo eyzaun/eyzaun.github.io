@@ -10,7 +10,10 @@ export default defineConfig({
       output: {
         format: 'iife',
         name: 'Portfolio',
-        inlineDynamicImports: true
+        inlineDynamicImports: true,
+        assetFileNames: 'assets/[name].[ext]',
+        entryFileNames: 'app.txt', // .txt extension to bypass MIME issues
+        chunkFileNames: 'assets/[name].txt'
       }
     }
   }
