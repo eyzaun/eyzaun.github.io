@@ -22,8 +22,14 @@ const Header = () => {
           <div className="flex flex-col">
             <div className="text-2xl font-bold text-gray-900">
               <a href="#home" className="hover:text-blue-600 transition-colors">
-                <span className="text-blue-600">Eyüp</span>
-                <span className="text-gray-900"> Zafer Ünal</span>
+                <span className="text-blue-600">Ey</span>
+                <span className="text-gray-900">üp</span>
+
+                <span className="text-blue-600"> Za</span>
+                <span className="text-gray-900">fer</span>
+
+                <span className="text-blue-600"> Ün</span>
+                <span className="text-gray-900">al</span>
               </a>
             </div>
             <div className="text-xs text-gray-500 mt-1">
