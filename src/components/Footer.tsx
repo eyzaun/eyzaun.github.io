@@ -3,7 +3,6 @@ import { personalInfo } from '../data/portfolio';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const buildTime = "21.07.2025, 16:55"; // Manuel build time
 
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -94,14 +93,11 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center space-y-2">
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-300 flex items-center justify-center">
             © {currentYear} {personalInfo.name}. Made with{' '}
             <Heart className="mx-1 text-red-500" size={16} fill="currentColor" />{' '}
             using React & Tailwind CSS
-          </p>
-          <p className="text-gray-400 text-sm">
-            Son güncelleme: {buildTime}
           </p>
         </div>
       </div>
