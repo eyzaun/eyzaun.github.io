@@ -10,6 +10,7 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
+        format: 'es',
         manualChunks: undefined,
         assetFileNames: 'assets/[name]-[hash][extname]',
         chunkFileNames: 'assets/[name]-[hash].js',
