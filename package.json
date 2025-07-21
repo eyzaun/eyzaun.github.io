@@ -9,7 +9,7 @@
     "build:github": "tsc -b && vite build --mode production --base=./",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build:github",
+    "predeploy": "npm run build:github && node fix-html.js",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
