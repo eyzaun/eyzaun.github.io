@@ -102,6 +102,7 @@ const Contact = () => {
                   id="name"
                   name="name"
                   required
+                  autoComplete="name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Adınızı girin"
                 />
@@ -116,6 +117,7 @@ const Contact = () => {
                   id="email"
                   name="email"
                   required
+                  autoComplete="email"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Email adresinizi girin"
                 />
