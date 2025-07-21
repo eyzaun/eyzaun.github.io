@@ -3,17 +3,18 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: './', // Relative base için değiştirildi
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
-        format: 'iife',
+        format: 'umd', // IIFE yerine UMD format (daha stabil)
         name: 'Portfolio',
         inlineDynamicImports: true,
         assetFileNames: 'assets/[name].[ext]',
-        entryFileNames: 'app.txt', // .txt extension to bypass MIME issues
-        chunkFileNames: 'assets/[name].txt'
+        entryFileNames: 'app.js', // .txt yerine .js (daha güvenli)
+        chunkFileNames: 'assets/[name].js'
       }
     }
   }
