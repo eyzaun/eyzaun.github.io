@@ -5,6 +5,13 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        format: 'iife',
+        name: 'Portfolio',
+        inlineDynamicImports: true
+      }
+    }
   }
 })

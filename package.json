@@ -5,7 +5,7 @@
   "homepage": "https://eyzaun.github.io/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node fix-github-pages.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
