@@ -14,10 +14,9 @@ const Contact = () => {
           {/* Contact Info */}
           <div className="space-y-8">
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Benimle İletişime Geçin</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">{t('contact.getInTouch')}</h3>
               <p className="text-gray-700 mb-8">
-                Projeleriniz, iş fırsatları veya işbirliği önerileri için benimle iletişime geçebilirsiniz. 
-                Size mümkün olan en kısa sürede dönüş yapacağım.
+                {t('contact.description')}
               </p>
             </div>
             
@@ -27,7 +26,7 @@ const Contact = () => {
                   <Mail className="text-blue-600" size={20} />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Email</p>
+                  <p className="font-medium text-gray-900">{t('contact.email')}</p>
                   <a 
                     href={`mailto:${personalInfo.email}`}
                     className="text-blue-600 hover:text-blue-700"
@@ -42,7 +41,7 @@ const Contact = () => {
                   <Phone className="text-green-600" size={20} />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Telefon</p>
+                  <p className="font-medium text-gray-900">{t('contact.phone')}</p>
                   <a 
                     href={`tel:${personalInfo.phone}`}
                     className="text-green-600 hover:text-green-700"
@@ -57,7 +56,7 @@ const Contact = () => {
                   <MapPin className="text-purple-600" size={20} />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Konum</p>
+                  <p className="font-medium text-gray-900">{t('contact.location')}</p>
                   <p className="text-gray-700">{personalInfo.location}</p>
                 </div>
               </div>
@@ -65,7 +64,7 @@ const Contact = () => {
             
             {/* Social Links */}
             <div className="pt-8 border-t border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Sosyal Medya</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('contact.socialMedia')}</h4>
               <div className="flex space-x-4">
                 <a
                   href={personalInfo.github}
@@ -89,7 +88,7 @@ const Contact = () => {
           
           {/* Contact Form */}
           <div className="card">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Mesaj Gönder</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('contact.form.title')}</h3>
             
             <form 
               action="https://formspree.io/f/xqalaadl"
@@ -98,7 +97,7 @@ const Contact = () => {
             >
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Adınız
+                  {t('contact.form.name')}
                 </label>
                 <input
                   type="text"
@@ -107,13 +106,13 @@ const Contact = () => {
                   required
                   autoComplete="name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Adınızı girin"
+                  placeholder={t('contact.form.namePlaceholder')}
                 />
               </div>
               
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
+                  {t('contact.form.email')}
                 </label>
                 <input
                   type="email"
@@ -122,13 +121,13 @@ const Contact = () => {
                   required
                   autoComplete="email"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Email adresinizi girin"
+                  placeholder={t('contact.form.emailPlaceholder')}
                 />
               </div>
               
               <div>
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                  Konu
+                  {t('contact.form.subject')}
                 </label>
                 <input
                   type="text"
@@ -136,13 +135,13 @@ const Contact = () => {
                   name="subject"
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Mesaj konusu"
+                  placeholder={t('contact.form.subjectPlaceholder')}
                 />
               </div>
               
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Mesaj
+                  {t('contact.form.message')}
                 </label>
                 <textarea
                   id="message"
@@ -150,7 +149,7 @@ const Contact = () => {
                   rows={4}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Mesajınızı buraya yazın..."
+                  placeholder={t('contact.form.messagePlaceholder')}
                 ></textarea>
               </div>
               
@@ -159,12 +158,12 @@ const Contact = () => {
                 className="w-full btn-primary flex items-center justify-center space-x-2"
               >
                 <Send size={18} />
-                <span>Mesaj Gönder</span>
+                <span>{t('contact.form.send')}</span>
               </button>
               
               <div className="bg-green-50 p-4 rounded-lg">
                 <p className="text-sm text-green-700">
-                  Form aktif! Mesajınız doğrudan email adresime iletilecektir.
+                  {t('contact.form.formActive')}
                 </p>
               </div>
             </form>

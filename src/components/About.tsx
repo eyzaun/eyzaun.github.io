@@ -15,25 +15,26 @@ const About = () => {
           <div className="space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <User className="text-blue-600" size={24} />
-              <h3 className="text-2xl font-semibold text-gray-900">Kişisel Bilgiler</h3>
+              <h3 className="text-2xl font-semibold text-gray-900">{t('about.personalInfo')}</h3>
             </div>
             
             <p className="text-gray-700 leading-relaxed">
-              Hacettepe Üniversitesi Bilgisayar Mühendisliği öğrencisiyim. Yazılım geliştirme, 
-              yapay zeka ve makine öğrenmesi alanlarında deneyimim bulunuyor. 
-              Özellikle full-stack development ve AI/ML projeleri konularında kendimi geliştiriyorum.
+              {t('about.description1')}
             </p>
             
             <p className="text-gray-700 leading-relaxed">
-              İnovatif çözümler üretmek ve en son teknolojilerle çalışmak beni motive ediyor. 
-              Takım çalışmasına yatkın, öğrenmeye açık ve problem çözme odaklı yaklaşımım var.
+              {t('about.description2')}
+            </p>
+            
+            <p className="text-gray-700 leading-relaxed">
+              {t('about.description3')}
             </p>
 
             {/* Education */}
             <div className="mt-8">
               <div className="flex items-center space-x-3 mb-4">
                 <BookOpen className="text-blue-600" size={20} />
-                <h4 className="text-xl font-semibold text-gray-900">Eğitim</h4>
+                <h4 className="text-xl font-semibold text-gray-900">{t('about.education')}</h4>
               </div>
               
               <div className="space-y-3">
@@ -56,7 +57,7 @@ const About = () => {
             <div>
               <div className="flex items-center space-x-3 mb-6">
                 <Award className="text-blue-600" size={24} />
-                <h3 className="text-2xl font-semibold text-gray-900">Sertifikalar</h3>
+                <h3 className="text-2xl font-semibold text-gray-900">{t('about.certifications')}</h3>
               </div>
               
               <div className="space-y-4">
@@ -74,7 +75,7 @@ const About = () => {
             <div>
               <div className="flex items-center space-x-3 mb-6">
                 <Code className="text-blue-600" size={24} />
-                <h3 className="text-2xl font-semibold text-gray-900">İlgili Dersler</h3>
+                <h3 className="text-2xl font-semibold text-gray-900">{t('about.relevantCourses')}</h3>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

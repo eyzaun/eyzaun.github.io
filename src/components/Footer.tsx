@@ -1,7 +1,9 @@
 import { Heart, Github, Linkedin, Mail } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Footer = () => {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -12,8 +14,7 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-semibold mb-4">{personalInfo.name}</h3>
             <p className="text-gray-300 mb-4">
-              Computer Engineering student passionate about software development, 
-              AI/ML, and creating innovative solutions.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -43,36 +44,36 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">Hızlı Linkler</h3>
+            <h3 className="text-xl font-semibold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#home" className="text-gray-300 hover:text-white transition-colors">
-                  Ana Sayfa
+                  {t('nav.home')}
                 </a>
               </li>
               <li>
                 <a href="#about" className="text-gray-300 hover:text-white transition-colors">
-                  Hakkımda
+                  {t('nav.about')}
                 </a>
               </li>
               <li>
                 <a href="#experience" className="text-gray-300 hover:text-white transition-colors">
-                  Deneyim
+                  {t('nav.experience')}
                 </a>
               </li>
               <li>
                 <a href="#projects" className="text-gray-300 hover:text-white transition-colors">
-                  Projeler
+                  {t('nav.projects')}
                 </a>
               </li>
               <li>
                 <a href="#skills" className="text-gray-300 hover:text-white transition-colors">
-                  Yetenekler
+                  {t('nav.skills')}
                 </a>
               </li>
               <li>
                 <a href="#contact" className="text-gray-300 hover:text-white transition-colors">
-                  İletişim
+                  {t('nav.contact')}
                 </a>
               </li>
             </ul>
@@ -80,7 +81,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">İletişim</h3>
+            <h3 className="text-xl font-semibold mb-4">{t('contact.title')}</h3>
             <div className="space-y-2">
               <p className="text-gray-300">
                 <Mail className="inline mr-2" size={16} />
@@ -95,9 +96,9 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-300 flex items-center justify-center">
-            © {currentYear} {personalInfo.name}. Made with{' '}
-            <Heart className="mx-1 text-red-500" size={16} fill="currentColor" />{' '}
-            using React & Tailwind CSS
+            © {currentYear} {personalInfo.name}. {t('footer.madeWith')}
+            <Heart className="mx-1 text-red-500" size={16} fill="currentColor" />
+            React & Tailwind CSS
           </p>
         </div>
       </div>
