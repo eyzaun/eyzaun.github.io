@@ -16,13 +16,10 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^24.0.14",
     "autoprefixer": "^10.4.21",
-    "emailjs-com": "^3.2.0",
-    "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "postcss": "^8.5.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.7.0",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
