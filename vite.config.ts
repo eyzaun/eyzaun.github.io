@@ -3,22 +3,27 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
     rollupOptions: {
       output: {
-        format: 'iife',
-        name: 'Portfolio',
         manualChunks: undefined,
         assetFileNames: 'assets/[name].[ext]',
-        chunkFileNames: 'assets/[name].js',
-        entryFileNames: 'assets/[name].js'
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js'
       }
     },
     target: ['es2015', 'chrome58', 'firefox57'],
-    minify: false
+    minify: 'terser'
+  },
+  server: {
+    port: 3000,
+    host: true
+  },
+  preview: {
+    port: 3000,
+    host: true
   }
 })

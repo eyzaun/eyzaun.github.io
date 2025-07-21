@@ -2,15 +2,15 @@
   "name": "eyzaun.github.io",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://eyzaun.github.io/",
+  "homepage": "https://eyzaun-portfolio.vercel.app/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --mode production",
-    "build:github": "tsc -b && vite build --mode production --base=./",
+    "build": "tsc -b && vite build",
+    "build:vercel": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build:github && node fix-html.js",
-    "deploy": "gh-pages -d dist"
+    "deploy:github": "npm run build:github && gh-pages -d dist",
+    "build:github": "tsc -b && vite build --base=./ && node fix-html.js"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",

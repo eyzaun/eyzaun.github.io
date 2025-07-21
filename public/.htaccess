@@ -1,0 +1,10 @@
+AddType application/javascript .js
+AddType application/javascript .mjs
+
+<Files "*.js">
+  Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
+
+<Files "*.mjs">
+  Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
