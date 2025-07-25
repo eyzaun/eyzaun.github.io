@@ -13,6 +13,7 @@ const Skills = () => {
     "C++": 4,
     "JavaScript": 5,
     "TypeScript": 5,
+    "Go": 4,
     "C#": 4,
     
     // Frontend
@@ -28,6 +29,10 @@ const Skills = () => {
     "Express": 5,
     "ASP.NET Core": 4,
     ".NET Aspire": 3,
+    "Gin": 4,
+    "Gorilla Mux": 4,
+    "GORM": 4,
+    "gRPC": 3,
     
     // AI/ML
     "PyTorch": 4,
@@ -41,6 +46,7 @@ const Skills = () => {
     "PostgreSQL": 4,
     "MongoDB": 4,
     "Firebase": 4,
+    "Redis": 4,
     
     // Tools & Technologies
     "Git": 5,

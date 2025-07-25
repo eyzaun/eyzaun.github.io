@@ -145,19 +145,19 @@ export const certifications: Certification[] = [
 
 export const skills = {
   "Languages & Frameworks": [
-    "Python", "Java", "C++", "JavaScript", "TypeScript", "C#"
+    "Python", "Java", "C++", "JavaScript", "TypeScript", "Go", "C#"
   ],
   "Frontend": [
     "React", "Flutter", "HTML5", "CSS3", "Tailwind CSS", "Three.js"
   ],
   "Backend": [
-    "Node.js", "Express", "ASP.NET Core", ".NET Aspire"
+    "Node.js", "Express", "ASP.NET Core", ".NET Aspire", "Gin", "Gorilla Mux", "GORM", "gRPC"
   ],
   "AI/ML": [
     "PyTorch", "Transformers", "LLMs", "NLP", "TensorFlow"
   ],
   "Databases": [
-    "MySQL", "PostgreSQL", "MongoDB", "Firebase"
+    "MySQL", "PostgreSQL", "MongoDB", "Firebase", "Redis"
   ],
   "Tools & Technologies": [
     "Git", "Docker", "CI/CD", "Arduino", "CANbus", "OBD2"
