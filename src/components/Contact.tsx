@@ -105,7 +105,7 @@ const Contact = () => {
                   name="name"
                   required
                   autoComplete="name"
-                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.namePlaceholder')}
                 />
               </div>
@@ -120,7 +120,7 @@ const Contact = () => {
                   name="email"
                   required
                   autoComplete="email"
-                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.emailPlaceholder')}
                 />
               </div>
@@ -134,7 +134,7 @@ const Contact = () => {
                   id="subject"
                   name="subject"
                   required
-                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.subjectPlaceholder')}
                 />
               </div>
@@ -148,7 +148,7 @@ const Contact = () => {
                   name="message"
                   rows={4}
                   required
-                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300 resize-vertical"
+                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300 resize-vertical"
                   placeholder={t('contact.form.messagePlaceholder')}
                 ></textarea>
               </div>

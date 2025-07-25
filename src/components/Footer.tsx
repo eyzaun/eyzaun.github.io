@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail, MapPin } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -88,7 +88,8 @@ const Footer = () => {
                 {personalInfo.email}
               </p>
               <p className="text-gray-300">
-                📍 {t('hero.location')}
+                <MapPin className="inline mr-2" size={16} />
+                {t('hero.location')}
               </p>
             </div>
           </div>
