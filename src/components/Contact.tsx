@@ -57,7 +57,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-lightest-slate">{t('contact.location')}</p>
-                  <p className="text-slate">{personalInfo.location}</p>
+                  <p className="text-green-300">{personalInfo.location}</p>
                 </div>
               </div>
             </div>
@@ -105,7 +105,7 @@ const Contact = () => {
                   name="name"
                   required
                   autoComplete="name"
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate-light focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.namePlaceholder')}
                 />
               </div>
@@ -120,7 +120,7 @@ const Contact = () => {
                   name="email"
                   required
                   autoComplete="email"
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate-light focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.emailPlaceholder')}
                 />
               </div>
@@ -134,7 +134,7 @@ const Contact = () => {
                   id="subject"
                   name="subject"
                   required
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate-light focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
                   placeholder={t('contact.form.subjectPlaceholder')}
                 />
               </div>
@@ -148,24 +148,18 @@ const Contact = () => {
                   name="message"
                   rows={4}
                   required
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate-light focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300 resize-vertical"
+                  className="w-full px-4 py-3 bg-light-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300 resize-vertical"
                   placeholder={t('contact.form.messagePlaceholder')}
                 ></textarea>
               </div>
               
               <button
                 type="submit"
-                className="w-full btn-primary flex items-center justify-center space-x-2 group"
+                className="w-full py-4 px-6 bg-green-300/10 border border-green-300 text-green-300 rounded-lg font-medium hover:bg-green-300 hover:text-navy transition-all duration-300 flex items-center justify-center space-x-3 group"
               >
-                <Send size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-                <span>{t('contact.form.send')}</span>
+                <Send size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="text-lg">{t('contact.form.send')}</span>
               </button>
-              
-              <div className="bg-green-300/10 border border-green-300/20 p-4 rounded-lg">
-                <p className="text-sm text-green-300">
-                  {t('contact.form.formActive')}
-                </p>
-              </div>
             </form>
           </div>
         </div>

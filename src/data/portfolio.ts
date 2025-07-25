@@ -32,7 +32,7 @@ export const personalInfo = {
   title: "Software Engineer",
   email: "eyzaun@gmail.com",
   phone: "+905426999881",
-  location: "Ankara, Turkey",
+  location: "Ankara, Türkiye",
   about: "Computer Engineering graduate from Hacettepe University with expertise in software development, AI/ML, and full-stack development. Passionate about creating innovative solutions and working with cutting-edge technologies.",
   github: "https://github.com/eyzaun",
   linkedin: "https://www.linkedin.com/in/eyzaun/"
