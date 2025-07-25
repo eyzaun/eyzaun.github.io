@@ -1,9 +1,52 @@
 import { BookOpen, Award, Code, User } from 'lucide-react';
-import { education, certifications, courses } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const About = () => {
   const { t } = useLanguage();
+  
+  // Çeviri anahtarlarını kullanan eğitim verileri
+  const translatedEducation = [
+    {
+      institution: t('education.hacettepeUniversity'),
+      degree: t('education.computerEngineering'),
+      year: "2021-2025"
+    },
+    {
+      institution: "Eskişehir Fatih Fen Lisesi",
+      degree: t('education.scienceHighSchool'),
+      year: undefined
+    },
+    {
+      institution: "Emine-Emir Şahbaz BİLSEM",
+      degree: t('education.scienceArtCenter'),
+      year: undefined
+    }
+  ];
+
+  // Çeviri anahtarlarını kullanan sertifika verileri
+  const translatedCertifications = [
+    {
+      name: t('certifications.aspNetCore'),
+      issuer: "Microsoft Learn",
+      description: t('certifications.aspNetCoreDesc')
+    },
+    {
+      name: t('certifications.netAspire'),
+      issuer: "Microsoft Learn", 
+      description: t('certifications.netAspireDesc')
+    }
+  ];
+
+  // Çeviri anahtarlarını kullanan ders verileri
+  const translatedCourses = [
+    t('courses.softwareArchitecture'),
+    t('courses.embeddedSystems'),
+    t('courses.databaseManagement'),
+    t('courses.computerGraphics'),
+    t('courses.gameTechnologies'),
+    t('courses.algorithmDesign'),
+    t('courses.dataStructures')
+  ];
   
   return (
     <section id="about" className="py-20 bg-white">
@@ -38,7 +81,7 @@ const About = () => {
               </div>
               
               <div className="space-y-3">
-                {education.map((edu, index) => (
+                {translatedEducation.map((edu, index) => (
                   <div key={index} className="bg-gray-50 p-4 rounded-lg">
                     <h5 className="font-semibold text-gray-900">{edu.institution}</h5>
                     <p className="text-gray-700">{edu.degree}</p>
@@ -61,7 +104,7 @@ const About = () => {
               </div>
               
               <div className="space-y-4">
-                {certifications.map((cert, index) => (
+                {translatedCertifications.map((cert, index) => (
                   <div key={index} className="card">
                     <h4 className="font-semibold text-gray-900 mb-2">{cert.name}</h4>
                     <p className="text-blue-600 font-medium mb-2">{cert.issuer}</p>
@@ -79,7 +122,7 @@ const About = () => {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {courses.map((course, index) => (
+                {translatedCourses.map((course, index) => (
                   <div key={index} className="bg-blue-50 px-4 py-2 rounded-lg">
                     <span className="text-gray-800 font-medium">{course}</span>
                   </div>

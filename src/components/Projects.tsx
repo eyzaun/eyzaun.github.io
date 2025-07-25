@@ -10,10 +10,10 @@ const Projects = () => {
       description: t('projects.journeyOfCrops.description'),
       technologies: ["Three.js", "WebGL2", "JavaScript", "Dynamic Programming"],
       features: [
-        "Resource optimization using dynamic programming (Knapsack algorithms)",
-        "Interactive rail system simulation using Three.js and WebGL2",
-        "Animated visualization of algorithmic solutions",
-        "Score calculation system based on optimization results"
+        t('projects.journeyOfCrops.feature1'),
+        t('projects.journeyOfCrops.feature2'),
+        t('projects.journeyOfCrops.feature3'),
+        t('projects.journeyOfCrops.feature4')
       ],
       github: undefined,
       link: undefined
@@ -23,10 +23,10 @@ const Projects = () => {
       description: t('projects.linkedHU.description'),
       technologies: ["Node.js", "Express", "MongoDB", "React", "JWT"],
       features: [
-        "Backend functionality with comprehensive testing procedures using agile methodology",
-        "User authentication and profile management systems",
-        "RESTful APIs for university networking features",
-        "Code quality and performance optimization with CI/CD integration"
+        t('projects.linkedHU.feature1'),
+        t('projects.linkedHU.feature2'),
+        t('projects.linkedHU.feature3'),
+        t('projects.linkedHU.feature4')
       ],
       github: "https://github.com/eyzaun/linkedhu",
       link: undefined
@@ -36,10 +36,10 @@ const Projects = () => {
       description: t('projects.avukatLLM.description'),
       technologies: ["Python", "PyTorch", "Transformers", "Microsoft Phi-4", "NLP"],
       features: [
-        "85% response accuracy in Turkish tax law consultations",
-        "Model quantization for 75% memory reduction",
-        "Continuous model improvement pipeline",
-        "Multi-language support with Turkish focus"
+        t('projects.avukatLLM.feature1'),
+        t('projects.avukatLLM.feature2'),
+        t('projects.avukatLLM.feature3'),
+        t('projects.avukatLLM.feature4')
       ],
       github: undefined,
       link: undefined
@@ -49,10 +49,10 @@ const Projects = () => {
       description: t('projects.goDash.description'),
       technologies: ["Go", "Gin Framework", "WebSocket", "PostgreSQL", "GORM", "Docker"],
       features: [
-        "Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections",
-        "Implemented CPU, memory, and disk usage tracking with automated alert system via email/webhook",
-        "Designed REST API with PostgreSQL storage using GORM for historical data analysis",
-        "Created responsive web interface and Docker containerization for cross-platform deployment"
+        t('projects.goDash.feature1'),
+        t('projects.goDash.feature2'),
+        t('projects.goDash.feature3'),
+        t('projects.goDash.feature4')
       ],
       github: "https://github.com/eyzaun/godash",
       link: undefined

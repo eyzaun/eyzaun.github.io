@@ -88,7 +88,7 @@ const Footer = () => {
                 {personalInfo.email}
               </p>
               <p className="text-gray-300">
-                📍 {personalInfo.location}
+                📍 {t('hero.location')}
               </p>
             </div>
           </div>

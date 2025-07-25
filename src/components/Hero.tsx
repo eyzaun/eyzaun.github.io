@@ -22,11 +22,11 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-6">
-            {personalInfo.title}
+            {t('hero.title')}
           </p>
           
           <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-            {personalInfo.about}
+            {t('hero.description')}
           </p>
 
           {/* Contact Info */}
@@ -37,7 +37,7 @@ const Hero = () => {
             </div>
             <div className="flex items-center space-x-2 text-gray-600">
               <span>📍</span>
-              <span>{personalInfo.location}</span>
+              <span>{t('hero.location')}</span>
             </div>
           </div>
 
