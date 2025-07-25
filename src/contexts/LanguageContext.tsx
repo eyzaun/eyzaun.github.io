@@ -121,6 +121,7 @@ const translations = {
     'contact.formActive': 'Mesajınız güvenli bir şekilde tarafıma iletilecektir.',
     
     // Contact Form
+    'contact.form.title': 'Mesaj Gönder',
     'contact.form.name': 'Adınız',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Konu',
@@ -269,6 +270,7 @@ const translations = {
     'contact.formActive': 'Your message will be securely delivered to me.',
     
     // Contact Form
+    'contact.form.title': 'Send Message',
     'contact.form.name': 'Your Name',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Subject',

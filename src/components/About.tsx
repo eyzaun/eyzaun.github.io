@@ -59,10 +59,6 @@ const About: React.FC = () => {
             {t('about.description3')}
           </p>
 
-          <p style={{ color: 'var(--slate)' }}>
-            {t('about.technologies')} 
-          </p>
-
           {/* Technologies Grid */}
           <div className="grid grid-cols-2 gap-2 mt-6">
             {technologies.map((tech, index) => (

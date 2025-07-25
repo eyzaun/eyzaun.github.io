@@ -57,8 +57,8 @@ const Header: React.FC = () => {
           <span style={{ color: 'var(--lightest-slate)' }}>üp </span>
           <span style={{ color: 'var(--green)' }}>Za</span>
           <span style={{ color: 'var(--lightest-slate)' }}>fer </span>
-          <span style={{ color: 'var(--green)' }}>Ü</span>
-          <span style={{ color: 'var(--lightest-slate)' }}>nal</span>
+          <span style={{ color: 'var(--green)' }}>Ün</span>
+          <span style={{ color: 'var(--lightest-slate)' }}>al</span>
         </a>
       </div>
 
