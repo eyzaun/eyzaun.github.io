@@ -20,11 +20,6 @@ const Hero: React.FC = () => {
   return (
     <section className="min-h-screen flex flex-col justify-center items-start px-6 md:px-12 lg:px-24 xl:px-32 relative">
       <div className="max-w-4xl">
-        {/* Greeting */}
-        <h1 className="fade-in font-mono text-base md:text-lg mb-5" style={{ color: 'var(--green)' }}>
-          {t('hero.greeting')}
-        </h1>
-
         {/* Name */}
         <h2 className="fade-in-delay-1 font-bold leading-tight mb-5" style={{ 
           fontSize: 'clamp(40px, 8vw, 80px)',

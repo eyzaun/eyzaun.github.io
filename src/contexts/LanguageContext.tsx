@@ -56,6 +56,7 @@ const translations = {
     'hero.description': 'Hacettepe Üniversitesi Bilgisayar Mühendisliği mezunu. Yazılım geliştirme, yapay zeka/makine öğrenmesi ve full-stack development alanlarında deneyimim var. İnovatif çözümler üretmek ve en son teknolojilerle çalışmak beni motive ediyor.',
     'hero.location': 'Ankara, Türkiye',
     'hero.viewProjects': 'Projelerimi Gör',
+    'hero.downloadCV': 'CV İndir',
     'hero.contact': 'İletişime Geç',
     
     // About Section
@@ -119,7 +120,7 @@ const translations = {
     'contact.location': 'Konum',
     'contact.socialMedia': 'Sosyal Medya',
     'contact.sendMessage': 'Mesaj Gönder',
-    'contact.formActive': 'Form aktif! Mesajınız doğrudan email adresime iletilecektir.',
+    'contact.formActive': 'Mesajınız güvenli bir şekilde tarafıma iletilecektir.',
     
     // Contact Form
     'contact.form.name': 'Adınız',
@@ -205,6 +206,7 @@ const translations = {
     'hero.description': 'Computer Engineering graduate from Hacettepe University with expertise in software development, AI/ML, and full-stack development. Passionate about creating innovative solutions and working with cutting-edge technologies.',
     'hero.location': 'Ankara, Turkey',
     'hero.viewProjects': 'View My Projects',
+    'hero.downloadCV': 'Download CV',
     'hero.contact': 'Get in Touch',
     
     // About Section
@@ -268,7 +270,7 @@ const translations = {
     'contact.location': 'Location',
     'contact.socialMedia': 'Social Media',
     'contact.sendMessage': 'Send Message',
-    'contact.formActive': 'Form is active! Your message will be sent directly to my email address.',
+    'contact.formActive': 'Your message will be securely delivered to me.',
     
     // Contact Form
     'contact.form.name': 'Your Name',
