@@ -133,10 +133,10 @@ const Projects: React.FC = () => {
             href="https://github.com/eyzaun"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary inline-flex items-center space-x-2 group"
+            className="inline-flex items-center space-x-3 py-4 px-6 bg-green-300/10 border border-green-300 text-green-300 rounded-lg font-medium hover:bg-green-300 hover:text-navy transition-all duration-300 group"
           >
             <Github size={20} className="group-hover:scale-110 transition-transform duration-300" />
-            <span>{t('projects.moreProjects')}</span>
+            <span className="text-lg">{t('projects.moreProjects')}</span>
           </a>
         </div>
       </div>

@@ -10,7 +10,7 @@ const Contact = () => {
       <div className="container">
         <h2 className="section-title">{t('contact.title')}</h2>
         
-        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto items-start">
           {/* Contact Info */}
           <div className="space-y-8">
             <div>
@@ -57,7 +57,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-lightest-slate">{t('contact.location')}</p>
-                  <p className="text-green-300">{personalInfo.location}</p>
+                  <p className="text-slate">{personalInfo.location}</p>
                 </div>
               </div>
             </div>

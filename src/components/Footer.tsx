@@ -1,4 +1,4 @@
-import { Heart, Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -96,9 +96,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-300 flex items-center justify-center">
-            © {currentYear} {personalInfo.name}. {t('footer.madeWith')}
-            <Heart className="mx-1 text-red-500" size={16} fill="currentColor" />
-            React & Tailwind CSS
+            © {currentYear} {personalInfo.name}. {t('footer.madeWith')} React & Tailwind CSS
           </p>
         </div>
       </div>

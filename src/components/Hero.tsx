@@ -6,8 +6,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 const Hero: React.FC = () => {
   const { t } = useLanguage();
 
-  const scrollToAbout = () => {
-    const element = document.getElementById('about');
+  const scrollToProjects = () => {
+    const element = document.getElementById('projects');
     if (element) {
       const offsetTop = element.offsetTop - 100;
       window.scrollTo({
@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
         {/* CTA Buttons */}
         <div className="fade-in-delay-3 flex flex-col sm:flex-row gap-4">
           <button
-            onClick={scrollToAbout}
+            onClick={scrollToProjects}
             className="btn inline-flex items-center gap-2"
           >
             {t('hero.viewProjects')}

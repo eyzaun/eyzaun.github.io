@@ -15,7 +15,7 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('tr');
+  const [language, setLanguage] = useState<Language>('en');
 
   const t = (key: string): string => {
     return (translations[language] as any)[key] || key;
@@ -141,7 +141,7 @@ const translations = {
     'footer.description': 'Yazılım geliştirme, AI/ML ve yenilikçi çözümler konusunda tutkulu Bilgisayar Mühendisliği mezunu.',
     'footer.quickLinks': 'Hızlı Linkler',
     'footer.contact': 'İletişim',
-    'footer.madeWith': '❤️ ile yapıldı',
+    'footer.madeWith': 'Built with',
     
     // Education Data
     'education.computerEngineering': 'Bilgisayar Mühendisliği - Mezun',
@@ -290,7 +290,7 @@ const translations = {
     'footer.description': 'Computer Engineering graduate passionate about software development, AI/ML, and creating innovative solutions.',
     'footer.quickLinks': 'Quick Links',
     'footer.contact': 'Contact',
-    'footer.madeWith': 'Made with ❤️',
+    'footer.madeWith': 'Built with',
     
     // Education Data
     'education.computerEngineering': 'Computer Engineering - Graduate',
