@@ -8,10 +8,7 @@ const Contact = () => {
   return (
     <section id="contact" className="section">
       <div className="container">
-        <div className="section-title-wrapper">
-          <span className="section-number">05.</span>
-          <h2 className="section-title">{t('contact.title')}</h2>
-        </div>
+        <h2 className="section-title">{t('contact.title')}</h2>
         
         <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
           {/* Contact Info */}

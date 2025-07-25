@@ -52,10 +52,13 @@ const Header: React.FC = () => {
   return (
     <header className={`navbar ${isScrolled ? 'shadow-lg' : ''}`}>
       <div className="fade-in">
-        <a href="#" className="text-xl font-bold font-mono" style={{ color: 'var(--green)' }}>
+        <a href="#" className="text-xl font-bold font-mono">
           <span style={{ color: 'var(--green)' }}>Ey</span>
-          <span style={{ color: 'var(--lightest-slate)' }}>Za</span>
-          <span style={{ color: 'var(--green)' }}>Un</span>
+          <span style={{ color: 'var(--lightest-slate)' }}>üp </span>
+          <span style={{ color: 'var(--green)' }}>Za</span>
+          <span style={{ color: 'var(--lightest-slate)' }}>fer </span>
+          <span style={{ color: 'var(--green)' }}>Ü</span>
+          <span style={{ color: 'var(--lightest-slate)' }}>nal</span>
         </a>
       </div>
 

@@ -61,32 +61,32 @@ const Skills: React.FC = () => {
   const skillCategories = [
     {
       title: t('skills.categories.languagesFrameworks'),
-      icon: <Code className="text-blue-600" size={24} />,
+      icon: <Code className="text-green-300" size={24} />,
       skills: skills["Languages & Frameworks"]
     },
     {
       title: t('skills.categories.frontend'),
-      icon: <Globe className="text-green-600" size={24} />,
+      icon: <Globe className="text-green-300" size={24} />,
       skills: skills["Frontend"]
     },
     {
       title: t('skills.categories.backend'),
-      icon: <Database className="text-purple-600" size={24} />,
+      icon: <Database className="text-green-300" size={24} />,
       skills: skills["Backend"]
     },
     {
       title: t('skills.categories.aiMl'),
-      icon: <Brain className="text-pink-600" size={24} />,
+      icon: <Brain className="text-green-300" size={24} />,
       skills: skills["AI/ML"]
     },
     {
       title: t('skills.categories.databases'),
-      icon: <Database className="text-orange-600" size={24} />,
+      icon: <Database className="text-green-300" size={24} />,
       skills: skills["Databases"]
     },
     {
       title: t('skills.categories.tools'),
-      icon: <Wrench className="text-red-600" size={24} />,
+      icon: <Wrench className="text-green-300" size={24} />,
       skills: skills["Tools & Technologies"]
     }
   ];
@@ -94,10 +94,7 @@ const Skills: React.FC = () => {
   return (
     <section id="skills" className="section">
       <div className="container">
-        <div className="section-title-wrapper">
-          <span className="section-number">04.</span>
-          <h2 className="section-title">{t('skills.title')}</h2>
-        </div>
+        <h2 className="section-title">{t('skills.title')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {skillCategories.map((category, index) => (

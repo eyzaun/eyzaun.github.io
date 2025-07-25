@@ -100,16 +100,14 @@ const translations = {
     
     // Skills Section
     'skills.title': 'Yetenekler',
-    'skills.continuousLearning': 'Sürekli Öğrenmeye Açık',
-    'skills.description': 'Teknoloji hızla gelişiyor ve ben de bu gelişimi takip etmeye, yeni teknolojileri öğrenmeye ve mevcut bilgimi güncel tutmaya odaklanıyorum. Her proje benim için yeni bir öğrenme fırsatı ve mesleki gelişimime katkı sağlıyor.',
-    
-    // Skill Categories (Teknik terimler İngilizce)
-    'skills.languagesFrameworks': 'Languages & Frameworks',
-    'skills.frontend': 'Frontend',
-    'skills.backend': 'Backend',
-    'skills.aiMl': 'AI/ML',
-    'skills.databases': 'Veritabanları',
-    'skills.tools': 'Araçlar & Teknolojiler',
+    'skills.categories.languagesFrameworks': 'Diller & Framework\'ler',
+    'skills.categories.frontend': 'Frontend',
+    'skills.categories.backend': 'Backend',
+    'skills.categories.aiMl': 'AI/ML',
+    'skills.categories.databases': 'Veritabanları',
+    'skills.categories.tools': 'Araçlar & Teknolojiler',
+    'skills.continuousLearning.title': 'Sürekli Öğrenmeye Açık',
+    'skills.continuousLearning.description': 'Teknoloji hızla gelişiyor ve ben de bu gelişimi takip etmeye, yeni teknolojileri öğrenmeye ve mevcut bilgimi güncel tutmaya odaklanıyorum. Her proje benim için yeni bir öğrenme fırsatı ve mesleki gelişimime katkı sağlıyor.',
     
     // Contact Section
     'contact.title': 'İletişim',
@@ -250,16 +248,14 @@ const translations = {
     
     // Skills Section
     'skills.title': 'Skills',
-    'skills.continuousLearning': 'Continuous Learning',
-    'skills.description': 'Technology evolves rapidly, and I focus on following this development, learning new technologies, and keeping my current knowledge up to date. Every project is a new learning opportunity for me and contributes to my professional development.',
-    
-    // Skill Categories (Teknik terimler İngilizce)
-    'skills.languagesFrameworks': 'Languages & Frameworks',
-    'skills.frontend': 'Frontend',
-    'skills.backend': 'Backend',
-    'skills.aiMl': 'AI/ML',
-    'skills.databases': 'Databases',
-    'skills.tools': 'Tools & Technologies',
+    'skills.categories.languagesFrameworks': 'Languages & Frameworks',
+    'skills.categories.frontend': 'Frontend',
+    'skills.categories.backend': 'Backend',
+    'skills.categories.aiMl': 'AI/ML',
+    'skills.categories.databases': 'Databases',
+    'skills.categories.tools': 'Tools & Technologies',
+    'skills.continuousLearning.title': 'Continuous Learning',
+    'skills.continuousLearning.description': 'Technology evolves rapidly, and I focus on following this development, learning new technologies, and keeping my current knowledge up to date. Every project is a new learning opportunity for me and contributes to my professional development.',
     
     // Contact Section
     'contact.title': 'Contact',

@@ -66,10 +66,7 @@ const Projects: React.FC = () => {
   return (
     <section id="projects" className="section">
       <div className="container">
-        <div className="section-title-wrapper">
-          <span className="section-number">03.</span>
-          <h2 className="section-title">{t('projects.title')}</h2>
-        </div>
+        <h2 className="section-title">{t('projects.title')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {translatedProjects.map((project, index) => (
