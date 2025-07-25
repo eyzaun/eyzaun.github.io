@@ -1,139 +1,131 @@
-import { useState } from 'react';
-import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
-import { personalInfo } from '../data/portfolio';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import LanguageSwitcher from './LanguageSwitcher';
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useLanguage();
+const Header: React.FC = () => {
+  const { language, setLanguage, t } = useLanguage();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+      
+      // Active section detection
+      const sections = ['about', 'experience', 'projects', 'skills', 'contact'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 150 && rect.bottom >= 150;
+        }
+        return false;
+      });
+      setActiveSection(current || '');
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offsetTop = element.offsetTop - 100;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+    setIsMobileMenuOpen(false);
+  };
 
   const navItems = [
-    { name: t('nav.home'), href: '#home' },
-    { name: t('nav.about'), href: '#about' },
-    { name: t('nav.experience'), href: '#experience' },
-    { name: t('nav.projects'), href: '#projects' },
-    { name: t('nav.skills'), href: '#skills' },
-    { name: t('nav.contact'), href: '#contact' }
+    { id: 'about', label: t('nav.about') },
+    { id: 'experience', label: t('nav.experience') },
+    { id: 'projects', label: t('nav.projects') },
+    { id: 'skills', label: t('nav.skills') },
+    { id: 'contact', label: t('nav.contact') }
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 shadow-sm">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex flex-col">
-            <div className="text-2xl font-bold text-gray-900">
-              <a href="#home" className="hover:text-blue-600 transition-colors">
-                <span className="text-blue-600">Ey</span>
-                <span className="text-gray-900">üp</span>
-
-                <span className="text-blue-600"> Za</span>
-                <span className="text-gray-900">fer</span>
-
-                <span className="text-blue-600"> Ün</span>
-                <span className="text-gray-900">al</span>
-              </a>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {t('header.lastUpdated')}: 21.07.2025, 16:55:30
-            </div>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
-
-          {/* Social Links & Language Switcher */}
-          <div className="hidden md:flex items-center space-x-4">
-            <LanguageSwitcher />
-            <a
-              href={personalInfo.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              <Github size={20} />
-            </a>
-            <a
-              href={personalInfo.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a
-              href={`mailto:${personalInfo.email}`}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              <Mail size={20} />
-            </a>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 py-4 border-t border-gray-200">
-            <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
-              <div className="flex items-center justify-between pt-4">
-                <LanguageSwitcher />
-                <div className="flex space-x-4">
-                  <a
-                    href={personalInfo.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    <Github size={20} />
-                  </a>
-                  <a
-                    href={personalInfo.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    <Linkedin size={20} />
-                  </a>
-                  <a
-                    href={`mailto:${personalInfo.email}`}
-                    className="text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    <Mail size={20} />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </nav>
-        )}
+    <header className={`navbar ${isScrolled ? 'shadow-lg' : ''}`}>
+      <div className="fade-in">
+        <a href="#" className="text-xl font-bold font-mono" style={{ color: 'var(--green)' }}>
+          {t('nav.logo')}
+        </a>
       </div>
+
+      {/* Desktop Navigation */}
+      <nav className="hidden md:block fade-in-delay-1">
+        <ol className="nav-links">
+          {navItems.map((item, index) => (
+            <li key={item.id} className="nav-item">
+              <button
+                onClick={() => scrollToSection(item.id)}
+                className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+          <li className="nav-item ml-4">
+            <button
+              onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+              className="btn text-sm px-3 py-2 flex items-center gap-2"
+              title={t('nav.toggleLanguage')}
+            >
+              <Globe size={16} />
+              {language.toUpperCase()}
+            </button>
+          </li>
+        </ol>
+      </nav>
+
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden p-2"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        style={{ color: 'var(--green)' }}
+      >
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Mobile Navigation */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[var(--light-navy)] border-t border-[var(--lighter-navy)] shadow-lg">
+          <nav className="p-4">
+            <ol className="space-y-4">
+              {navItems.map((item, index) => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => scrollToSection(item.id)}
+                    className="nav-link block w-full text-left"
+                    style={{ 
+                      transitionDelay: `${index * 100}ms`,
+                      color: activeSection === item.id ? 'var(--green)' : 'var(--lightest-slate)'
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+              <li className="pt-4 border-t border-[var(--lighter-navy)]">
+                <button
+                  onClick={() => setLanguage(language === 'tr' ? 'en' : 'tr')}
+                  className="btn text-sm px-3 py-2 flex items-center gap-2"
+                  title={t('nav.toggleLanguage')}
+                >
+                  <Globe size={16} />
+                  {language.toUpperCase()}
+                </button>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

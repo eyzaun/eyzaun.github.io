@@ -1,9 +1,24 @@
-import { BookOpen, Award, Code, User } from 'lucide-react';
+import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const About = () => {
+const About: React.FC = () => {
   const { t } = useLanguage();
-  
+
+  const technologies = [
+    'JavaScript (ES6+)',
+    'TypeScript', 
+    'React',
+    'Node.js',
+    'Python',
+    'Django',
+    'PostgreSQL',
+    'Git & GitHub',
+    'Docker',
+    'AWS',
+    'MongoDB',
+    'Go'
+  ];
+
   // Çeviri anahtarlarını kullanan eğitim verileri
   const translatedEducation = [
     {
@@ -23,112 +38,64 @@ const About = () => {
     }
   ];
 
-  // Çeviri anahtarlarını kullanan sertifika verileri
-  const translatedCertifications = [
-    {
-      name: t('certifications.aspNetCore'),
-      issuer: "Microsoft Learn",
-      description: t('certifications.aspNetCoreDesc')
-    },
-    {
-      name: t('certifications.netAspire'),
-      issuer: "Microsoft Learn", 
-      description: t('certifications.netAspireDesc')
-    }
-  ];
-
-  // Çeviri anahtarlarını kullanan ders verileri
-  const translatedCourses = [
-    t('courses.softwareArchitecture'),
-    t('courses.embeddedSystems'),
-    t('courses.databaseManagement'),
-    t('courses.computerGraphics'),
-    t('courses.gameTechnologies'),
-    t('courses.algorithmDesign'),
-    t('courses.dataStructures')
-  ];
-  
   return (
-    <section id="about" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <h2 className="section-title">{t('about.title')}</h2>
-        
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* Personal Info */}
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <User className="text-blue-600" size={24} />
-              <h3 className="text-2xl font-semibold text-gray-900">{t('about.personalInfo')}</h3>
-            </div>
-            
-            <p className="text-gray-700 leading-relaxed">
-              {t('about.description1')}
-            </p>
-            
-            <p className="text-gray-700 leading-relaxed">
-              {t('about.description2')}
-            </p>
-            
-            <p className="text-gray-700 leading-relaxed">
-              {t('about.description3')}
-            </p>
+    <section id="about" className="section">
+      <h2 className="section-title fade-in">
+        {t('about.title')}
+      </h2>
 
-            {/* Education */}
-            <div className="mt-8">
-              <div className="flex items-center space-x-3 mb-4">
-                <BookOpen className="text-blue-600" size={20} />
-                <h4 className="text-xl font-semibold text-gray-900">{t('about.education')}</h4>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+        {/* About Text */}
+        <div className="lg:col-span-2 space-y-4 fade-in-delay-1">
+          <p style={{ color: 'var(--slate)' }}>
+            {t('about.intro')}
+          </p>
+
+          <p style={{ color: 'var(--slate)' }}>
+            {t('about.journey')}
+          </p>
+
+          <p style={{ color: 'var(--slate)' }}>
+            {t('about.focus')}
+          </p>
+
+          <p style={{ color: 'var(--slate)' }}>
+            {t('about.technologies')}
+          </p>
+
+          {/* Technologies Grid */}
+          <div className="grid grid-cols-2 gap-2 mt-6">
+            {technologies.map((tech, index) => (
+              <div key={tech} className="flex items-center" style={{ transitionDelay: `${index * 50}ms` }}>
+                <span className="text-sm mr-2" style={{ color: 'var(--green)' }}>▹</span>
+                <span className="font-mono text-sm" style={{ color: 'var(--slate)' }}>{tech}</span>
               </div>
-              
-              <div className="space-y-3">
-                {translatedEducation.map((edu, index) => (
-                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                    <h5 className="font-semibold text-gray-900">{edu.institution}</h5>
-                    <p className="text-gray-700">{edu.degree}</p>
-                    {edu.year && (
-                      <p className="text-sm text-gray-500">{edu.year}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
+        </div>
 
-          {/* Certifications & Courses */}
-          <div className="space-y-8">
-            {/* Certifications */}
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <Award className="text-blue-600" size={24} />
-                <h3 className="text-2xl font-semibold text-gray-900">{t('about.certifications')}</h3>
+        {/* Education */}
+        <div className="lg:col-span-1 fade-in-delay-2">
+          <div className="card glow">
+            <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--lightest-slate)' }}>
+              {t('about.education.title')}
+            </h3>
+            
+            {translatedEducation.map((edu, index) => (
+              <div key={index} className="mb-6 last:mb-0">
+                <h4 className="font-semibold" style={{ color: 'var(--lightest-slate)' }}>
+                  {edu.degree}
+                </h4>
+                <p className="text-sm" style={{ color: 'var(--green)' }}>
+                  {edu.institution}
+                </p>
+                {edu.year && (
+                  <p className="text-sm" style={{ color: 'var(--slate)' }}>
+                    {edu.year}
+                  </p>
+                )}
               </div>
-              
-              <div className="space-y-4">
-                {translatedCertifications.map((cert, index) => (
-                  <div key={index} className="card">
-                    <h4 className="font-semibold text-gray-900 mb-2">{cert.name}</h4>
-                    <p className="text-blue-600 font-medium mb-2">{cert.issuer}</p>
-                    <p className="text-gray-700 text-sm">{cert.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Relevant Courses */}
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <Code className="text-blue-600" size={24} />
-                <h3 className="text-2xl font-semibold text-gray-900">{t('about.relevantCourses')}</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {translatedCourses.map((course, index) => (
-                  <div key={index} className="bg-blue-50 px-4 py-2 rounded-lg">
-                    <span className="text-gray-800 font-medium">{course}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

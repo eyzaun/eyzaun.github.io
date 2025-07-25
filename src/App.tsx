@@ -15,11 +15,13 @@ function App() {
         <Header />
         <main>
           <Hero />
-          <About />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Contact />
+          <div className="px-6 md:px-12 lg:px-24 xl:px-32">
+            <About />
+            <Experience />
+            <Projects />
+            <Skills />
+            <Contact />
+          </div>
         </main>
         <Footer />
       </div>

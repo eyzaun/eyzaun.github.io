@@ -1,8 +1,9 @@
-import { Briefcase, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const Experience = () => {
+const Experience: React.FC = () => {
   const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState(0);
   
   const experiences = [
     {
@@ -31,48 +32,70 @@ const Experience = () => {
   ];
 
   return (
-    <section id="experience" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="section-title">{t('experience.title')}</h2>
-        
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-8">
-            {experiences.map((exp, index) => (
-              <div key={index} className="card">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <div className="flex items-center space-x-3 mb-2 md:mb-0">
-                    <Briefcase className="text-blue-600" size={20} />
-                    <h3 className="text-xl font-semibold text-gray-900">{exp.position}</h3>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Calendar size={16} />
-                    <span className="text-sm">{exp.duration}</span>
-                  </div>
-                </div>
-                
-                <h4 className="text-lg font-medium text-blue-600 mb-4">{exp.company}</h4>
-                
-                <div className="space-y-3 mb-6">
-                  {exp.description.map((desc, descIndex) => (
-                    <div key={descIndex} className="flex items-start space-x-2">
-                      <span className="text-blue-600 mt-1">•</span>
-                      <p className="text-gray-700">{desc}</p>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {exp.technologies.map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+    <section id="experience" className="section">
+      <h2 className="section-title fade-in">
+        {t('experience.title')}
+      </h2>
+      
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Tab Navigation */}
+          <div className="lg:w-1/4">
+            <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible">
+              {experiences.map((exp, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(index)}
+                  className={`px-4 py-3 text-left whitespace-nowrap lg:whitespace-normal border-l-2 transition-all duration-300 ${
+                    activeTab === index
+                      ? 'border-green-400 bg-green-400/10 text-green-400'
+                      : 'border-gray-600 text-slate-400 hover:bg-slate-800/50 hover:text-green-400'
+                  }`}
+                  style={{
+                    borderLeftColor: activeTab === index ? 'var(--green)' : 'var(--lighter-navy)',
+                    backgroundColor: activeTab === index ? 'var(--green-tint)' : 'transparent',
+                    color: activeTab === index ? 'var(--green)' : 'var(--slate)'
+                  }}
+                >
+                  <div className="font-mono text-sm">{exp.company}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="lg:w-3/4">
+            <div className="fade-in-delay-1">
+              <div className="mb-4">
+                <h3 className="text-xl font-semibold" style={{ color: 'var(--lightest-slate)' }}>
+                  {experiences[activeTab].position}
+                  <span className="text-lg ml-2" style={{ color: 'var(--green)' }}>
+                    @ {experiences[activeTab].company}
+                  </span>
+                </h3>
+                <p className="text-sm font-mono mt-1" style={{ color: 'var(--slate)' }}>
+                  {experiences[activeTab].duration}
+                </p>
               </div>
-            ))}
+
+              <div className="space-y-3 mb-6">
+                {experiences[activeTab].description.map((desc, index) => (
+                  <div key={index} className="flex items-start">
+                    <span className="mr-3 mt-2" style={{ color: 'var(--green)' }}>▹</span>
+                    <p style={{ color: 'var(--slate)' }}>{desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Technologies */}
+              <div className="flex flex-wrap gap-2">
+                {experiences[activeTab].technologies.map((tech, index) => (
+                  <span key={index} className="tech-tag">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

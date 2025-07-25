@@ -1,7 +1,8 @@
-import { ExternalLink, Github, Folder, Star } from 'lucide-react';
+import React from 'react';
+import { ExternalLink, Github, Folder } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const Projects = () => {
+const Projects: React.FC = () => {
   const { t } = useLanguage();
   
   const translatedProjects = [
@@ -16,7 +17,8 @@ const Projects = () => {
         t('projects.journeyOfCrops.feature4')
       ],
       github: undefined,
-      link: undefined
+      link: undefined,
+      featured: true
     },
     {
       name: t('projects.linkedHU.name'),
@@ -29,7 +31,8 @@ const Projects = () => {
         t('projects.linkedHU.feature4')
       ],
       github: "https://github.com/eyzaun/linkedhu",
-      link: undefined
+      link: undefined,
+      featured: true
     },
     {
       name: t('projects.avukatLLM.name'),
@@ -42,7 +45,8 @@ const Projects = () => {
         t('projects.avukatLLM.feature4')
       ],
       github: undefined,
-      link: undefined
+      link: undefined,
+      featured: true
     },
     {
       name: t('projects.goDash.name'),
