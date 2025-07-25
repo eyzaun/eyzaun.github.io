@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
           </button>
           
           <a
-            href="/cv.pdf"
+            href="/Eyup_Zafer_UNAL_CV.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary inline-flex items-center gap-2"

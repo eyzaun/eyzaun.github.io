@@ -64,17 +64,23 @@ const Projects: React.FC = () => {
   ];
   
   return (
-    <section id="projects" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <h2 className="section-title">{t('projects.title')}</h2>
+    <section id="projects" className="section">
+      <div className="container">
+        <div className="section-title-wrapper">
+          <span className="section-number">03.</span>
+          <h2 className="section-title">{t('projects.title')}</h2>
+        </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {translatedProjects.map((project, index) => (
-            <div key={index} className="card group hover:scale-105 transition-transform duration-300">
+            <div 
+              key={index} 
+              className="group relative bg-light-navy p-6 rounded-lg border border-slate hover:border-green-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-navy/20"
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <Folder className="text-blue-600" size={24} />
-                  <h3 className="text-xl font-semibold text-gray-900">{project.name}</h3>
+                  <Folder className="text-green-300" size={24} />
+                  <h3 className="text-xl font-semibold text-lightest-slate group-hover:text-green-300 transition-colors duration-300">{project.name}</h3>
                 </div>
                 <div className="flex items-center space-x-2">
                   {project.github && (
@@ -82,7 +88,7 @@ const Projects: React.FC = () => {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      className="text-slate hover:text-green-300 transition-colors duration-300 hover:-translate-y-1 transform"
                     >
                       <Github size={20} />
                     </a>
@@ -92,7 +98,7 @@ const Projects: React.FC = () => {
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                      className="text-slate hover:text-green-300 transition-colors duration-300 hover:-translate-y-1 transform"
                     >
                       <ExternalLink size={20} />
                     </a>
@@ -100,13 +106,13 @@ const Projects: React.FC = () => {
                 </div>
               </div>
               
-              <p className="text-gray-700 mb-4">{project.description}</p>
+              <p className="text-slate mb-4 leading-relaxed">{project.description}</p>
               
               <div className="space-y-3 mb-6">
                 {project.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-start space-x-2">
-                    <Star className="text-yellow-500 mt-1" size={16} />
-                    <span className="text-gray-700 text-sm">{feature}</span>
+                    <Star className="text-green-300 mt-1 flex-shrink-0" size={16} />
+                    <span className="text-slate text-sm leading-relaxed">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -115,7 +121,7 @@ const Projects: React.FC = () => {
                 {project.technologies.map((tech, techIndex) => (
                   <span
                     key={techIndex}
-                    className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium"
+                    className="px-3 py-1 bg-navy border border-slate text-slate rounded-full text-sm font-medium hover:border-green-300 hover:text-green-300 transition-colors duration-300"
                   >
                     {tech}
                   </span>
@@ -130,9 +136,9 @@ const Projects: React.FC = () => {
             href="https://github.com/eyzaun"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary inline-flex items-center space-x-2"
+            className="btn-primary inline-flex items-center space-x-2 group"
           >
-            <Github size={20} />
+            <Github size={20} className="group-hover:scale-110 transition-transform duration-300" />
             <span>{t('projects.moreProjects')}</span>
           </a>
         </div>
