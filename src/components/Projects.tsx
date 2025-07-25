@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Github, Folder } from 'lucide-react';
+import { ExternalLink, Github, Folder, Star } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects: React.FC = () => {
