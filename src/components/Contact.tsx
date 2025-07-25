@@ -2,6 +2,92 @@ import { Mail, Phone, MapPin, Github, Linkedin, Send } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
+// Reusable components to reduce repetition
+const ContactItem = ({ icon: Icon, label, value, href, isClickable = false }: {
+  icon: any;
+  label: string;
+  value: string;
+  href?: string;
+  isClickable?: boolean;
+}) => (
+  <div className="flex items-center space-x-4 group">
+    <div className="bg-light-navy p-3 rounded-lg border border-slate group-hover:border-green-300 transition-colors duration-300">
+      <Icon className="text-green-300" size={20} />
+    </div>
+    <div>
+      <p className="font-medium text-lightest-slate">{label}</p>
+      {isClickable && href ? (
+        <a href={href} className="text-green-300 hover:text-lightest-slate transition-colors duration-300">
+          {value}
+        </a>
+      ) : (
+        <p className="text-light-slate">{value}</p>
+      )}
+    </div>
+  </div>
+);
+
+const SocialLink = ({ href, icon: Icon }: { href: string; icon: any }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-light-navy p-3 rounded-lg border border-slate hover:border-green-300 hover:-translate-y-1 transition-all duration-300"
+  >
+    <Icon className="text-slate hover:text-green-300 transition-colors duration-300" size={20} />
+  </a>
+);
+
+const FormField = ({ 
+  id, 
+  name, 
+  type = "text", 
+  label, 
+  placeholder, 
+  required = false, 
+  rows, 
+  autoComplete 
+}: {
+  id: string;
+  name: string;
+  type?: string;
+  label: string;
+  placeholder: string;
+  required?: boolean;
+  rows?: number;
+  autoComplete?: string;
+}) => {
+  const baseClasses = "w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300";
+  
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-slate mb-2">
+        {label}
+      </label>
+      {type === 'textarea' ? (
+        <textarea
+          id={id}
+          name={name}
+          rows={rows}
+          required={required}
+          className={`${baseClasses} resize-vertical`}
+          placeholder={placeholder}
+        />
+      ) : (
+        <input
+          type={type}
+          id={id}
+          name={name}
+          required={required}
+          autoComplete={autoComplete}
+          className={baseClasses}
+          placeholder={placeholder}
+        />
+      )}
+    </div>
+  );
+};
+
 const Contact = () => {
   const { t } = useLanguage();
   
@@ -21,67 +107,36 @@ const Contact = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="flex items-center space-x-4 group">
-                <div className="bg-light-navy p-3 rounded-lg border border-slate group-hover:border-green-300 transition-colors duration-300">
-                  <Mail className="text-green-300" size={20} />
-                </div>
-                <div>
-                  <p className="font-medium text-lightest-slate">{t('contact.email')}</p>
-                  <a 
-                    href={`mailto:${personalInfo.email}`}
-                    className="text-green-300 hover:text-lightest-slate transition-colors duration-300"
-                  >
-                    {personalInfo.email}
-                  </a>
-                </div>
-              </div>
+              <ContactItem
+                icon={Mail}
+                label={t('contact.email')}
+                value={personalInfo.email}
+                href={`mailto:${personalInfo.email}`}
+                isClickable={true}
+              />
               
-              <div className="flex items-center space-x-4 group">
-                <div className="bg-light-navy p-3 rounded-lg border border-slate group-hover:border-green-300 transition-colors duration-300">
-                  <Phone className="text-green-300" size={20} />
-                </div>
-                <div>
-                  <p className="font-medium text-lightest-slate">{t('contact.phone')}</p>
-                  <a 
-                    href={`tel:${personalInfo.phone}`}
-                    className="text-green-300 hover:text-lightest-slate transition-colors duration-300"
-                  >
-                    {personalInfo.phone}
-                  </a>
-                </div>
-              </div>
+              <ContactItem
+                icon={Phone}
+                label={t('contact.phone')}
+                value={personalInfo.phone}
+                href={`tel:${personalInfo.phone}`}
+                isClickable={true}
+              />
               
-              <div className="flex items-center space-x-4 group">
-                <div className="bg-light-navy p-3 rounded-lg border border-slate group-hover:border-green-300 transition-colors duration-300">
-                  <MapPin className="text-green-300" size={20} />
-                </div>
-                <div>
-                  <p className="font-medium text-lightest-slate">{t('contact.location')}</p>
-                  <p className="text-light-slate">{personalInfo.location}</p>
-                </div>
-              </div>
+              <ContactItem
+                icon={MapPin}
+                label={t('contact.location')}
+                value={personalInfo.location}
+                isClickable={false}
+              />
             </div>
             
             {/* Social Links */}
             <div className="pt-8 border-t border-slate">
               <h4 className="text-lg font-semibold text-lightest-slate mb-4">{t('contact.socialMedia')}</h4>
               <div className="flex space-x-4">
-                <a
-                  href={personalInfo.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-light-navy p-3 rounded-lg border border-slate hover:border-green-300 hover:-translate-y-1 transition-all duration-300"
-                >
-                  <Github className="text-slate hover:text-green-300 transition-colors duration-300" size={20} />
-                </a>
-                <a
-                  href={personalInfo.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-light-navy p-3 rounded-lg border border-slate hover:border-green-300 hover:-translate-y-1 transition-all duration-300"
-                >
-                  <Linkedin className="text-slate hover:text-green-300 transition-colors duration-300" size={20} />
-                </a>
+                <SocialLink href={personalInfo.github} icon={Github} />
+                <SocialLink href={personalInfo.linkedin} icon={Linkedin} />
               </div>
             </div>
           </div>
@@ -90,68 +145,43 @@ const Contact = () => {
           <div className="bg-light-navy p-8 rounded-lg border border-slate">
             <h3 className="text-xl font-semibold text-lightest-slate mb-6">{t('contact.form.title')}</h3>
             
-            <form 
-              action="https://formspree.io/f/xqalaadl"
-              method="POST"
-              className="space-y-6"
-            >
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate mb-2">
-                  {t('contact.form.name')}
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  autoComplete="name"
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
-                  placeholder={t('contact.form.namePlaceholder')}
-                />
-              </div>
+            <form action="https://formspree.io/f/xqalaadl" method="POST" className="space-y-6">
+              <FormField
+                id="name"
+                name="name"
+                label={t('contact.form.name')}
+                placeholder={t('contact.form.namePlaceholder')}
+                required={true}
+                autoComplete="name"
+              />
               
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate mb-2">
-                  {t('contact.form.email')}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  autoComplete="email"
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
-                  placeholder={t('contact.form.emailPlaceholder')}
-                />
-              </div>
+              <FormField
+                id="email"
+                name="email"
+                type="email"
+                label={t('contact.form.email')}
+                placeholder={t('contact.form.emailPlaceholder')}
+                required={true}
+                autoComplete="email"
+              />
               
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-slate mb-2">
-                  {t('contact.form.subject')}
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300"
-                  placeholder={t('contact.form.subjectPlaceholder')}
-                />
-              </div>
+              <FormField
+                id="subject"
+                name="subject"
+                label={t('contact.form.subject')}
+                placeholder={t('contact.form.subjectPlaceholder')}
+                required={true}
+              />
               
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-slate mb-2">
-                  {t('contact.form.message')}
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={4}
-                  required
-                  className="w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300 resize-vertical"
-                  placeholder={t('contact.form.messagePlaceholder')}
-                ></textarea>
-              </div>
+              <FormField
+                id="message"
+                name="message"
+                type="textarea"
+                label={t('contact.form.message')}
+                placeholder={t('contact.form.messagePlaceholder')}
+                required={true}
+                rows={4}
+              />
               
               <button
                 type="submit"
