@@ -17,7 +17,12 @@ const ContactItem = ({ icon: Icon, label, value, href, isClickable = false }: {
     <div>
       <p className="font-medium text-lightest-slate">{label}</p>
       {isClickable && href ? (
-        <a href={href} className="text-green-300 hover:text-lightest-slate transition-colors duration-300">
+        <a 
+          href={href} 
+          className="text-green-300 hover:text-lightest-slate transition-colors duration-300"
+          target={href.startsWith('http') ? '_blank' : undefined}
+          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+        >
           {value}
         </a>
       ) : (
@@ -57,7 +62,7 @@ const FormField = ({
   rows?: number;
   autoComplete?: string;
 }) => {
-  const baseClasses = "w-full px-4 py-3 bg-navy border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300";
+  const baseClasses = "w-full px-4 py-3 bg-slate-800 border border-slate rounded-lg text-lightest-slate placeholder-slate focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 transition-colors duration-300";
   
   return (
     <div>
@@ -127,7 +132,8 @@ const Contact = () => {
                 icon={MapPin}
                 label={t('contact.location')}
                 value={personalInfo.location}
-                isClickable={false}
+                href="https://maps.app.goo.gl/bibxM2oeW1u7ypGY9"
+                isClickable={true}
               />
             </div>
             
