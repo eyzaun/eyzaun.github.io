@@ -39,6 +39,9 @@ export const useLanguage = () => {
 // Çeviri verileri
 const translations = {
   tr: {
+    // Header
+    'header.lastUpdated': 'Son güncelleme',
+    
     // Navigation
     'nav.home': 'Ana Sayfa',
     'nav.about': 'Hakkımda',
@@ -70,44 +73,42 @@ const translations = {
     
     // Projects Section
     'projects.title': 'Projeler',
+    'projects.moreProjects': 'Daha Fazla Proje',
+    
+    // Project Details (CV'ye uygun)
+    'projects.goDash.name': 'GoDash - System Monitoring Tool',
+    'projects.goDash.description': 'Go, Gin framework ve WebSocket kullanarak gerçek zamanlı sistem izleme panosu',
+    'projects.goDash.feature1': 'CPU, bellek ve disk kullanımı takibi ile otomatik uyarı sistemi',
+    'projects.goDash.feature2': 'GORM ile PostgreSQL depolama kullanan REST API',
+    'projects.goDash.feature3': 'Responsive web arayüzü ve Docker konteynerizasyonu',
+    'projects.goDash.feature4': 'Email/webhook ile otomatik bildirim sistemi',
+    
     'projects.journeyOfCrops.name': 'Journey Of Crops',
-    'projects.journeyOfCrops.description': 'Tarımsal optimizasyon oyunu, kaynak yönetimi ve algoritmaları içeren interaktif bir deneyim.',
-    'projects.journeyOfCrops.feature1': 'Dinamik programlama kullanarak kaynak optimizasyonu (Knapsack algoritmaları)',
-    'projects.journeyOfCrops.feature2': 'Three.js ve WebGL2 kullanarak interaktif ray sistemi simülasyonu',
+    'projects.journeyOfCrops.description': 'Dinamik programlama ve algoritma görselleştirmesi içeren tarımsal optimizasyon oyunu',
+    'projects.journeyOfCrops.feature1': 'Dinamik programlama kullanarak kaynak optimizasyonu (Knapsack algoritması)',
+    'projects.journeyOfCrops.feature2': 'Three.js ve WebGL2 ile interaktif ray sistemi simülasyonu',
     'projects.journeyOfCrops.feature3': 'Algoritmik çözümlerin animasyonlu görselleştirilmesi',
     'projects.journeyOfCrops.feature4': 'Optimizasyon sonuçlarına dayalı puan hesaplama sistemi',
+    
     'projects.linkedHU.name': 'LinkedHU',
-    'projects.linkedHU.description': 'Öğrenci ve öğretim üyelerini birbirine bağlayan üniversite ağ platformu.',
-    'projects.linkedHU.feature1': 'Çevik metodoloji kullanarak kapsamlı test prosedürleri ile backend işlevselliği',
-    'projects.linkedHU.feature2': 'Kullanıcı kimlik doğrulama ve profil yönetim sistemleri',
+    'projects.linkedHU.description': 'Üniversite ağ platformu - Backend geliştirme ve test süreçleri',
+    'projects.linkedHU.feature1': 'Agile metodoloji ile kapsamlı test prosedürleri',
+    'projects.linkedHU.feature2': 'Kullanıcı kimlik doğrulama ve profil yönetimi',
     'projects.linkedHU.feature3': 'Üniversite ağ özellikleri için RESTful API\'ler',
-    'projects.linkedHU.feature4': 'CI/CD entegrasyonu ile kod kalitesi ve performans optimizasyonu',
-    'projects.avukatLLM.name': 'AvukatLLM',
-    'projects.avukatLLM.description': 'Türk vergi hukuku danışmanlığında uzmanlaşmış AI destekli hukuki asistan.',
-    'projects.avukatLLM.feature1': 'Türk vergi hukuku danışmanlığında %85 yanıt doğruluğu',
-    'projects.avukatLLM.feature2': '%75 bellek azaltımı için model quantization',
-    'projects.avukatLLM.feature3': 'Sürekli model iyileştirme pipeline\'ı',
-    'projects.avukatLLM.feature4': 'Türkçe odaklı çoklu dil desteği',
-    'projects.goDash.name': 'GoDash',
-    'projects.goDash.description': 'Sistem İzleme Aracı - Otomatik uyarılarla gerçek zamanlı sistem izleme panosu.',
-    'projects.goDash.feature1': 'Go, Gin framework ve WebSocket bağlantıları kullanarak gerçek zamanlı sistem izleme panosu geliştirme',
-    'projects.goDash.feature2': 'Email/webhook ile otomatik uyarı sistemi ile CPU, bellek ve disk kullanımı takibi',
-    'projects.goDash.feature3': 'Geçmiş veri analizi için GORM kullanarak PostgreSQL depolamalı REST API tasarımı',
-    'projects.goDash.feature4': 'Cross-platform deployment için responsive web arayüzü ve Docker konteynerizasyonu',
+    'projects.linkedHU.feature4': 'CI/CD entegrasyonu ile kod kalitesi optimizasyonu',
     
     // Skills Section
     'skills.title': 'Yetenekler',
     'skills.continuousLearning': 'Sürekli Öğrenmeye Açık',
     'skills.description': 'Teknoloji hızla gelişiyor ve ben de bu gelişimi takip etmeye, yeni teknolojileri öğrenmeye ve mevcut bilgimi güncel tutmaya odaklanıyorum. Her proje benim için yeni bir öğrenme fırsatı ve mesleki gelişimime katkı sağlıyor.',
-    'skills.programming': 'Programlama Dilleri',
-    'skills.frameworks': 'Framework & Kütüphaneler',
-    'skills.tools': 'Araçlar & Teknolojiler',
-    'skills.databases': 'Veritabanları',
-    'skills.languagesFrameworks': 'Diller & Framework\'ler',
+    
+    // Skill Categories (Teknik terimler İngilizce)
+    'skills.languagesFrameworks': 'Languages & Frameworks',
     'skills.frontend': 'Frontend',
     'skills.backend': 'Backend',
     'skills.aiMl': 'AI/ML',
-    'skills.toolsTech': 'Araçlar & Teknolojiler',
+    'skills.databases': 'Veritabanları',
+    'skills.tools': 'Araçlar & Teknolojiler',
     
     // Contact Section
     'contact.title': 'İletişim',
@@ -117,33 +118,30 @@ const translations = {
     'contact.phone': 'Telefon',
     'contact.location': 'Konum',
     'contact.socialMedia': 'Sosyal Medya',
-    'contact.form.title': 'Mesaj Gönder',
+    'contact.sendMessage': 'Mesaj Gönder',
+    'contact.formActive': 'Form aktif! Mesajınız doğrudan email adresime iletilecektir.',
+    
+    // Contact Form
     'contact.form.name': 'Adınız',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Konu',
     'contact.form.message': 'Mesaj',
-    'contact.form.send': 'Mesaj Gönder',
+    'contact.form.send': 'Gönder',
+    'contact.form.sending': 'Gönderiliyor...',
+    'contact.form.success': 'Mesajınız başarıyla gönderildi!',
+    'contact.form.error': 'Mesaj gönderilirken bir hata oluştu.',
+    
+    // Form Placeholders
     'contact.form.namePlaceholder': 'Adınızı girin',
     'contact.form.emailPlaceholder': 'Email adresinizi girin',
     'contact.form.subjectPlaceholder': 'Mesaj konusu',
     'contact.form.messagePlaceholder': 'Mesajınızı buraya yazın...',
-    'contact.form.formActive': 'Form aktif! Mesajınız doğrudan email adresime iletilecektir.',
-    
-    // Skills Categories
-    'skills.categories.languagesFrameworks': 'Diller & Framework\'ler',
-    'skills.categories.frontend': 'Frontend',
-    'skills.categories.backend': 'Backend',
-    'skills.categories.aiMl': 'AI/ML',
-    'skills.categories.databases': 'Veritabanları',
-    'skills.categories.tools': 'Araçlar & Teknolojiler',
-    'skills.continuousLearning.title': 'Sürekli Öğrenmeye Açık',
-    'skills.continuousLearning.description': 'Teknoloji hızla gelişiyor ve ben de bu gelişimi takip etmeye, yeni teknolojileri öğrenmeye ve mevcut bilgimi güncel tutmaya odaklanıyorum. Her proje benim için yeni bir öğrenme fırsatı.',
     
     // Footer
     'footer.description': 'Yazılım geliştirme, AI/ML ve yenilikçi çözümler konusunda tutkulu Bilgisayar Mühendisliği mezunu.',
     'footer.quickLinks': 'Hızlı Linkler',
-    'footer.madeWith': 'ile yapıldı',
-    'footer.lastUpdate': 'Son güncelleme',
+    'footer.contact': 'İletişim',
+    'footer.madeWith': '❤️ ile yapıldı',
     
     // Education Data
     'education.computerEngineering': 'Bilgisayar Mühendisliği - Mezun',
@@ -186,10 +184,13 @@ const translations = {
     // Common
     'common.loading': 'Yükleniyor...',
     'common.error': 'Hata',
-    'common.viewMore': 'Daha Fazla Gör',
-    'common.viewLess': 'Daha Az Gör',
+    'common.viewMore': 'Daha Fazla',
+    'common.viewLess': 'Daha Az',
   },
   en: {
+    // Header
+    'header.lastUpdated': 'Last updated',
+    
     // Navigation
     'nav.home': 'Home',
     'nav.about': 'About',
@@ -221,44 +222,42 @@ const translations = {
     
     // Projects Section
     'projects.title': 'Projects',
+    'projects.moreProjects': 'More Projects',
+    
+    // Project Details (CV'ye uygun)
+    'projects.goDash.name': 'GoDash - System Monitoring Tool',
+    'projects.goDash.description': 'Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections',
+    'projects.goDash.feature1': 'Implemented CPU, memory, and disk usage tracking with automated alert system',
+    'projects.goDash.feature2': 'Designed REST API with PostgreSQL storage using GORM for historical data analysis',
+    'projects.goDash.feature3': 'Created responsive web interface and Docker containerization for cross-platform deployment',
+    'projects.goDash.feature4': 'Automated email/webhook notification system',
+    
     'projects.journeyOfCrops.name': 'Journey Of Crops',
-    'projects.journeyOfCrops.description': 'An interactive agricultural optimization game featuring resource management and algorithms.',
-    'projects.journeyOfCrops.feature1': 'Resource optimization using dynamic programming (Knapsack algorithms)',
-    'projects.journeyOfCrops.feature2': 'Interactive rail system simulation using Three.js and WebGL2',
-    'projects.journeyOfCrops.feature3': 'Animated visualization of algorithmic solutions',
-    'projects.journeyOfCrops.feature4': 'Score calculation system based on optimization results',
+    'projects.journeyOfCrops.description': 'Agricultural optimization game featuring dynamic programming and algorithm visualization',
+    'projects.journeyOfCrops.feature1': 'Implemented resource optimization using dynamic programming (Knapsack algorithm)',
+    'projects.journeyOfCrops.feature2': 'Enhanced interactive rail system simulation using Three.js and WebGL2',
+    'projects.journeyOfCrops.feature3': 'Created animated visualization of algorithmic solutions',
+    'projects.journeyOfCrops.feature4': 'Built a score calculation system based on optimization results',
+    
     'projects.linkedHU.name': 'LinkedHU',
-    'projects.linkedHU.description': 'A university networking platform connecting students and faculty members.',
-    'projects.linkedHU.feature1': 'Backend functionality with comprehensive testing procedures using agile methodology',
-    'projects.linkedHU.feature2': 'User authentication and profile management systems',
-    'projects.linkedHU.feature3': 'RESTful APIs for university networking features',
-    'projects.linkedHU.feature4': 'Code quality and performance optimization with CI/CD integration',
-    'projects.avukatLLM.name': 'AvukatLLM',
-    'projects.avukatLLM.description': 'AI-powered legal assistant specializing in Turkish tax law consultations.',
-    'projects.avukatLLM.feature1': '85% response accuracy in Turkish tax law consultations',
-    'projects.avukatLLM.feature2': 'Model quantization for 75% memory reduction',
-    'projects.avukatLLM.feature3': 'Continuous model improvement pipeline',
-    'projects.avukatLLM.feature4': 'Multi-language support with Turkish focus',
-    'projects.goDash.name': 'GoDash',
-    'projects.goDash.description': 'System Monitoring Tool - Real-time system monitoring dashboard with automated alerts.',
-    'projects.goDash.feature1': 'Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections',
-    'projects.goDash.feature2': 'Implemented CPU, memory, and disk usage tracking with automated alert system via email/webhook',
-    'projects.goDash.feature3': 'Designed REST API with PostgreSQL storage using GORM for historical data analysis',
-    'projects.goDash.feature4': 'Created responsive web interface and Docker containerization for cross-platform deployment',
+    'projects.linkedHU.description': 'University networking platform - Backend development and testing processes',
+    'projects.linkedHU.feature1': 'Built backend functionality with comprehensive testing procedures using agile methodology',
+    'projects.linkedHU.feature2': 'Implemented user authentication and profile management systems',
+    'projects.linkedHU.feature3': 'Created RESTful APIs for university networking features',
+    'projects.linkedHU.feature4': 'Ensured code quality and performance optimization with CI/CD integration',
     
     // Skills Section
     'skills.title': 'Skills',
     'skills.continuousLearning': 'Continuous Learning',
     'skills.description': 'Technology evolves rapidly, and I focus on following this development, learning new technologies, and keeping my current knowledge up to date. Every project is a new learning opportunity for me and contributes to my professional development.',
-    'skills.programming': 'Programming Languages',
-    'skills.frameworks': 'Frameworks & Libraries',
-    'skills.tools': 'Tools & Technologies',
-    'skills.databases': 'Databases',
+    
+    // Skill Categories (Teknik terimler İngilizce)
     'skills.languagesFrameworks': 'Languages & Frameworks',
     'skills.frontend': 'Frontend',
     'skills.backend': 'Backend',
     'skills.aiMl': 'AI/ML',
-    'skills.toolsTech': 'Tools & Technologies',
+    'skills.databases': 'Databases',
+    'skills.tools': 'Tools & Technologies',
     
     // Contact Section
     'contact.title': 'Contact',
@@ -268,33 +267,30 @@ const translations = {
     'contact.phone': 'Phone',
     'contact.location': 'Location',
     'contact.socialMedia': 'Social Media',
-    'contact.form.title': 'Send Message',
+    'contact.sendMessage': 'Send Message',
+    'contact.formActive': 'Form is active! Your message will be sent directly to my email address.',
+    
+    // Contact Form
     'contact.form.name': 'Your Name',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Subject',
     'contact.form.message': 'Message',
-    'contact.form.send': 'Send Message',
+    'contact.form.send': 'Send',
+    'contact.form.sending': 'Sending...',
+    'contact.form.success': 'Your message has been sent successfully!',
+    'contact.form.error': 'An error occurred while sending the message.',
+    
+    // Form Placeholders
     'contact.form.namePlaceholder': 'Enter your name',
     'contact.form.emailPlaceholder': 'Enter your email address',
     'contact.form.subjectPlaceholder': 'Message subject',
     'contact.form.messagePlaceholder': 'Write your message here...',
-    'contact.form.formActive': 'Form is active! Your message will be sent directly to my email address.',
-    
-    // Skills Categories
-    'skills.categories.languagesFrameworks': 'Languages & Frameworks',
-    'skills.categories.frontend': 'Frontend',
-    'skills.categories.backend': 'Backend',
-    'skills.categories.aiMl': 'AI/ML',
-    'skills.categories.databases': 'Databases',
-    'skills.categories.tools': 'Tools & Technologies',
-    'skills.continuousLearning.title': 'Continuous Learning',
-    'skills.continuousLearning.description': 'Technology evolves rapidly, and I focus on following this development, learning new technologies, and keeping my current knowledge up to date. Every project is a new learning opportunity for me.',
     
     // Footer
     'footer.description': 'Computer Engineering graduate passionate about software development, AI/ML, and creating innovative solutions.',
     'footer.quickLinks': 'Quick Links',
-    'footer.madeWith': 'Made with',
-    'footer.lastUpdate': 'Last updated',
+    'footer.contact': 'Contact',
+    'footer.madeWith': 'Made with ❤️',
     
     // Education Data
     'education.computerEngineering': 'Computer Engineering - Graduate',

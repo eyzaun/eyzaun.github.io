@@ -36,7 +36,7 @@ const Header = () => {
               </a>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              Son güncelleme: 21.07.2025, 16:55:30
+              {t('header.lastUpdated')}: 21.07.2025, 16:55:30
             </div>
           </div>
 
