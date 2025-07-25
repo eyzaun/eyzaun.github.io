@@ -48,19 +48,19 @@ const About: React.FC = () => {
         {/* About Text */}
         <div className="lg:col-span-2 space-y-4 fade-in-delay-1">
           <p style={{ color: 'var(--slate)' }}>
-            {t('about.intro')}
+            {t('about.description1')}
           </p>
 
           <p style={{ color: 'var(--slate)' }}>
-            {t('about.journey')}
+            {t('about.description2')}
           </p>
 
           <p style={{ color: 'var(--slate)' }}>
-            {t('about.focus')}
+            {t('about.description3')}
           </p>
 
           <p style={{ color: 'var(--slate)' }}>
-            {t('about.technologies')}
+            {t('about.technologies')} 
           </p>
 
           {/* Technologies Grid */}

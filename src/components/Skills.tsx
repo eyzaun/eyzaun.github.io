@@ -1,8 +1,9 @@
+import React from 'react';
 import { Code, Database, Globe, Wrench, Brain } from 'lucide-react';
 import { skills } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const Skills = () => {
+const Skills: React.FC = () => {
   const { t } = useLanguage();
   
   // Sabit skill seviyeleri (her skill için 1-5 arası seviye)
@@ -91,33 +92,49 @@ const Skills = () => {
   ];
 
   return (
-    <section id="skills" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="section-title">{t('skills.title')}</h2>
+    <section id="skills" className="section">
+      <div className="container">
+        <div className="section-title-wrapper">
+          <span className="section-number">04.</span>
+          <h2 className="section-title">{t('skills.title')}</h2>
+        </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {skillCategories.map((category, index) => (
-            <div key={index} className="card">
+            <div 
+              key={index} 
+              className="group relative bg-light-navy p-6 rounded-lg border border-slate hover:border-green-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-navy/20"
+            >
               <div className="flex items-center space-x-3 mb-6">
-                {category.icon}
-                <h3 className="text-xl font-semibold text-gray-900">{category.title}</h3>
+                <div className="p-2 bg-navy rounded-lg group-hover:bg-green-300/10 transition-colors duration-300">
+                  {category.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-lightest-slate">{category.title}</h3>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {category.skills.map((skill, skillIndex) => (
-                  <div key={skillIndex} className="flex items-center justify-between">
-                    <span className="text-gray-700 font-medium">{skill}</span>
-                    <div className="flex space-x-1">
-                      {[...Array(5)].map((_, starIndex) => (
-                        <div
-                          key={starIndex}
-                          className={`w-2 h-2 rounded-full ${
-                            starIndex < (skillLevels[skill] || 4) // Sabit skill seviyesi kullan
-                              ? 'bg-blue-600'
-                              : 'bg-gray-300'
-                          }`}
-                        />
-                      ))}
+                  <div key={skillIndex} className="skill-item">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-slate font-medium">{skill}</span>
+                      <div className="flex space-x-1">
+                        {[...Array(5)].map((_, starIndex) => (
+                          <div
+                            key={starIndex}
+                            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                              starIndex < (skillLevels[skill] || 4)
+                                ? 'bg-green-300'
+                                : 'bg-slate-600'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="skill-bar">
+                      <div 
+                        className="skill-progress"
+                        style={{ width: `${((skillLevels[skill] || 4) / 5) * 100}%` }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -127,9 +144,13 @@ const Skills = () => {
         </div>
         
         <div className="mt-16 text-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('skills.continuousLearning.title')}</h3>
-            <p className="text-gray-700 leading-relaxed">
+          <div className="bg-light-navy/50 p-8 rounded-lg border border-slate max-w-2xl mx-auto backdrop-blur-sm">
+            <h3 className="text-2xl font-bold text-lightest-slate mb-4 relative">
+              <span className="inline-block w-12 h-0.5 bg-green-300 mr-4 align-middle"></span>
+              {t('skills.continuousLearning.title')}
+              <span className="inline-block w-12 h-0.5 bg-green-300 ml-4 align-middle"></span>
+            </h3>
+            <p className="text-slate leading-relaxed">
               {t('skills.continuousLearning.description')}
             </p>
           </div>
