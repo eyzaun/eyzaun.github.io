@@ -1,11 +1,39 @@
 import { Briefcase, Calendar } from 'lucide-react';
-import { experiences } from '../data/portfolio';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Experience = () => {
+  const { t } = useLanguage();
+  
+  const experiences = [
+    {
+      company: t('experience.binaryBrain.company'),
+      position: t('experience.binaryBrain.title'),
+      duration: t('experience.binaryBrain.period'),
+      description: [
+        t('experience.binaryBrain.description1'),
+        t('experience.binaryBrain.description2'),
+        t('experience.binaryBrain.description3'),
+        t('experience.binaryBrain.description4')
+      ],
+      technologies: ["Python", "PyTorch", "Transformers", "Flutter", "Firebase", "Microsoft Phi-4", "LLM"]
+    },
+    {
+      company: t('experience.tellus.company'),
+      position: t('experience.tellus.title'),
+      duration: t('experience.tellus.period'),
+      description: [
+        t('experience.tellus.description1'),
+        t('experience.tellus.description2'),
+        t('experience.tellus.description3')
+      ],
+      technologies: ["Arduino", "C++", "CANbus", "OBD2", "PID Control"]
+    }
+  ];
+
   return (
     <section id="experience" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Deneyim</h2>
+        <h2 className="section-title">{t('experience.title')}</h2>
         
         <div className="max-w-4xl mx-auto">
           <div className="space-y-8">

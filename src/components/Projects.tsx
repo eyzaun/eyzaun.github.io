@@ -1,9 +1,63 @@
 import { ExternalLink, Github, Folder, Star } from 'lucide-react';
-import { projects } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects = () => {
   const { t } = useLanguage();
+  
+  const translatedProjects = [
+    {
+      name: t('projects.journeyOfCrops.name'),
+      description: t('projects.journeyOfCrops.description'),
+      technologies: ["Three.js", "WebGL2", "JavaScript", "Dynamic Programming"],
+      features: [
+        "Resource optimization using dynamic programming (Knapsack algorithms)",
+        "Interactive rail system simulation using Three.js and WebGL2",
+        "Animated visualization of algorithmic solutions",
+        "Score calculation system based on optimization results"
+      ],
+      github: undefined,
+      link: undefined
+    },
+    {
+      name: t('projects.linkedHU.name'),
+      description: t('projects.linkedHU.description'),
+      technologies: ["Node.js", "Express", "MongoDB", "React", "JWT"],
+      features: [
+        "Backend functionality with comprehensive testing procedures using agile methodology",
+        "User authentication and profile management systems",
+        "RESTful APIs for university networking features",
+        "Code quality and performance optimization with CI/CD integration"
+      ],
+      github: "https://github.com/eyzaun/linkedhu",
+      link: undefined
+    },
+    {
+      name: t('projects.avukatLLM.name'),
+      description: t('projects.avukatLLM.description'),
+      technologies: ["Python", "PyTorch", "Transformers", "Microsoft Phi-4", "NLP"],
+      features: [
+        "85% response accuracy in Turkish tax law consultations",
+        "Model quantization for 75% memory reduction",
+        "Continuous model improvement pipeline",
+        "Multi-language support with Turkish focus"
+      ],
+      github: undefined,
+      link: undefined
+    },
+    {
+      name: t('projects.goDash.name'),
+      description: t('projects.goDash.description'),
+      technologies: ["Go", "Gin Framework", "WebSocket", "PostgreSQL", "GORM", "Docker"],
+      features: [
+        "Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections",
+        "Implemented CPU, memory, and disk usage tracking with automated alert system via email/webhook",
+        "Designed REST API with PostgreSQL storage using GORM for historical data analysis",
+        "Created responsive web interface and Docker containerization for cross-platform deployment"
+      ],
+      github: "https://github.com/eyzaun/godash",
+      link: undefined
+    }
+  ];
   
   return (
     <section id="projects" className="py-20 bg-white">
@@ -11,7 +65,7 @@ const Projects = () => {
         <h2 className="section-title">{t('projects.title')}</h2>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
+          {translatedProjects.map((project, index) => (
             <div key={index} className="card group hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
