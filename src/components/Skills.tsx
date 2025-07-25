@@ -5,6 +5,52 @@ import { useLanguage } from '../contexts/LanguageContext';
 const Skills = () => {
   const { t } = useLanguage();
   
+  // Sabit skill seviyeleri (her skill için 1-5 arası seviye)
+  const skillLevels: { [key: string]: number } = {
+    // Languages & Frameworks
+    "Python": 5,
+    "Java": 4,
+    "C++": 4,
+    "JavaScript": 5,
+    "TypeScript": 5,
+    "C#": 4,
+    
+    // Frontend
+    "React": 5,
+    "Flutter": 4,
+    "HTML5": 5,
+    "CSS3": 5,
+    "Tailwind CSS": 5,
+    "Three.js": 3,
+    
+    // Backend
+    "Node.js": 5,
+    "Express": 5,
+    "ASP.NET Core": 4,
+    ".NET Aspire": 3,
+    
+    // AI/ML
+    "PyTorch": 4,
+    "Transformers": 4,
+    "LLMs": 4,
+    "NLP": 4,
+    "TensorFlow": 3,
+    
+    // Databases
+    "MySQL": 4,
+    "PostgreSQL": 4,
+    "MongoDB": 4,
+    "Firebase": 4,
+    
+    // Tools & Technologies
+    "Git": 5,
+    "Docker": 4,
+    "CI/CD": 4,
+    "Arduino": 4,
+    "CANbus": 3,
+    "OBD2": 3
+  };
+  
   const skillCategories = [
     {
       title: t('skills.categories.languagesFrameworks'),
@@ -60,7 +106,7 @@ const Skills = () => {
                         <div
                           key={starIndex}
                           className={`w-2 h-2 rounded-full ${
-                            starIndex < Math.floor(Math.random() * 2 + 3) // Random skill level 3-5
+                            starIndex < (skillLevels[skill] || 4) // Sabit skill seviyesi kullan
                               ? 'bg-blue-600'
                               : 'bg-gray-300'
                           }`}
