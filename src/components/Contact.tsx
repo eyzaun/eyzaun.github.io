@@ -57,7 +57,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-lightest-slate">{t('contact.location')}</p>
-                  <p className="text-slate">{personalInfo.location}</p>
+                  <p className="text-light-slate">{personalInfo.location}</p>
                 </div>
               </div>
             </div>

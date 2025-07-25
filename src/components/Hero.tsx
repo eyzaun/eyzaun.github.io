@@ -53,8 +53,7 @@ const Hero: React.FC = () => {
           
           <a
             href="/Eyup_Zafer_UNAL_CV.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+            download="Eyup_Zafer_UNAL_CV.pdf"
             className="btn btn-primary inline-flex items-center gap-2"
           >
             <Download size={16} />
