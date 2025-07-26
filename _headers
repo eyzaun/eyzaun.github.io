@@ -1,0 +1,168 @@
+# Security Headers Configuration for Netlify/Vercel
+# This file configures HTTP security headers for the portfolio website
+
+/*
+  # Content Security Policy - Prevent XSS attacks
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self'; object-src 'none'; frame-src 'none'; connect-src 'self' https://www.google-analytics.com https://formspree.io; base-uri 'self'; form-action 'self' https://formspree.io; frame-ancestors 'none';
+
+  # X-Content-Type-Options - Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+
+  # X-Frame-Options - Prevent clickjacking
+  X-Frame-Options: DENY
+
+  # X-XSS-Protection - Enable XSS filtering
+  X-XSS-Protection: 1; mode=block
+
+  # Referrer-Policy - Control referrer information
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Permissions-Policy - Control browser features
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=()
+
+  # Strict-Transport-Security - Force HTTPS
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Cross-Origin-Embedder-Policy - Enable cross-origin isolation
+  Cross-Origin-Embedder-Policy: credentialless
+
+  # Cross-Origin-Opener-Policy - Prevent cross-origin attacks
+  Cross-Origin-Opener-Policy: same-origin
+
+  # Cross-Origin-Resource-Policy - Control resource sharing
+  Cross-Origin-Resource-Policy: cross-origin
+
+  # Cache Control - Default caching strategy
+  Cache-Control: public, max-age=31536000, immutable
+
+  # Server Information - Hide server details
+  Server: Portfolio
+
+# HTML files - Short cache for dynamic content
+/*.html
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: text/html; charset=utf-8
+
+# Service Worker - No cache to ensure updates
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: application/javascript
+
+# Manifest - Short cache for PWA updates
+/manifest.json
+  Cache-Control: public, max-age=86400
+  Content-Type: application/manifest+json
+
+# CSS files - Long cache with versioning
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/css; charset=utf-8
+
+# JavaScript files - Long cache with versioning
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/javascript; charset=utf-8
+
+# Image files - Long cache for static assets
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/png
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/jpeg
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/jpeg
+
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/gif
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/svg+xml
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/webp
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/x-icon
+
+# Font files - Long cache for web fonts
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/woff
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/woff2
+
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/ttf
+
+/*.eot
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/vnd.ms-fontobject
+
+# Document files - Medium cache
+/*.pdf
+  Cache-Control: public, max-age=86400
+  Content-Type: application/pdf
+
+# API endpoints (if any)
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex
+
+# Special files - Custom caching
+/robots.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain
+
+/sitemap.xml
+  Cache-Control: public, max-age=86400
+  Content-Type: application/xml
+
+/.well-known/*
+  Cache-Control: public, max-age=86400
+
+# Error pages
+/404.html
+  Cache-Control: public, max-age=300
+
+# Security.txt for responsible disclosure
+/.well-known/security.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain
+
+# Additional security for admin/development files
+/admin/*
+  X-Robots-Tag: noindex, nofollow, nosnippet
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/.env*
+  X-Robots-Tag: noindex, nofollow, nosnippet
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/config/*
+  X-Robots-Tag: noindex, nofollow, nosnippet
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Source maps - Only for development
+/*.map
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Development files
+/src/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/node_modules/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache, no-store, must-revalidate

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Browser configuration file for Windows 8/10 and Internet Explorer 11 -->
+<browserconfig>
+  <msapplication>
+    <!-- Windows 8/10 tile configuration -->
+    <tile>
+      <!-- Small tile (70x70) -->
+      <square70x70logo src="/icons/mstile-70x70.png"/>
+      <!-- Medium tile (150x150) -->
+      <square150x150logo src="/icons/mstile-150x150.png"/>
+      <!-- Wide tile (310x150) -->
+      <wide310x150logo src="/icons/mstile-310x150.png"/>
+      <!-- Large tile (310x310) -->
+      <square310x310logo src="/icons/mstile-310x310.png"/>
+      <!-- Tile background color -->
+      <TileColor>#0a192f</TileColor>
+    </tile>
+    
+    <!-- Application configuration -->
+    <application>
+      <!-- Application name -->
+      <applicationName>Eyüp Zafer Ünal Portfolio</applicationName>
+      <!-- Tooltip text -->
+      <msTooltip>Software Developer Portfolio</msTooltip>
+      <!-- Start URL when pinned -->
+      <startUrl>/?source=homescreen</startUrl>
+      <!-- Task configuration -->
+      <task>
+        <name>Home</name>
+        <url>/?source=taskbar</url>
+        <iconUri>/icons/favicon-32x32.png</iconUri>
+        <windowType>tab</windowType>
+      </task>
+      <task>
+        <name>About</name>
+        <url>/#about?source=taskbar</url>
+        <iconUri>/icons/favicon-32x32.png</iconUri>
+        <windowType>tab</windowType>
+      </task>
+      <task>
+        <name>Projects</name>
+        <url>/#projects?source=taskbar</url>
+        <iconUri>/icons/favicon-32x32.png</iconUri>
+        <windowType>tab</windowType>
+      </task>
+      <task>
+        <name>Contact</name>
+        <url>/#contact?source=taskbar</url>
+        <iconUri>/icons/favicon-32x32.png</iconUri>
+        <windowType>tab</windowType>
+      </task>
+    </application>
+    
+    <!-- Badge configuration -->
+    <badge>
+      <polling>
+        <frequency>60</frequency>
+        <uri src="/api/badge"/>
+      </polling>
+    </badge>
+    
+    <!-- Notification configuration -->
+    <notification>
+      <polling>
+        <frequency>1440</frequency>
+        <uri1 src="/api/notifications/1"/>
+        <uri2 src="/api/notifications/2"/>
+        <uri3 src="/api/notifications/3"/>
+        <uri4 src="/api/notifications/4"/>
+        <uri5 src="/api/notifications/5"/>
+      </polling>
+    </notification>
+  </msapplication>
+</browserconfig>

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+	<defs>
+		<linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+			<stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+			<stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+		</linearGradient>
+		<linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+			<stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+		</linearGradient>
+		<filter id="glow">
+			<feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+			<feMerge>
+				<feMergeNode in="coloredBlur"/>
+				<feMergeNode in="SourceGraphic"/>
+			</feMerge>
+		</filter>
+	</defs>
+
+	<!-- Ana container -->
+	<rect x="28" y="28" width="200" height="200" rx="25" fill="url(#mainGrad)" opacity="0.1"/>
+
+	<!-- Modern geometrik şekil -->
+	<polygon points="50,80 206,80 206,120 190,120 190,176 50,176" fill="url(#mainGrad)" opacity="0.2"/>
+
+	<!-- Ana metin alanı -->
+	<rect x="50" y="80" width="156" height="96" rx="8" fill="url(#mainGrad)" filter="url(#glow)"/>
+
+	<!-- İsim harfleri (EZÜ) -->
+	<text x="128" y="140" font-family="Arial, sans-serif" font-size="36" font-weight="bold"
+		  text-anchor="middle" fill="#ffffff" opacity="0.95">EZÜ</text>
+
+	<!-- Alt çizgi vurgusu -->
+	<rect x="95" y="155" width="66" height="3" rx="1.5" fill="url(#accentGrad)" opacity="0.8"/>
+
+	<!-- Kod simgesi -->
+	<g transform="translate(75, 190)">
+		<circle cx="6" cy="6" r="6" fill="url(#accentGrad)" opacity="0.3"/>
+		<text x="6" y="9" font-family="monospace" font-size="8" font-weight="bold"
+			  text-anchor="middle" fill="url(#accentGrad)">&lt;/&gt;</text>
+	</g>
+
+	<!-- Developer indicator -->
+	<g transform="translate(175, 190)">
+		<circle cx="6" cy="6" r="6" fill="url(#accentGrad)" opacity="0.3"/>
+		<rect x="3" y="3" width="6" height="6" rx="1" fill="url(#accentGrad)" opacity="0.8"/>
+		<rect x="4" y="5" width="4" height="1" fill="#ffffff"/>
+		<rect x="4" y="7" width="4" height="1" fill="#ffffff"/>
+	</g>
+
+	<!-- Dekoratif noktalar -->
+	<circle cx="70" cy="60" r="2" fill="url(#accentGrad)" opacity="0.6"/>
+	<circle cx="85" cy="55" r="1.5" fill="url(#accentGrad)" opacity="0.4"/>
+	<circle cx="100" cy="58" r="2.5" fill="url(#accentGrad)" opacity="0.3"/>
+
+	<!-- Modern accent çizgiler -->
+	<path d="M40 40 L80 40" stroke="url(#accentGrad)" stroke-width="2" opacity="0.5"/>
+	<path d="M40 45 L65 45" stroke="url(#accentGrad)" stroke-width="2" opacity="0.3"/>
+</svg>

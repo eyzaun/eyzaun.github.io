@@ -1,15 +1,292 @@
 <!doctype html>
-<html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Eyüp Zafer Ünal - Software Engineering Student Portfolio" />
-    <title>Eyüp Zafer Ünal - Portfolio</title>
-    <script type="module" crossorigin src="/assets/index-v_uiw4at.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DmHAHh72.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<html lang="en">
+<head>
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Eyüp Zafer Ünal - Software Developer Portfolio. Computer Engineering graduate passionate about AI/ML and full-stack development." />
+  <meta name="keywords" content="Eyüp Zafer Ünal, Software Developer, Computer Engineer, AI/ML, React, Python, JavaScript, TypeScript, Full-Stack Developer, Ankara, Turkey" />
+  <meta name="author" content="Eyüp Zafer Ünal" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="English" />
+  <meta name="revisit-after" content="7 days" />
+  
+  <!-- Title -->
+  <title>Eyüp Zafer Ünal - Software Developer Portfolio</title>
+  
+  <!-- Open Graph Tags -->
+  <meta property="og:title" content="Eyüp Zafer Ünal - Software Developer Portfolio" />
+  <meta property="og:description" content="Computer Engineering graduate passionate about software development, AI/ML, and creating innovative solutions." />
+  <meta property="og:image" content="https://eyzaun.github.io/og-image.png" />
+  <meta property="og:url" content="https://eyzaun.github.io" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Eyüp Zafer Ünal Portfolio" />
+  <meta property="og:locale" content="en_US" />
+  
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Eyüp Zafer Ünal - Software Developer Portfolio" />
+  <meta name="twitter:description" content="Computer Engineering graduate passionate about software development, AI/ML, and creating innovative solutions." />
+  <meta name="twitter:image" content="https://eyzaun.github.io/twitter-card.png" />
+  <meta name="twitter:creator" content="@eyzaun" />
+  
+  <!-- Favicon and Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+  <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#64ffda" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- Theme Colors -->
+  <meta name="theme-color" content="#64ffda" />
+  <meta name="msapplication-TileColor" content="#0a192f" />
+  <meta name="msapplication-config" content="/browserconfig.xml" />
+  
+  <!-- Canonical Link -->
+  <link rel="canonical" href="https://eyzaun.github.io" />
+  
+  <!-- DNS Prefetch for External Resources -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="//github.com" />
+  <link rel="dns-prefetch" href="//linkedin.com" />
+  
+  <!-- Preconnect for Critical Resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  
+  <!-- Resource Hints -->
+  <link rel="prefetch" href="/Eyup_Zafer_UNAL_CV.pdf" />
+  
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+  
+  <!-- Performance Optimization -->
+  <meta http-equiv="Cache-Control" content="public, max-age=31536000" />
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Eyüp Zafer Ünal",
+    "jobTitle": "Software Developer",
+    "description": "Computer Engineering graduate passionate about software development, AI/ML, and creating innovative solutions.",
+    "url": "https://eyzaun.github.io",
+    "sameAs": [
+      "https://github.com/eyzaun",
+      "https://linkedin.com/in/eyzaun"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ankara",
+      "addressCountry": "Turkey"
+    },
+    "email": "eyzaun@gmail.com",
+    "alumniOf": {
+      "@type": "University",
+      "name": "Hacettepe University"
+    },
+    "knowsAbout": [
+      "Software Development",
+      "Artificial Intelligence", 
+      "Machine Learning",
+      "Full-Stack Development",
+      "React",
+      "Python",
+      "JavaScript",
+      "TypeScript"
+    ]
+  }
+  </script>
+  
+  <!-- Critical CSS (will be inlined by build process) -->
+  <style>
+    /* Critical above-the-fold styles */
+    html { visibility: hidden; }
+    body { 
+      font-family: 'Calibre', 'Inter', 'San Francisco', 'SF Pro Text', -apple-system, system-ui, sans-serif;
+      background-color: #0a192f;
+      color: #8892b0;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Loading spinner for initial load */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0a192f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #233554;
+      border-top: 3px solid #64ffda;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Hide loading overlay when page is ready */
+    .loaded .loading-overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preload" href="/assets/fonts/SF-Mono-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/Calibre-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <script type="module" crossorigin src="/assets/index-CcjPaT5p.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-dQk0gtQ5.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-o28RK68C.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-FygwUNNn.css">
+</head>
+
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Skip to main content for accessibility -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-green-300 text-navy px-4 py-2 rounded z-50 font-medium">
+    Skip to main content
+  </a>
+  
+  <!-- React Root -->
+  <div id="root"></div>
+  
+  <!-- Fallback for non-JS users -->
+  <noscript>
+    <div style="padding: 2rem; text-align: center; background: #0a192f; color: #8892b0; min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+      <h1 style="color: #64ffda; margin-bottom: 1rem;">Eyüp Zafer Ünal</h1>
+      <h2 style="color: #ccd6f6; margin-bottom: 2rem;">Software Developer Portfolio</h2>
+      <p style="max-width: 600px; line-height: 1.6; margin-bottom: 2rem;">
+        This website requires JavaScript to function properly. 
+        Please enable JavaScript in your browser settings to view my portfolio.
+      </p>
+      <p>
+        You can also contact me directly at: 
+        <a href="mailto:eyzaun@gmail.com" style="color: #64ffda;">eyzaun@gmail.com</a>
+      </p>
+      <p style="margin-top: 1rem;">
+        Or download my CV: 
+        <a href="/Eyup_Zafer_UNAL_CV.pdf" style="color: #64ffda;">Download CV</a>
+      </p>
+    </div>
+  </noscript>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('Service Worker registered successfully:', registration.scope);
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New content is available, prompt user to refresh
+                  if (confirm('New content is available. Would you like to refresh?')) {
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // Hide loading overlay when page is ready
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+      setTimeout(() => {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          overlay.remove();
+        }
+      }, 300);
+    });
+    
+    // Performance monitoring
+    window.addEventListener('load', () => {
+      // Log Core Web Vitals
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          console.log(`${entry.name}: ${entry.value}ms`);
+        });
+      });
+      
+      try {
+        observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'cumulative-layout-shift'] });
+      } catch (e) {
+        // Older browsers might not support all metrics
+      }
+    });
+    
+    // Analytics placeholder (replace with actual analytics)
+    window.gtag = window.gtag || function() { (window.gtag.q = window.gtag.q || []).push(arguments); };
+    
+    // Error tracking
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+      // Send to error tracking service in production
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      // Send to error tracking service in production
+    });
+  </script>
+  
+  <!-- Main App Script (will be replaced by Vite) -->
+  
+  <!-- Browser Support Detection -->
+  <script>
+    // Check for required features and show fallback if needed
+    const requiredFeatures = [
+      'Promise',
+      'fetch',
+      'IntersectionObserver',
+      'URLSearchParams'
+    ];
+    
+    const unsupportedFeatures = requiredFeatures.filter(feature => !(feature in window));
+    
+    if (unsupportedFeatures.length > 0) {
+      console.warn('Unsupported features detected:', unsupportedFeatures);
+      // Could show a browser upgrade message here
+    }
+  </script>
+</body>
 </html>
