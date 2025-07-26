@@ -10,125 +10,13 @@
   "scope": "/",
   "lang": "en",
   "dir": "ltr",
-  "categories": [
-    "business",
-    "education",
-    "productivity"
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "platform": "wide",
-      "label": "Portfolio Homepage - Desktop"
-    },
-    {
-      "src": "/screenshots/mobile-home.png", 
-      "sizes": "375x812",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Portfolio Homepage - Mobile"
-    }
-  ],
+  "categories": ["business", "education", "productivity"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "About Me",
-      "short_name": "About",
-      "description": "Learn more about my background and experience",
-      "url": "/#about",
-      "icons": [
-        {
-          "src": "/icons/shortcut-about.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Projects",
-      "short_name": "Projects", 
-      "description": "View my latest projects and work",
-      "url": "/#projects",
-      "icons": [
-        {
-          "src": "/icons/shortcut-projects.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Contact",
-      "short_name": "Contact",
-      "description": "Get in touch with me",
-      "url": "/#contact",
-      "icons": [
-        {
-          "src": "/icons/shortcut-contact.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Download CV",
-      "short_name": "CV",
-      "description": "Download my latest CV",
-      "url": "/Eyup_Zafer_UNAL_CV.pdf",
-      "icons": [
-        {
-          "src": "/icons/shortcut-cv.png",
-          "sizes": "96x96"
-        }
-      ]
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
     }
   ],
   "related_applications": [
@@ -137,11 +25,5 @@
       "url": "https://eyzaun.github.io"
     }
   ],
-  "prefer_related_applications": false,
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  }
+  "prefer_related_applications": false
 }

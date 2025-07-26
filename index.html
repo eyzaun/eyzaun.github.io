@@ -179,7 +179,7 @@
     </style>
 
     <!-- Note: Font preloading removed as files don't exist in public directory -->
-    <script type="module" crossorigin src="/assets/index-B5BeTZ6s.js"></script>
+    <script type="module" crossorigin src="/assets/index-CK8s8ZdF.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/vendor-dQk0gtQ5.js">
     <link rel="modulepreload" crossorigin href="/assets/ui-o28RK68C.js">
     <link rel="stylesheet" crossorigin href="/assets/index-Cz6JGlqh.css">
@@ -276,19 +276,40 @@
 
       // Performance monitoring
       window.addEventListener('load', () => {
-        // Log Core Web Vitals
-        const observer = new PerformanceObserver((list) => {
-          list.getEntries().forEach((entry) => {
-            console.log(`${entry.name}: ${entry.value}ms`);
-          });
-        });
-
+        // Safely observe Core Web Vitals
         try {
-          observer.observe({
-            entryTypes: ['largest-contentful-paint', 'first-input', 'cumulative-layout-shift'],
+          const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+              console.log(`${entry.name}: ${entry.value || entry.startTime}ms`);
+            });
           });
+
+          // Try each metric separately to avoid unsupported entry types
+          ['largest-contentful-paint', 'first-input'].forEach((entryType) => {
+            try {
+              observer.observe({ entryTypes: [entryType] });
+            } catch (e) {
+              console.warn(`${entryType} not supported:`, e);
+            }
+          });
+
+          // Layout shift needs different observer setup
+          try {
+            const clsObserver = new PerformanceObserver((list) => {
+              let cls = 0;
+              list.getEntries().forEach((entry) => {
+                if (!entry.hadRecentInput) {
+                  cls += entry.value;
+                  console.log(`CLS: ${cls}`);
+                }
+              });
+            });
+            clsObserver.observe({ type: 'layout-shift', buffered: true });
+          } catch (e) {
+            console.warn('Layout shift not supported:', e);
+          }
         } catch (e) {
-          // Older browsers might not support all metrics
+          console.warn('Performance Observer not supported:', e);
         }
       });
 
