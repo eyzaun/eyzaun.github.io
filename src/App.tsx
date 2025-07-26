@@ -11,11 +11,15 @@ import { LanguageProvider } from './contexts/LanguageContext';
 function App() {
   return (
     <LanguageProvider>
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-slate-900">
         <Header />
+        
         <main>
+          {/* Hero section - Full width */}
           <Hero />
-          <div className="px-6 md:px-12 lg:px-24 xl:px-32">
+          
+          {/* Other sections - Consistent padding */}
+          <div className="bg-slate-900">
             <About />
             <Experience />
             <Projects />
@@ -23,6 +27,7 @@ function App() {
             <Contact />
           </div>
         </main>
+        
         <Footer />
       </div>
     </LanguageProvider>
