@@ -49,6 +49,7 @@ const translations = {
     'nav.projects': 'Projeler',
     'nav.skills': 'Yetenekler',
     'nav.contact': 'İletişim',
+    'nav.toggleLanguage': 'Dil Değiştir',
     
     // Hero Section
     'hero.greeting': 'Merhaba, Ben Eyüp Zafer ÜNAL',
@@ -63,6 +64,7 @@ const translations = {
     'about.title': 'Hakkımda',
     'about.personalInfo': 'Kişisel Bilgiler',
     'about.education': 'Eğitim',
+    'about.education.title': 'Eğitim',
     'about.certifications': 'Sertifikalar',
     'about.relevantCourses': 'İlgili Dersler',
     'about.description1': 'Hacettepe Üniversitesi Bilgisayar Mühendisliği mezunuyum. Yazılım geliştirme, yapay zeka ve makine öğrenmesi alanlarında kapsamlı deneyime sahibim. Özellikle full-stack development ve AI/ML projeleri konularında uzmanlaşmaya devam ediyorum.',
@@ -76,7 +78,7 @@ const translations = {
     'projects.title': 'Projeler',
     'projects.moreProjects': 'Daha Fazla Proje',
     
-    // Project Details (CV'ye uygun)
+    // Project Details
     'projects.goDash.name': 'GoDash - System Monitoring Tool',
     'projects.goDash.description': 'Go, Gin framework ve WebSocket kullanarak gerçek zamanlı sistem izleme panosu',
     'projects.goDash.feature1': 'CPU, bellek ve disk kullanımı takibi ile otomatik uyarı sistemi',
@@ -97,6 +99,13 @@ const translations = {
     'projects.linkedHU.feature2': 'Kullanıcı kimlik doğrulama ve profil yönetimi',
     'projects.linkedHU.feature3': 'Üniversite ağ özellikleri için RESTful API\'ler',
     'projects.linkedHU.feature4': 'CI/CD entegrasyonu ile kod kalitesi optimizasyonu',
+    
+    'projects.avukatLLM.name': 'AvukatLLM',
+    'projects.avukatLLM.description': 'AI destekli hukuki asistan - Türk vergi hukuku danışmanlığı',
+    'projects.avukatLLM.feature1': 'Microsoft Phi-4 modeli ile %85 yanıt doğruluğu',
+    'projects.avukatLLM.feature2': 'Model quantization ile %75 bellek azaltımı',
+    'projects.avukatLLM.feature3': 'Sürekli model iyileştirme pipeline\'ı',
+    'projects.avukatLLM.feature4': 'Türkçe odaklı çok dil desteği',
     
     // Skills Section
     'skills.title': 'Yetenekler',
@@ -198,6 +207,7 @@ const translations = {
     'nav.projects': 'Projects',
     'nav.skills': 'Skills',
     'nav.contact': 'Contact',
+    'nav.toggleLanguage': 'Toggle Language',
     
     // Hero Section
     'hero.greeting': 'Hello, I\'m Eyüp Zafer ÜNAL',
@@ -212,6 +222,7 @@ const translations = {
     'about.title': 'About Me',
     'about.personalInfo': 'Personal Information',
     'about.education': 'Education',
+    'about.education.title': 'Education',
     'about.certifications': 'Certifications',
     'about.relevantCourses': 'Relevant Courses',
     'about.description1': 'I\'m a Computer Engineering graduate from Hacettepe University with comprehensive experience in software development, artificial intelligence, and machine learning. I continue to specialize in full-stack development and AI/ML projects.',
@@ -225,7 +236,7 @@ const translations = {
     'projects.title': 'Projects',
     'projects.moreProjects': 'More Projects',
     
-    // Project Details (CV'ye uygun)
+    // Project Details
     'projects.goDash.name': 'GoDash - System Monitoring Tool',
     'projects.goDash.description': 'Built real-time system monitoring dashboard using Go, Gin framework, and WebSocket connections',
     'projects.goDash.feature1': 'Implemented CPU, memory, and disk usage tracking with automated alert system',
@@ -246,6 +257,13 @@ const translations = {
     'projects.linkedHU.feature2': 'Implemented user authentication and profile management systems',
     'projects.linkedHU.feature3': 'Created RESTful APIs for university networking features',
     'projects.linkedHU.feature4': 'Ensured code quality and performance optimization with CI/CD integration',
+    
+    'projects.avukatLLM.name': 'AvukatLLM',
+    'projects.avukatLLM.description': 'AI-powered legal assistant specializing in Turkish tax law consultations',
+    'projects.avukatLLM.feature1': '85% response accuracy in Turkish tax law consultations',
+    'projects.avukatLLM.feature2': 'Model quantization for 75% memory reduction',
+    'projects.avukatLLM.feature3': 'Continuous model improvement pipeline',
+    'projects.avukatLLM.feature4': 'Multi-language support with Turkish focus',
     
     // Skills Section
     'skills.title': 'Skills',

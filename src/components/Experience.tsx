@@ -31,33 +31,39 @@ const Experience: React.FC = () => {
   ];
 
   return (
-    <section id="experience" className="section">
-      <div className="container">
-        <h2 className="section-title">{t('experience.title')}</h2>
+    <section id="experience" className="py-16 px-6 md:px-12 lg:px-24 xl:px-32">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-12 relative">
+          <span className="text-green-400 font-mono text-xl md:text-2xl mr-2">02.</span>
+          {t('experience.title')}
+          <span className="block h-px bg-slate-600 mt-4 ml-0 md:ml-32 lg:ml-40"></span>
+        </h2>
         
         <div className="space-y-8">
           {experiences.map((exp, index) => (
             <div 
               key={index}
-              className="group relative bg-light-navy p-6 md:p-8 rounded-lg border border-slate hover:border-green-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-navy/20"
+              className="group relative bg-slate-800/30 backdrop-blur-sm border border-slate-700 p-6 md:p-8 rounded-lg hover:border-green-400 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-400/10"
             >
               <div className="mb-6">
-                <h3 className="text-xl md:text-2xl font-semibold mb-2" style={{ color: 'var(--lightest-slate)' }}>
+                <h3 className="text-xl md:text-2xl font-semibold mb-2 text-slate-200">
                   {exp.position}
-                  <span className="text-lg md:text-xl ml-2" style={{ color: 'var(--green)' }}>
+                  <span className="text-lg md:text-xl ml-2 text-green-400">
                     @ {exp.company}
                   </span>
                 </h3>
-                <p className="text-sm font-mono" style={{ color: 'var(--slate)' }}>
+                <p className="text-sm font-mono text-slate-400">
                   {exp.duration}
                 </p>
               </div>
 
               <div className="space-y-3 mb-6">
                 {exp.description.map((desc, descIndex) => (
-                  <div key={descIndex} className="flex items-start">
-                    <span className="mr-3 mt-2 flex-shrink-0" style={{ color: 'var(--green)' }}>▹</span>
-                    <p className="leading-relaxed" style={{ color: 'var(--slate)' }}>{desc}</p>
+                  <div key={descIndex} className="flex items-start group-hover:translate-x-1 transition-transform duration-300">
+                    <span className="mr-3 mt-2 flex-shrink-0 text-green-400 font-mono">▹</span>
+                    <p className="leading-relaxed text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
+                      {desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -65,7 +71,10 @@ const Experience: React.FC = () => {
               {/* Technologies */}
               <div className="flex flex-wrap gap-2">
                 {exp.technologies.map((tech, techIndex) => (
-                  <span key={techIndex} className="tech-tag">
+                  <span
+                    key={techIndex}
+                    className="px-3 py-1 bg-green-400/10 border border-green-400/20 text-green-400 rounded-full text-sm font-mono hover:bg-green-400/20 hover:border-green-400/40 transition-all duration-300 cursor-default"
+                  >
                     {tech}
                   </span>
                 ))}
