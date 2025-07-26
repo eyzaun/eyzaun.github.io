@@ -82,8 +82,8 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Social Links - Fixed Position (Hidden on mobile) */}
-      <div className="fixed left-4 lg:left-10 bottom-0 hidden lg:flex flex-col items-center space-y-6 z-20">
+      {/* Social Links - Fixed Position (Better positioning) */}
+      <div className="fixed left-6 lg:left-8 bottom-0 hidden lg:flex flex-col items-center space-y-6 z-20">
         <a
           href={personalInfo.github}
           target="_blank"
@@ -112,8 +112,8 @@ const Hero: React.FC = () => {
         <div className="w-px h-24 bg-slate-500"></div>
       </div>
 
-      {/* Email - Fixed Position (Hidden on mobile) */}
-      <div className="fixed right-4 lg:right-10 bottom-0 hidden lg:flex flex-col items-center z-20">
+      {/* Email - Fixed Position (Better positioning) */}
+      <div className="fixed right-6 lg:right-8 bottom-0 hidden lg:flex flex-col items-center z-20">
         <a
           href={`mailto:${personalInfo.email}`}
           className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 text-sm font-mono tracking-widest mb-6 [writing-mode:vertical-rl] [text-orientation:mixed]"

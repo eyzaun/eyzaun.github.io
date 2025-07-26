@@ -7,13 +7,13 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-white py-12">
-      <div className="container mx-auto px-4">
+    <footer className="bg-slate-900 border-t border-slate-800 py-12">
+      <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-24 xl:px-32">
         <div className="grid md:grid-cols-3 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">{personalInfo.name}</h3>
-            <p className="text-gray-300 mb-4">
+            <h3 className="text-xl font-semibold mb-4 text-slate-200">{personalInfo.name}</h3>
+            <p className="text-slate-400 mb-4 leading-relaxed">
               {t('footer.description')}
             </p>
             <div className="flex space-x-4">
@@ -21,7 +21,8 @@ const Footer = () => {
                 href={personalInfo.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-green-400 transition-colors duration-300 p-2 rounded-lg hover:bg-slate-800"
+                aria-label="GitHub"
               >
                 <Github size={20} />
               </a>
@@ -29,13 +30,15 @@ const Footer = () => {
                 href={personalInfo.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-green-400 transition-colors duration-300 p-2 rounded-lg hover:bg-slate-800"
+                aria-label="LinkedIn"
               >
                 <Linkedin size={20} />
               </a>
               <a
                 href={`mailto:${personalInfo.email}`}
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-green-400 transition-colors duration-300 p-2 rounded-lg hover:bg-slate-800"
+                aria-label="Email"
               >
                 <Mail size={20} />
               </a>
@@ -44,35 +47,35 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('footer.quickLinks')}</h3>
+            <h3 className="text-xl font-semibold mb-4 text-slate-200">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#home" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#home" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.home')}
                 </a>
               </li>
               <li>
-                <a href="#about" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#about" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.about')}
                 </a>
               </li>
               <li>
-                <a href="#experience" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#experience" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.experience')}
                 </a>
               </li>
               <li>
-                <a href="#projects" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#projects" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.projects')}
                 </a>
               </li>
               <li>
-                <a href="#skills" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#skills" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.skills')}
                 </a>
               </li>
               <li>
-                <a href="#contact" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#contact" className="text-slate-400 hover:text-green-400 transition-colors duration-300">
                   {t('nav.contact')}
                 </a>
               </li>
@@ -81,23 +84,24 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('contact.title')}</h3>
-            <div className="space-y-2">
-              <p className="text-gray-300">
-                <Mail className="inline mr-2" size={16} />
+            <h3 className="text-xl font-semibold mb-4 text-slate-200">{t('contact.title')}</h3>
+            <div className="space-y-3">
+              <p className="text-slate-400 flex items-center">
+                <Mail className="inline mr-3 text-green-400" size={16} />
                 {personalInfo.email}
               </p>
-              <p className="text-gray-300">
-                <MapPin className="inline mr-2" size={16} />
-                {t('hero.location')}
+              <p className="text-slate-400 flex items-center">
+                <MapPin className="inline mr-3 text-green-400" size={16} />
+                {personalInfo.location}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-300 flex items-center justify-center">
-            © {currentYear} {personalInfo.name}. {t('footer.madeWith')} React & Tailwind CSS
+        <div className="border-t border-slate-800 mt-8 pt-8 text-center">
+          <p className="text-slate-400 flex items-center justify-center flex-wrap">
+            <span>© {currentYear} {personalInfo.name}.</span>
+            <span className="ml-1">{t('footer.madeWith')} React & Tailwind CSS</span>
           </p>
         </div>
       </div>

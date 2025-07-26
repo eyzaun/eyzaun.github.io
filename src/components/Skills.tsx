@@ -102,8 +102,8 @@ const Skills: React.FC = () => {
   ];
 
   return (
-    <section id="skills" className="py-16 px-6 md:px-12 lg:px-24 xl:px-32">
-      <div className="max-w-6xl mx-auto">
+    <section id="skills" className="py-16 px-6 md:px-12 lg:px-32 xl:px-40">
+      <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-12 relative">
           <span className="text-green-400 font-mono text-xl md:text-2xl mr-2">04.</span>
           {t('skills.title')}
