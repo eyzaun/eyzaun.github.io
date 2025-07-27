@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { ArrowDown, Download } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCursor } from '../hooks/useCursor';
+
+// Lazy load AnimatedBackground for better performance
+const AnimatedBackground = React.lazy(() => import('./AnimatedBackground'));
 
 const Hero: React.FC = () => {
   const { t } = useLanguage();
+  const { cursor, isActive } = useCursor();
 
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
@@ -18,10 +23,21 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-start px-4 sm:px-6 md:px-12 lg:px-24 xl:px-32 relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,255,218,0.15)_1px,transparent_0)] [background-size:50px_50px] opacity-20"></div>
+    <section className="min-h-screen flex flex-col justify-center items-start px-4 sm:px-6 md:px-12 lg:px-24 xl:px-32 relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
       
+      {/* Three.js Animated Background */}
+      <Suspense fallback={null}>
+        <AnimatedBackground
+          mouseX={cursor.x}
+          mouseY={cursor.y}
+          isActive={isActive}
+        />
+      </Suspense>
+
+      {/* Fallback Background Pattern - Still visible as overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,255,218,0.15)_1px,transparent_0)] [background-size:50px_50px] opacity-20 z-[2]"></div>
+      
+      {/* Content - Higher z-index to be above Three.js */}
       <div className="max-w-6xl relative z-10">
         {/* Greeting */}
         <p className="text-green-400 font-mono text-base sm:text-lg md:text-xl mb-4 sm:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
@@ -136,7 +152,6 @@ const Hero: React.FC = () => {
           <ArrowDown size={24} />
         </button>
       </div>
-
 
     </section>
   );
