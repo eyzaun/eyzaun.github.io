@@ -39,7 +39,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update mouse and scroll position
+  // Update mouse and scroll
   useEffect(() => {
     mouseRef.current.x = mouseX;
     mouseRef.current.y = mouseY;
@@ -54,7 +54,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Helper function to create text texture
+  // Helper function to create text texture - 1.5x büyüklük
   const createTextTexture = useCallback((text: string) => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d')!;
@@ -65,19 +65,23 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     context.fillStyle = 'rgba(0, 0, 0, 0)';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Text styling
+    // Text styling - Daha büyük font
     context.fillStyle = '#64ffda';
-    context.font = 'bold 80px Arial';
+    context.font = 'bold 90px Arial'; // 80px'den 90px'e
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     
-    // Add glow effect
+    // Strong glow effect
     context.shadowColor = '#64ffda';
-    context.shadowBlur = 15;
+    context.shadowBlur = 20;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
     
-    // Second pass for more glow
-    context.shadowBlur = 5;
+    // Double glow
+    context.shadowBlur = 10;
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+    // Third pass for brightness
+    context.shadowBlur = 0;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -94,7 +98,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       frameIdRef.current = undefined;
     }
 
-    // Dispose particles
+    // Clean up all resources
     if (particlesRef.current) {
       if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
       if (particlesRef.current.material) {
@@ -103,7 +107,6 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       }
     }
 
-    // Dispose letters
     lettersRef.current.forEach(letter => {
       if (letter.geometry) letter.geometry.dispose();
       if (letter.material) {
@@ -113,7 +116,6 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       }
     });
 
-    // Dispose lines
     if (linesRef.current) {
       if (linesRef.current.geometry) linesRef.current.geometry.dispose();
       if (linesRef.current.material) {
@@ -121,7 +123,6 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       }
     }
 
-    // Dispose renderer
     if (rendererRef.current) {
       rendererRef.current.dispose();
       rendererRef.current.forceContextLoss();
@@ -146,7 +147,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       return;
     }
 
-    console.log('Initializing Three.js with E-Y-Z-A-U-N Letters...');
+    console.log('Initializing Three.js with Centered E-Y-Z-A-U-N Letters...');
     
     try {
       const container = mountRef.current;
@@ -162,8 +163,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       const scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 2000);
-      camera.position.z = 300;
+      // Camera - Daha yakın pozisyon
+      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 1500);
+      camera.position.z = 200; // 300'den 200'e
       cameraRef.current = camera;
 
       const renderer = new THREE.WebGLRenderer({ 
@@ -178,39 +180,39 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
-      // === PARTICLES SYSTEM ===
-      const particleCount = 200;
+      // === PARTICLES SYSTEM - Sıkı boundaries ===
+      const particleCount = 180;
       const positions = new Float32Array(particleCount * 3);
       const colors = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
 
+      // Visible area hesaplama - Çok daha sıkı
+      const visibleWidth = screenWidth * 0.6; // 0.9'dan 0.6'ya
+      const visibleHeight = screenHeight * 0.6; // 0.9'dan 0.6'ya
+
       for (let i = 0; i < particleCount; i++) {
-        // Position within visible area
-        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.9;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.9;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+        // Position - Kesinlikle görünür alanda
+        positions[i * 3] = (Math.random() - 0.5) * visibleWidth;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * visibleHeight;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 200; // 300'den 200'e
 
         // Colors - Site theme
         const colorType = Math.random();
         if (colorType < 0.4) {
-          // Green theme #64ffda
-          colors[i * 3] = 0.39;     // R
-          colors[i * 3 + 1] = 1.0;  // G  
-          colors[i * 3 + 2] = 0.85; // B
+          colors[i * 3] = 0.39;     // Green
+          colors[i * 3 + 1] = 1.0;  
+          colors[i * 3 + 2] = 0.85; 
         } else if (colorType < 0.7) {
-          // Cyan
-          colors[i * 3] = 0.2;      // R
-          colors[i * 3 + 1] = 0.8;  // G  
-          colors[i * 3 + 2] = 1.0;  // B
+          colors[i * 3] = 0.2;      // Cyan
+          colors[i * 3 + 1] = 0.8;  
+          colors[i * 3 + 2] = 1.0;  
         } else {
-          // Light blue
-          colors[i * 3] = 0.6;      // R
-          colors[i * 3 + 1] = 0.9;  // G  
-          colors[i * 3 + 2] = 1.0;  // B
+          colors[i * 3] = 0.6;      // Light blue
+          colors[i * 3 + 1] = 0.9;  
+          colors[i * 3 + 2] = 1.0;  
         }
 
-        // Size
-        sizes[i] = Math.random() * 8 + 3;
+        sizes[i] = Math.random() * 6 + 4; // Biraz daha büyük
       }
 
       const particleGeometry = new THREE.BufferGeometry();
@@ -245,29 +247,29 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             
             // Mouse interaction
             vec2 mousePos = uMouse * 2.0 - 1.0;
-            float mouseDistance = distance(mousePos, modelPosition.xy / 500.0);
-            float mouseInfluence = smoothstep(0.8, 0.0, mouseDistance);
+            float mouseDistance = distance(mousePos, modelPosition.xy / 400.0);
+            float mouseInfluence = smoothstep(0.6, 0.0, mouseDistance);
             
-            // Wave motion
-            modelPosition.x += sin(uTime * 0.7 + position.y * 0.01) * 20.0;
-            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * 15.0;
-            modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
+            // Gentle wave motion
+            modelPosition.x += sin(uTime * 0.5 + position.y * 0.008) * 15.0;
+            modelPosition.y += cos(uTime * 0.4 + position.x * 0.008) * 12.0;
+            modelPosition.z += sin(uTime * 0.3 + position.x * 0.004) * 8.0;
             
-            // Boundary wrapping
-            float maxX = 800.0;
-            float maxY = 600.0;
+            // Strong boundary constraints - Keep in center
+            float maxX = 500.0; // Daha sıkı
+            float maxY = 400.0; // Daha sıkı
             
-            if (modelPosition.x > maxX) modelPosition.x = -maxX;
-            if (modelPosition.x < -maxX) modelPosition.x = maxX;
-            if (modelPosition.y > maxY) modelPosition.y = -maxY;
-            if (modelPosition.y < -maxY) modelPosition.y = maxY;
+            if (modelPosition.x > maxX) modelPosition.x = maxX - 50.0;
+            if (modelPosition.x < -maxX) modelPosition.x = -maxX + 50.0;
+            if (modelPosition.y > maxY) modelPosition.y = maxY - 50.0;
+            if (modelPosition.y < -maxY) modelPosition.y = -maxY + 50.0;
             
-            // Mouse repulsion
-            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 500.0);
-            modelPosition.xy += mouseDirection * mouseInfluence * 80.0;
+            // Mouse interaction
+            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 400.0);
+            modelPosition.xy += mouseDirection * mouseInfluence * 60.0;
             
             // Scroll parallax
-            modelPosition.y += uScrollY * 0.3;
+            modelPosition.y += uScrollY * 0.2;
             
             vec4 viewPosition = viewMatrix * modelPosition;
             vec4 projectedPosition = projectionMatrix * viewPosition;
@@ -275,9 +277,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             gl_Position = projectedPosition;
             
             // Size and alpha
-            float baseSize = size * (400.0 / -viewPosition.z);
-            gl_PointSize = baseSize * (1.5 + mouseInfluence * 3.0) * uPixelRatio;
-            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 0.6);
+            float baseSize = size * (300.0 / -viewPosition.z);
+            gl_PointSize = baseSize * (1.8 + mouseInfluence * 2.0) * uPixelRatio;
+            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.9 + mouseInfluence * 0.5);
           }
         `,
         fragmentShader: `
@@ -287,10 +289,10 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           void main() {
             float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
             float strength = 1.0 - smoothstep(0.0, 0.5, distanceToCenter);
-            float glow = 1.0 - smoothstep(0.0, 0.8, distanceToCenter);
+            float glow = 1.0 - smoothstep(0.0, 0.7, distanceToCenter);
             
             vec3 finalColor = vColor;
-            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.4;
+            float finalAlpha = strength * vAlpha * 1.4 + glow * vAlpha * 0.6;
             
             gl_FragColor = vec4(finalColor, finalAlpha);
           }
@@ -301,37 +303,39 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       scene.add(particles);
       particlesRef.current = particles;
 
-      // === 3D LETTERS (E-Y-Z-A-U-N) ===
+      // === 3D LETTERS (E-Y-Z-A-U-N) - 1.5x büyük ve merkezi ===
       const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
       const letterMeshes: THREE.Mesh[] = [];
 
       letters.forEach((letter, index) => {
-        const geometry = new THREE.PlaneGeometry(30, 30);
+        // 1.5x daha büyük geometry
+        const geometry = new THREE.PlaneGeometry(45, 45); // 30x30'dan 45x45'e
         const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.9, // Biraz daha parlak
           side: THREE.DoubleSide
         });
 
         const letterMesh = new THREE.Mesh(geometry, material);
         
-        // Position letters in a circle
+        // Harfleri çok daha merkezi konumlandır
         const angle = (index / letters.length) * Math.PI * 2;
-        const radiusX = Math.min(screenWidth * 0.35, 400);
-        const radiusY = Math.min(screenHeight * 0.35, 300);
+        const radiusX = Math.min(screenWidth * 0.2, 250); // 0.35'den 0.2'ye
+        const radiusY = Math.min(screenHeight * 0.2, 200); // 0.35'den 0.2'ye
         
         letterMesh.position.set(
           Math.cos(angle) * radiusX,
           Math.sin(angle) * radiusY,
-          (Math.random() - 0.5) * 150
+          (Math.random() - 0.5) * 80 // 150'den 80'e
         );
         
+        // Daha az rotasyon
         letterMesh.rotation.set(
-          Math.random() * 0.5,
-          Math.random() * 0.5,
-          Math.random() * 0.5
+          Math.random() * 0.3,
+          Math.random() * 0.3,
+          Math.random() * 0.3
         );
 
         scene.add(letterMesh);
@@ -340,26 +344,26 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
       lettersRef.current = letterMeshes;
 
-      // === CONNECTION LINES ===
+      // === CONNECTION LINES - Optimize edilmiş ===
       const createConnectionLines = () => {
         const linePositions: number[] = [];
         const lineColors: number[] = [];
         
-        for (let i = 0; i < particleCount && linePositions.length < 600; i++) {
-          for (let j = i + 1; j < particleCount && linePositions.length < 600; j++) {
+        for (let i = 0; i < particleCount && linePositions.length < 400; i++) {
+          for (let j = i + 1; j < particleCount && linePositions.length < 400; j++) {
             const distance = new THREE.Vector3(
               positions[i * 3] - positions[j * 3],
               positions[i * 3 + 1] - positions[j * 3 + 1],
               positions[i * 3 + 2] - positions[j * 3 + 2]
             ).length();
 
-            if (distance < 120) {
+            if (distance < 100) { // Daha yakın mesafe
               linePositions.push(
                 positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
                 positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
               );
               
-              const alpha = 1.0 - (distance / 120);
+              const alpha = 1.0 - (distance / 100);
               lineColors.push(0.39, 1.0, 0.85, alpha);
               lineColors.push(0.39, 1.0, 0.85, alpha);
             }
@@ -374,7 +378,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           const lineMaterial = new THREE.LineBasicMaterial({
             vertexColors: true,
             transparent: true,
-            opacity: 0.5,
+            opacity: 0.6,
             blending: THREE.AdditiveBlending
           });
 
@@ -386,7 +390,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
       createConnectionLines();
       isInitializedRef.current = true;
-      console.log('Three.js with 3D Letters initialized successfully');
+      console.log('Three.js with Centered Letters initialized successfully');
 
     } catch (error) {
       console.error('Three.js initialization error:', error);
@@ -413,64 +417,66 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           mouseRef.current.x / window.innerWidth,
           1.0 - mouseRef.current.y / window.innerHeight
         );
-        material.uniforms.uScrollY.value = scrollRef.current * 0.5;
+        material.uniforms.uScrollY.value = scrollRef.current * 0.3;
       }
 
-      // Animate letters
+      // Animate letters - Sıkı boundary kontrolü
       lettersRef.current.forEach((letter, index) => {
-        // Rotation
-        letter.rotation.x += 0.003 + index * 0.001;
-        letter.rotation.y += 0.005 + index * 0.0015;
-        letter.rotation.z += 0.002 + index * 0.0008;
+        // Smooth rotation
+        letter.rotation.x += 0.002 + index * 0.0008;
+        letter.rotation.y += 0.004 + index * 0.001;
+        letter.rotation.z += 0.001 + index * 0.0006;
         
-        // Floating motion with boundaries
-        const originalX = letter.position.x;
-        const originalY = letter.position.y;
+        // Base position tracking
+        const baseX = letter.position.x;
+        const baseY = letter.position.y;
         
-        letter.position.y += Math.sin(time * 0.3 + index) * 0.8;
-        letter.position.x += Math.cos(time * 0.2 + index) * 0.6;
-        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * 0.4;
+        // Gentle floating motion
+        letter.position.y += Math.sin(time * 0.2 + index) * 0.6;
+        letter.position.x += Math.cos(time * 0.15 + index) * 0.4;
+        letter.position.z += Math.sin(time * 0.25 + index * 0.5) * 0.3;
         
-        // Boundary checks
-        const maxX = screenWidth * 0.4;
-        const maxY = screenHeight * 0.4;
+        // Very strict boundary enforcement
+        const maxX = screenWidth * 0.25; // Çok sıkı
+        const maxY = screenHeight * 0.25; // Çok sıkı
         
         if (Math.abs(letter.position.x) > maxX) {
-          letter.position.x = originalX * 0.8;
+          letter.position.x = baseX * 0.5; // Merkeze çek
         }
         if (Math.abs(letter.position.y) > maxY) {
-          letter.position.y = originalY * 0.8;
+          letter.position.y = baseY * 0.5; // Merkeze çek
         }
         
-        if (letter.position.z > 100) letter.position.z = 100;
-        if (letter.position.z < -100) letter.position.z = -100;
+        // Z boundary
+        if (letter.position.z > 50) letter.position.z = 50;
+        if (letter.position.z < -50) letter.position.z = -50;
         
-        // Mouse interaction
-        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 50;
-        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 50;
+        // Gentle mouse interaction
+        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30;
+        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30;
         
         const distanceToMouse = Math.sqrt(
           Math.pow(letter.position.x - mouseInfluenceX, 2) + 
           Math.pow(letter.position.y - mouseInfluenceY, 2)
         );
         
-        if (distanceToMouse < 100) {
-          const pushForce = (100 - distanceToMouse) / 100;
-          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.02;
-          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.02;
+        if (distanceToMouse < 80) {
+          const pushForce = (80 - distanceToMouse) / 80;
+          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.015;
+          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.015;
           
           letter.position.x += pushX;
           letter.position.y += pushY;
         }
       });
 
-      // Camera movement
-      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 100;
-      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 100;
-      const scrollInfluence = scrollRef.current * 0.1;
+      // Subtle camera movement
+      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 50;
+      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 50;
+      const scrollInfluence = scrollRef.current * 0.05;
       
-      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.02;
-      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.02;
+      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.015;
+      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.015;
       cameraRef.current.lookAt(0, 0, 0);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
