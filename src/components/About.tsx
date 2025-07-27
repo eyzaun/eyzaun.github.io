@@ -88,7 +88,6 @@ const About: React.FC = () => {
           <div className="lg:col-span-1 fade-in-delay-2">
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-6 hover:border-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/10">
               <h3 className="text-xl font-semibold mb-6 text-slate-200 flex items-center">
-                <span className="text-green-400 mr-2">🎓</span>
                 {t('about.education.title')}
               </h3>
               
