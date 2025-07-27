@@ -251,10 +251,10 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             
             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
             
-            // Simplified mouse interaction for mobile
+            // More sensitive mouse interaction
             vec2 mousePos = uMouse * 2.0 - 1.0;
-            float mouseDistance = distance(mousePos, modelPosition.xy / 500.0);
-            float mouseInfluence = smoothstep(0.8, 0.0, mouseDistance);
+            float mouseDistance = distance(mousePos, modelPosition.xy / 400.0); // Closer detection
+            float mouseInfluence = smoothstep(1.0, 0.0, mouseDistance); // Wider influence area
             
             // Reduced wave motion for mobile performance
             float waveIntensity = uIsMobile > 0.5 ? 10.0 : 20.0;
@@ -265,33 +265,34 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
               modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
             }
             
-            // Tighter boundary wrapping for mobile
-            float maxX = uIsMobile > 0.5 ? 300.0 : 400.0;
-            float maxY = uIsMobile > 0.5 ? 200.0 : 300.0;
+            // Much tighter boundary wrapping - particles stay visible
+            float maxX = uIsMobile > 0.5 ? 250.0 : 350.0; // Tighter bounds
+            float maxY = uIsMobile > 0.5 ? 180.0 : 250.0; // Tighter bounds
             
-            if (modelPosition.x > maxX) modelPosition.x = -maxX;
-            if (modelPosition.x < -maxX) modelPosition.x = maxX;
-            if (modelPosition.y > maxY) modelPosition.y = -maxY;
-            if (modelPosition.y < -maxY) modelPosition.y = maxY;
+            // Smooth boundary - no harsh wrapping
+            if (modelPosition.x > maxX) modelPosition.x = maxX - 10.0;
+            if (modelPosition.x < -maxX) modelPosition.x = -maxX + 10.0;
+            if (modelPosition.y > maxY) modelPosition.y = maxY - 10.0;
+            if (modelPosition.y < -maxY) modelPosition.y = -maxY + 10.0;
             
-            // Reduced mouse repulsion for mobile
-            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 500.0);
-            float repulsionForce = uIsMobile > 0.5 ? 40.0 : 80.0;
+            // Mouse repulsion - much stronger and wider area
+            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 400.0); // Closer reference point
+            float repulsionForce = uIsMobile > 0.5 ? 120.0 : 180.0; // Even stronger
             modelPosition.xy += mouseDirection * mouseInfluence * repulsionForce;
             
-            // Scroll parallax - reduced for mobile
-            modelPosition.y += uScrollY * (uIsMobile > 0.5 ? 0.2 : 0.3);
+            // Scroll parallax - much reduced
+            modelPosition.y += uScrollY * (uIsMobile > 0.5 ? 0.1 : 0.15);
             
             vec4 viewPosition = viewMatrix * modelPosition;
             vec4 projectedPosition = projectionMatrix * viewPosition;
             
             gl_Position = projectedPosition;
             
-            // Size and alpha
+            // Size and alpha - more responsive to mouse
             float baseSize = size * (400.0 / -viewPosition.z);
-            float sizeMultiplier = uIsMobile > 0.5 ? 1.2 : 1.5;
-            gl_PointSize = baseSize * (sizeMultiplier + mouseInfluence * 2.0) * uPixelRatio;
-            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 0.6);
+            float sizeMultiplier = uIsMobile > 0.5 ? 1.5 : 2.0; // Larger particles
+            gl_PointSize = baseSize * (sizeMultiplier + mouseInfluence * 4.0) * uPixelRatio; // Stronger mouse effect
+            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 1.0); // More visible with mouse
           }
         `,
         fragmentShader: `
@@ -428,10 +429,10 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           mouseRef.current.x / window.innerWidth,
           1.0 - mouseRef.current.y / window.innerHeight
         );
-        material.uniforms.uScrollY.value = scrollRef.current * (isMobile ? 0.3 : 0.5);
+        material.uniforms.uScrollY.value = scrollRef.current * (isMobile ? 0.1 : 0.2); // Reduced scroll effect
       }
 
-      // Animate letters - simplified for mobile
+      // Animate letters - improved boundary system
       lettersRef.current.forEach((letter, index) => {
         // Rotation - slower on mobile
         const rotationSpeed = isMobile ? 0.5 : 1;
@@ -439,64 +440,66 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         letter.rotation.y += (0.005 + index * 0.0015) * rotationSpeed;
         letter.rotation.z += (0.002 + index * 0.0008) * rotationSpeed;
         
-        // Very gentle floating motion
-        const baseX = letter.position.x;
-        const baseY = letter.position.y;
-        
-        // Much smaller floating range for mobile
-        const floatIntensity = isMobile ? 0.15 : 0.3;
-        letter.position.y += Math.sin(time * 0.3 + index) * floatIntensity;
-        letter.position.x += Math.cos(time * 0.2 + index) * (floatIntensity * 0.7);
-        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * (floatIntensity * 0.7);
-        
-        // Strict boundary checks
-        const maxX = screenWidth * (isMobile ? 0.15 : 0.2);
-        const maxY = screenHeight * (isMobile ? 0.15 : 0.2);
-        
-        if (Math.abs(letter.position.x) > maxX) {
-          letter.position.x = baseX * 0.5;
-        }
-        if (Math.abs(letter.position.y) > maxY) {
-          letter.position.y = baseY * 0.5;
+        // Store original position for reference
+        if (!letter.userData.originalX) {
+          letter.userData.originalX = letter.position.x;
+          letter.userData.originalY = letter.position.y;
+          letter.userData.originalZ = letter.position.z;
         }
         
-        // Keep Z very close
-        const maxZ = isMobile ? 20 : 30;
-        if (letter.position.z > maxZ) letter.position.z = maxZ;
-        if (letter.position.z < -maxZ) letter.position.z = -maxZ;
+        // Gentle floating motion around original position
+        const floatIntensity = isMobile ? 15 : 25;
+        const floatX = Math.cos(time * 0.2 + index) * floatIntensity;
+        const floatY = Math.sin(time * 0.3 + index) * floatIntensity;
+        const floatZ = Math.sin(time * 0.4 + index * 0.5) * 10;
         
-        // Mouse interaction - reduced for mobile
-        if (!isMobile || true) { // Keep mouse interaction on mobile but reduced
-          const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 20 : 30);
-          const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * (isMobile ? 20 : 30);
+        // Set position relative to original + floating
+        letter.position.x = letter.userData.originalX + floatX;
+        letter.position.y = letter.userData.originalY + floatY;
+        letter.position.z = letter.userData.originalZ + floatZ;
+        
+        // Strong mouse interaction - much more powerful
+        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 80 : 120);
+        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * (isMobile ? 80 : 120);
+        
+        const distanceToMouse = Math.sqrt(
+          Math.pow(letter.position.x - mouseInfluenceX, 2) + 
+          Math.pow(letter.position.y - mouseInfluenceY, 2)
+        );
+        
+        const interactionDistance = isMobile ? 120 : 180; // Increased interaction distance
+        if (distanceToMouse < interactionDistance) {
+          const pushForce = (interactionDistance - distanceToMouse) / interactionDistance;
+          const pushMultiplier = isMobile ? 80 : 120; // Much stronger push
           
-          const distanceToMouse = Math.sqrt(
-            Math.pow(letter.position.x - mouseInfluenceX, 2) + 
-            Math.pow(letter.position.y - mouseInfluenceY, 2)
-          );
+          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.25; // Increased force
+          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.25; // Increased force
           
-          const interactionDistance = isMobile ? 60 : 80;
-          if (distanceToMouse < interactionDistance) {
-            const pushForce = (interactionDistance - distanceToMouse) / interactionDistance;
-            const pushX = (letter.position.x - mouseInfluenceX) * pushForce * (isMobile ? 0.005 : 0.01);
-            const pushY = (letter.position.y - mouseInfluenceY) * pushForce * (isMobile ? 0.005 : 0.01);
-            
-            const newX = letter.position.x + pushX;
-            const newY = letter.position.y + pushY;
-            
-            if (Math.abs(newX) < maxX) letter.position.x = newX;
-            if (Math.abs(newY) < maxY) letter.position.y = newY;
-          }
+          letter.position.x += pushX;
+          letter.position.y += pushY;
+        }
+        
+        // Ensure letters never go too far from their original positions
+        const maxDistance = isMobile ? 100 : 150;
+        const currentDistance = Math.sqrt(
+          Math.pow(letter.position.x - letter.userData.originalX, 2) + 
+          Math.pow(letter.position.y - letter.userData.originalY, 2)
+        );
+        
+        if (currentDistance > maxDistance) {
+          const ratio = maxDistance / currentDistance;
+          letter.position.x = letter.userData.originalX + (letter.position.x - letter.userData.originalX) * ratio;
+          letter.position.y = letter.userData.originalY + (letter.position.y - letter.userData.originalY) * ratio;
         }
       });
 
-      // Camera movement - reduced for mobile
-      const cameraInfluence = isMobile ? 15 : 30;
+      // Camera movement - much more responsive to mouse
+      const cameraInfluence = isMobile ? 60 : 100; // Increased significantly
       const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * cameraInfluence;
       const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * cameraInfluence;
-      const scrollInfluence = scrollRef.current * (isMobile ? 0.03 : 0.05);
+      const scrollInfluence = scrollRef.current * (isMobile ? 0.02 : 0.03); // Much reduced scroll influence
       
-      const cameraSpeed = isMobile ? 0.005 : 0.01;
+      const cameraSpeed = isMobile ? 0.03 : 0.05; // Much faster response
       cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * cameraSpeed;
       cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * cameraSpeed;
       cameraRef.current.lookAt(0, 0, 0);
@@ -510,17 +513,25 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     }
   }, [cleanup]);
 
-  // Handle resize
+  // Handle resize with better mobile support
   const handleResize = useCallback(() => {
     if (!rendererRef.current || !cameraRef.current) return;
 
     const width = window.innerWidth;
     const height = window.innerHeight;
     
-    cameraRef.current.aspect = width / height;
+    // Ensure minimum height for mobile
+    const adjustedHeight = isMobile ? Math.max(height, 600) : height;
+    
+    cameraRef.current.aspect = width / adjustedHeight;
     cameraRef.current.updateProjectionMatrix();
-    rendererRef.current.setSize(width, height);
-  }, []);
+    rendererRef.current.setSize(width, adjustedHeight);
+    
+    // Also update camera position to prevent shrinking on mobile
+    if (isMobile) {
+      cameraRef.current.position.z = Math.max(150, 150 * (height / 600));
+    }
+  }, [isMobile]);
 
   // Main effect
   useEffect(() => {
@@ -558,7 +569,11 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       style={{ 
         zIndex: 5,
         width: '100vw',
-        height: '100vh'
+        height: '100vh',
+        minHeight: isMobile ? '100vh' : 'auto', // Ensure full height on mobile
+        position: 'fixed',
+        top: 0,
+        left: 0
       }}
     />
   );
