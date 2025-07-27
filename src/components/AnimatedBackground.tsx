@@ -288,8 +288,17 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             float repulsionForce = uIsMobile > 0.5 ? 120.0 : 180.0; // Even stronger
             modelPosition.xy += mouseDirection * mouseInfluence * repulsionForce;
             
-            // Scroll parallax - much reduced
-            modelPosition.y += uScrollY * (uIsMobile > 0.5 ? 0.1 : 0.15);
+            // Natural parallax scroll effect - different layers move at different speeds
+            float parallaxFactor = (position.z + 100.0) / 200.0; // Depth-based parallax (0.0 to 1.0)
+            float scrollInfluence = uScrollY * 0.3 * parallaxFactor; // Closer objects move faster
+            
+            // Gentle drift with scroll - not zoom
+            modelPosition.y -= scrollInfluence; // Smooth drift in scroll direction
+            
+            // Add subtle rotation based on scroll for 3D feel
+            float scrollRotation = uScrollY * 0.001;
+            modelPosition.x += sin(scrollRotation + position.y * 0.01) * 10.0;
+            modelPosition.z += cos(scrollRotation) * parallaxFactor * 15.0;
             
             vec4 viewPosition = viewMatrix * modelPosition;
             vec4 projectedPosition = projectionMatrix * viewPosition;
@@ -410,7 +419,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
       createConnectionLines();
       isInitializedRef.current = true;
-      console.log('Three.js with 3D Letters initialized successfully');
+      console.log('Three.js with Natural Parallax Scroll Effect initialized successfully');
 
     } catch (error) {
       console.error('Three.js initialization error:', error);
@@ -437,7 +446,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           mouseRef.current.x / window.innerWidth,
           1.0 - mouseRef.current.y / window.innerHeight
         );
-        material.uniforms.uScrollY.value = scrollRef.current * (isMobile ? 0.1 : 0.2); // Reduced scroll effect
+        material.uniforms.uScrollY.value = scrollRef.current; // Pass raw scroll value
       }
 
       // Animate letters - natural movement with soft boundaries
@@ -448,15 +457,17 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         letter.rotation.y += (0.005 + index * 0.0015) * rotationSpeed;
         letter.rotation.z += (0.002 + index * 0.0008) * rotationSpeed;
         
-        // Store original position for reference
+        // Store original position and depth factor for parallax
         if (!letter.userData.originalX) {
           letter.userData.originalX = letter.position.x;
           letter.userData.originalY = letter.position.y;
           letter.userData.originalZ = letter.position.z;
+          // Assign depth factor for parallax (0.3 to 1.0)
+          letter.userData.parallaxFactor = 0.3 + (index / lettersRef.current.length) * 0.7;
         }
         
         // Natural floating motion - much more dynamic
-        const floatIntensity = isMobile ? 40 : 60; // Much larger movement
+        const floatIntensity = isMobile ? 40 : 60;
         const timeX = time * 0.3 + index * 0.5;
         const timeY = time * 0.4 + index * 0.7;
         const timeZ = time * 0.2 + index * 0.3;
@@ -466,10 +477,19 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         const moveY = Math.cos(timeY) * floatIntensity + Math.sin(timeY * 1.3) * (floatIntensity * 0.4);
         const moveZ = Math.sin(timeZ) * 20 + Math.cos(timeZ * 2) * 10;
         
-        // Apply natural movement
-        letter.position.x = letter.userData.originalX + moveX;
-        letter.position.y = letter.userData.originalY + moveY;
-        letter.position.z = letter.userData.originalZ + moveZ;
+        // Natural parallax scroll effect for letters
+        const parallaxFactor = letter.userData.parallaxFactor;
+        const scrollDrift = scrollRef.current * 0.4 * parallaxFactor; // Different letters move at different speeds
+        
+        // Subtle perspective shift with scroll
+        const scrollPerspective = scrollRef.current * 0.001;
+        const perspectiveX = Math.sin(scrollPerspective + index) * 20 * parallaxFactor;
+        const perspectiveZ = Math.cos(scrollPerspective) * 30 * parallaxFactor;
+        
+        // Apply all movements
+        letter.position.x = letter.userData.originalX + moveX + perspectiveX;
+        letter.position.y = letter.userData.originalY + moveY - scrollDrift; // Drift down with scroll
+        letter.position.z = letter.userData.originalZ + moveZ + perspectiveZ;
         
         // Strong mouse interaction - much more powerful
         const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 80 : 120);
@@ -491,32 +511,35 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           letter.position.y += pushY;
         }
         
-        // Soft boundary system - gentle pull back when too far
-        const maxDistance = isMobile ? 200 : 300; // Generous movement area
+        // Soft boundary system - considers current scroll position
+        const baseMaxDistance = isMobile ? 200 : 300;
+        const scrollOffset = Math.abs(scrollRef.current * 0.1); // Account for scroll drift
+        const maxDistance = baseMaxDistance + scrollOffset;
+        
         const currentDistance = Math.sqrt(
           Math.pow(letter.position.x - letter.userData.originalX, 2) + 
-          Math.pow(letter.position.y - letter.userData.originalY, 2)
+          Math.pow((letter.position.y + scrollDrift) - letter.userData.originalY, 2) // Account for scroll drift in distance calc
         );
         
         if (currentDistance > maxDistance) {
           // Gentle pull back - not harsh snapping
-          const pullStrength = (currentDistance - maxDistance) / maxDistance * 0.1;
+          const pullStrength = (currentDistance - maxDistance) / maxDistance * 0.08;
           const pullX = (letter.userData.originalX - letter.position.x) * pullStrength;
-          const pullY = (letter.userData.originalY - letter.position.y) * pullStrength;
+          const pullY = ((letter.userData.originalY - scrollDrift) - letter.position.y) * pullStrength;
           
           letter.position.x += pullX;
           letter.position.y += pullY;
         }
         
-        // Screen boundary protection - only when absolutely necessary
-        const screenMaxX = screenWidth * 0.45;
-        const screenMaxY = screenHeight * 0.45;
+        // Dynamic screen boundary protection based on scroll
+        const scrollBasedMaxX = screenWidth * 0.45 + Math.abs(scrollRef.current * 0.05);
+        const scrollBasedMaxY = screenHeight * 0.45 + Math.abs(scrollRef.current * 0.05);
         
-        if (Math.abs(letter.position.x) > screenMaxX) {
-          letter.position.x = letter.position.x > 0 ? screenMaxX : -screenMaxX;
+        if (Math.abs(letter.position.x) > scrollBasedMaxX) {
+          letter.position.x = letter.position.x > 0 ? scrollBasedMaxX : -scrollBasedMaxX;
         }
-        if (Math.abs(letter.position.y) > screenMaxY) {
-          letter.position.y = letter.position.y > 0 ? screenMaxY : -screenMaxY;
+        if (Math.abs(letter.position.y) > scrollBasedMaxY) {
+          letter.position.y = letter.position.y > 0 ? scrollBasedMaxY : -scrollBasedMaxY;
         }
         
         // Z boundary - keep reasonable depth
@@ -524,15 +547,24 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         if (letter.position.z < -80) letter.position.z = -80;
       });
 
-      // Camera movement - much more responsive to mouse
-      const cameraInfluence = isMobile ? 60 : 100; // Increased significantly
+      // Camera movement - natural scroll response without zoom
+      const cameraInfluence = isMobile ? 60 : 100;
       const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * cameraInfluence;
       const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * cameraInfluence;
-      const scrollInfluence = scrollRef.current * (isMobile ? 0.02 : 0.03); // Much reduced scroll influence
       
-      const cameraSpeed = isMobile ? 0.03 : 0.05; // Much faster response
+      // Subtle camera perspective shift with scroll - not position change
+      const scrollRotationX = scrollRef.current * 0.0001; // Very subtle rotation
+      const scrollRotationY = scrollRef.current * 0.00005;
+      
+      // Apply mouse movement
+      const cameraSpeed = isMobile ? 0.03 : 0.05;
       cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * cameraSpeed;
-      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * cameraSpeed;
+      cameraRef.current.position.y += (mouseInfluenceY - cameraRef.current.position.y) * cameraSpeed;
+      
+      // Apply subtle scroll-based rotation instead of position change
+      cameraRef.current.rotation.x = scrollRotationX;
+      cameraRef.current.rotation.y = scrollRotationY;
+      
       cameraRef.current.lookAt(0, 0, 0);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
