@@ -16,73 +16,63 @@ const Skills: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  // Sabit skill seviyeleri (her skill için 1-5 arası seviye)
+  // Sabit skill seviyeleri (her skill için 1-5 arası seviye) - Daha gerçekçi puanlar
   const skillLevels: { [key: string]: number } = {
-    // Languages & Frameworks
-    "Python": 5,
-    "Java": 4,
-    "C++": 4,
-    "JavaScript": 5,
-    "TypeScript": 5,
-    "Go": 4,
-    "C#": 4,
+    // Programming Languages
+    "Python (Advanced)": 4,
+    "Java (Intermediate)": 3,
+    "C++ (Intermediate)": 3,
+    "JavaScript (Advanced)": 4,
+    "TypeScript (Intermediate)": 3,
+    "Go (Beginner)": 2,
     
-    // Frontend
-    "React": 5,
-    "Flutter": 4,
-    "HTML5": 5,
-    "CSS3": 5,
-    "Tailwind CSS": 5,
-    "Three.js": 3,
+    // Frontend Development
+    "React (Intermediate)": 3,
+    "HTML5 (Advanced)": 4,
+    "CSS3 (Intermediate)": 3,
+    "Tailwind CSS (Intermediate)": 3,
+    "Three.js (Beginner)": 2,
     
-    // Backend
-    "Node.js": 5,
-    "Express": 5,
-    "ASP.NET Core": 4,
-    ".NET Aspire": 3,
-    "Gin": 4,
-    "Gorilla Mux": 4,
-    "GORM": 4,
-    "gRPC": 3,
+    // Backend Development
+    "Node.js (Intermediate)": 3,
+    "Express (Intermediate)": 3,
+    "ASP.NET Core (Beginner)": 2,
+    "Go (Gin) (Beginner)": 2,
     
     // AI/ML
-    "PyTorch": 4,
-    "Transformers": 4,
-    "LLMs": 4,
-    "NLP": 4,
-    "TensorFlow": 3,
+    "PyTorch (Intermediate)": 3,
+    "Transformers (Beginner)": 2,
+    "LLMs (Beginner)": 2,
+    "Microsoft Phi-4 (Beginner)": 2,
     
     // Databases
-    "MySQL": 4,
-    "PostgreSQL": 4,
-    "MongoDB": 4,
-    "Firebase": 4,
-    "Redis": 4,
+    "PostgreSQL (Intermediate)": 3,
+    "MongoDB (Beginner)": 2,
+    "Firebase (Beginner)": 2,
     
-    // Tools & Technologies
-    "Git": 5,
-    "Docker": 4,
-    "CI/CD": 4,
-    "Arduino": 4,
-    "CANbus": 3,
-    "OBD2": 3
+    // Tools & Other
+    "Git (Intermediate)": 3,
+    "Docker (Beginner)": 2,
+    "Arduino (Intermediate)": 3,
+    "CANbus (Beginner)": 2,
+    "OBD2 (Beginner)": 2
   };
   
   const skillCategories = [
     {
       title: t('skills.categories.languagesFrameworks'),
       icon: <Code className="text-green-400" size={24} />,
-      skills: skills["Languages & Frameworks"]
+      skills: skills["Programming Languages"]
     },
     {
       title: t('skills.categories.frontend'),
       icon: <Globe className="text-green-400" size={24} />,
-      skills: skills["Frontend"]
+      skills: skills["Frontend Development"]
     },
     {
       title: t('skills.categories.backend'),
       icon: <Database className="text-green-400" size={24} />,
-      skills: skills["Backend"]
+      skills: skills["Backend Development"]
     },
     {
       title: t('skills.categories.aiMl'),
@@ -97,7 +87,7 @@ const Skills: React.FC = () => {
     {
       title: t('skills.categories.tools'),
       icon: <Wrench className="text-green-400" size={24} />,
-      skills: skills["Tools & Technologies"]
+      skills: skills["Tools & Other"]
     }
   ];
 
@@ -136,7 +126,7 @@ const Skills: React.FC = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  {category.skills.map((skill, skillIndex) => (
+                  {category.skills?.map((skill, skillIndex) => (
                     <div key={skillIndex} className="skill-item">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-slate-300 font-medium">{skill}</span>
@@ -145,7 +135,7 @@ const Skills: React.FC = () => {
                             <div
                               key={starIndex}
                               className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                                starIndex < (skillLevels[skill] || 4)
+                                starIndex < (skillLevels[skill] || 3)
                                   ? 'bg-green-400'
                                   : 'bg-slate-600'
                               }`}
@@ -159,13 +149,13 @@ const Skills: React.FC = () => {
                         <div 
                           className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000 ease-out"
                           style={{ 
-                            width: `${((skillLevels[skill] || 4) / 5) * 100}%`,
+                            width: `${((skillLevels[skill] || 3) / 5) * 100}%`,
                             transitionDelay: `${(index * 150) + (skillIndex * 100)}ms`
                           }}
                         />
                       </div>
                     </div>
-                  ))}
+                  )) || []}
                 </div>
 
                 {/* Hover overlay effect */}
