@@ -24,24 +24,24 @@ const Skills: React.FC = () => {
     "C++ (Intermediate)": 3,
     "JavaScript (Advanced)": 4,
     "TypeScript (Intermediate)": 3,
-    "Go (Beginner)": 2,
+    "Go (Intermediate)": 3,
     
     // Frontend Development
     "React (Intermediate)": 3,
     "HTML5 (Advanced)": 4,
     "CSS3 (Intermediate)": 3,
     "Tailwind CSS (Intermediate)": 3,
-    "Three.js (Beginner)": 2,
+    "Three.js (Intermediate)": 3,
     
     // Backend Development
     "Node.js (Intermediate)": 3,
     "Express (Intermediate)": 3,
-    "ASP.NET Core (Beginner)": 2,
+    "ASP.NET Core (Advanced)": 4,
     "Go (Gin) (Beginner)": 2,
     
     // AI/ML
     "PyTorch (Intermediate)": 3,
-    "Transformers (Beginner)": 2,
+    "Transformers (Intermediate)": 3,
     "LLMs (Beginner)": 2,
     "Microsoft Phi-4 (Beginner)": 2,
     
@@ -51,7 +51,7 @@ const Skills: React.FC = () => {
     "Firebase (Beginner)": 2,
     
     // Tools & Other
-    "Git (Intermediate)": 3,
+    "Git (Advanced)": 4,
     "Docker (Beginner)": 2,
     "Arduino (Intermediate)": 3,
     "CANbus (Beginner)": 2,
