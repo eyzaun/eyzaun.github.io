@@ -3,6 +3,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import SEO from './components/SEO';
 import LoadingSpinner from './components/LoadingSpinner';
 import { SkeletonCard } from './components/SkeletonLoader';
+import CustomCursor from './components/CustomCursor';
 
 // Lazy load components for better performance
 const Header = lazy(() => import('./components/Header'));
@@ -43,6 +44,9 @@ function App() {
       <div className="min-h-screen bg-slate-900">
         {/* SEO Component */}
         <SEO />
+        
+        {/* Custom Cursor - Highest layer */}
+        <CustomCursor />
         
         {/* Header - Always visible, minimal loading */}
         <Suspense fallback={
