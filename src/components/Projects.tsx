@@ -18,6 +18,20 @@ const Projects: React.FC = () => {
   
   const translatedProjects = [
     {
+      name: t('projects.myYDS.name'),
+      description: t('projects.myYDS.description'),
+      technologies: ["React", "Firebase", "JavaScript", "CSS3", "PWA", "Excel.js"],
+      features: [
+        t('projects.myYDS.feature1'),
+        t('projects.myYDS.feature2'),
+        t('projects.myYDS.feature3'),
+        t('projects.myYDS.feature4')
+      ],
+      github: undefined,
+      link: "https://my-yds.web.app/",
+      featured: true
+    },
+    {
       name: t('projects.journeyOfCrops.name'),
       description: t('projects.journeyOfCrops.description'),
       technologies: ["Three.js", "WebGL2", "JavaScript", "Dynamic Programming"],
@@ -86,7 +100,7 @@ const Projects: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {isLoading ? (
             // Loading skeletons
-            Array.from({ length: 4 }, (_, i) => (
+            Array.from({ length: 5 }, (_, i) => (
               <SkeletonCard 
                 key={i} 
                 className="animate-pulse"

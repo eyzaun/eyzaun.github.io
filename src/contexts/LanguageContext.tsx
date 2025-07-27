@@ -100,6 +100,13 @@ const translations = {
     'projects.linkedHU.feature3': 'Üniversite ağ özellikleri için RESTful API\'ler',
     'projects.linkedHU.feature4': 'CI/CD entegrasyonu ile kod kalitesi optimizasyonu',
     
+    'projects.myYDS.name': 'MyYDS - YDS Kelime Platformu',
+    'projects.myYDS.description': 'Yabancı Dil Sınavı (YDS) için kapsamlı kelime öğrenme platformu - 9 kategoride organize edilmiş, kişisel kelime kartları ve ilerleme takibi',
+    'projects.myYDS.feature1': '9 kategoride düzenlenmiş 4000+ YDS kelimesi ve sistematik öğrenme yöntemi',
+    'projects.myYDS.feature2': 'Excel upload ile kişisel kelime kartları ve Google Translate entegrasyonu',
+    'projects.myYDS.feature3': 'Test sistemi, değerlendirme ve kişisel ilerleme takibi özellikleri',
+    'projects.myYDS.feature4': 'Firebase backend, responsive tasarım ve PWA benzeri kullanıcı deneyimi',
+    
     'projects.avukatLLM.name': 'AvukatLLM',
     'projects.avukatLLM.description': 'AI destekli hukuki asistan - Türk vergi hukuku danışmanlığı',
     'projects.avukatLLM.feature1': 'Microsoft Phi-4 modeli ile %85 yanıt doğruluğu',
@@ -257,6 +264,13 @@ const translations = {
     'projects.linkedHU.feature2': 'Implemented user authentication and profile management systems',
     'projects.linkedHU.feature3': 'Created RESTful APIs for university networking features',
     'projects.linkedHU.feature4': 'Ensured code quality and performance optimization with CI/CD integration',
+    
+    'projects.myYDS.name': 'MyYDS - YDS Vocabulary Platform',
+    'projects.myYDS.description': 'Comprehensive vocabulary learning platform for YDS (Foreign Language Exam) - organized in 9 categories with personal flashcards and progress tracking',
+    'projects.myYDS.feature1': '4000+ YDS vocabulary organized in 9 categories with systematic learning methodology',
+    'projects.myYDS.feature2': 'Personal flashcard creation via Excel upload and Google Translate integration',
+    'projects.myYDS.feature3': 'Testing system, assessment tools and personalized progress tracking features',
+    'projects.myYDS.feature4': 'Firebase backend, responsive design and PWA-like user experience',
     
     'projects.avukatLLM.name': 'AvukatLLM',
     'projects.avukatLLM.description': 'AI-powered legal assistant specializing in Turkish tax law consultations',

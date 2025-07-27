@@ -144,23 +144,28 @@ export const certifications: Certification[] = [
 ];
 
 export const skills = {
-  "Languages & Frameworks": [
-    "Python", "Java", "C++", "JavaScript", "TypeScript", "Go", "C#"
+  "Programming Languages": [
+    "Python (Advanced)", "Java (Intermediate)", "C++ (Intermediate)", 
+    "JavaScript (Advanced)", "TypeScript (Intermediate)", "Go (Beginner)"
   ],
-  "Frontend": [
-    "React", "Flutter", "HTML5", "CSS3", "Tailwind CSS", "Three.js"
+  "Frontend Development": [
+    "React (Intermediate)", "HTML5 (Advanced)", "CSS3 (Intermediate)", 
+    "Tailwind CSS (Intermediate)", "Three.js (Beginner)"
   ],
-  "Backend": [
-    "Node.js", "Express", "ASP.NET Core", ".NET Aspire", "Gin", "Gorilla Mux", "GORM", "gRPC"
+  "Backend Development": [
+    "Node.js (Intermediate)", "Express (Intermediate)", 
+    "ASP.NET Core (Beginner)", "Go (Gin) (Beginner)"
   ],
   "AI/ML": [
-    "PyTorch", "Transformers", "LLMs", "NLP", "TensorFlow"
+    "PyTorch (Intermediate)", "Transformers (Beginner)", 
+    "LLMs (Beginner)", "Microsoft Phi-4 (Beginner)"
   ],
   "Databases": [
-    "MySQL", "PostgreSQL", "MongoDB", "Firebase", "Redis"
+    "PostgreSQL (Intermediate)", "MongoDB (Beginner)", "Firebase (Beginner)"
   ],
-  "Tools & Technologies": [
-    "Git", "Docker", "CI/CD", "Arduino", "CANbus", "OBD2"
+  "Tools & Other": [
+    "Git (Intermediate)", "Docker (Beginner)", 
+    "Arduino (Intermediate)", "CANbus (Beginner)", "OBD2 (Beginner)"
   ]
 };
 
