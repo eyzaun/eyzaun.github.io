@@ -100,6 +100,13 @@ const translations = {
     'projects.linkedHU.feature3': 'Üniversite ağ özellikleri için RESTful API\'ler',
     'projects.linkedHU.feature4': 'CI/CD entegrasyonu ile kod kalitesi optimizasyonu',
     
+    'projects.dokuzhaftadatyt.name': 'Dokuz Haftada TYT',
+    'projects.dokuzhaftadatyt.description': 'TYT (Temel Yeterlilik Testi) sınavına hazırlık için 9 haftalık yoğun eğitim programı - sistematik ders planı ve ilerleme takibi',
+    'projects.dokuzhaftadatyt.feature1': '9 haftalık yapılandırılmış TYT hazırlık programı ve günlük ders planları',
+    'projects.dokuzhaftadatyt.feature2': 'Matematik, Türkçe, Fen ve Sosyal Bilimler için kapsamlı konu anlatımları',
+    'projects.dokuzhaftadatyt.feature3': 'Kullanıcı hesap sistemi, kişisel ilerleme takibi ve performans analizi',
+    'projects.dokuzhaftadatyt.feature4': 'Firebase authentication, responsive tasarım ve mobil uyumlu arayüz',
+    
     'projects.myYDS.name': 'MyYDS - YDS Kelime Platformu',
     'projects.myYDS.description': 'Yabancı Dil Sınavı (YDS) için kapsamlı kelime öğrenme platformu - 9 kategoride organize edilmiş, kişisel kelime kartları ve ilerleme takibi',
     'projects.myYDS.feature1': '9 kategoride düzenlenmiş 4000+ YDS kelimesi ve sistematik öğrenme yöntemi',
@@ -264,6 +271,13 @@ const translations = {
     'projects.linkedHU.feature2': 'Implemented user authentication and profile management systems',
     'projects.linkedHU.feature3': 'Created RESTful APIs for university networking features',
     'projects.linkedHU.feature4': 'Ensured code quality and performance optimization with CI/CD integration',
+    
+    'projects.dokuzhaftadatyt.name': 'Dokuz Haftada TYT (9 Weeks to TYT)',
+    'projects.dokuzhaftadatyt.description': '9-week intensive preparation program for TYT (Basic Proficiency Test) - structured lesson plans and progress tracking for university entrance exam',
+    'projects.dokuzhaftadatyt.feature1': '9-week structured TYT preparation program with daily lesson plans and study schedules',
+    'projects.dokuzhaftadatyt.feature2': 'Comprehensive content coverage for Math, Turkish, Science and Social Studies subjects',
+    'projects.dokuzhaftadatyt.feature3': 'User account system, personal progress tracking and performance analytics',
+    'projects.dokuzhaftadatyt.feature4': 'Firebase authentication, responsive design and mobile-optimized interface',
     
     'projects.myYDS.name': 'MyYDS - YDS Vocabulary Platform',
     'projects.myYDS.description': 'Comprehensive vocabulary learning platform for YDS (Foreign Language Exam) - organized in 9 categories with personal flashcards and progress tracking',

@@ -32,6 +32,20 @@ const Projects: React.FC = () => {
       featured: true
     },
     {
+      name: t('projects.dokuzhaftadatyt.name'),
+      description: t('projects.dokuzhaftadatyt.description'),
+      technologies: ["React", "Firebase", "Authentication", "JavaScript", "CSS3", "PWA"],
+      features: [
+        t('projects.dokuzhaftadatyt.feature1'),
+        t('projects.dokuzhaftadatyt.feature2'),
+        t('projects.dokuzhaftadatyt.feature3'),
+        t('projects.dokuzhaftadatyt.feature4')
+      ],
+      github: undefined,
+      link: "https://dokuzhaftadatyt.web.app/",
+      featured: true
+    },
+    {
       name: t('projects.journeyOfCrops.name'),
       description: t('projects.journeyOfCrops.description'),
       technologies: ["Three.js", "WebGL2", "JavaScript", "Dynamic Programming"],
@@ -70,7 +84,7 @@ const Projects: React.FC = () => {
         t('projects.avukatLLM.feature4')
       ],
       github: undefined,
-      link: undefined,
+      link: "https://avukatllm.web.app/",
       featured: true
     },
     {
@@ -100,7 +114,7 @@ const Projects: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {isLoading ? (
             // Loading skeletons
-            Array.from({ length: 5 }, (_, i) => (
+            Array.from({ length: 6 }, (_, i) => (
               <SkeletonCard 
                 key={i} 
                 className="animate-pulse"
