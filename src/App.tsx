@@ -16,10 +16,10 @@ const Skills = lazy(() => import('./components/Skills'));
 const Contact = lazy(() => import('./components/Contact'));
 const Footer = lazy(() => import('./components/Footer'));
 
-// Global AnimatedBackground - now covers entire site
+// Global AnimatedBackground - covers entire site
 const AnimatedBackground = lazy(() => import('./components/AnimatedBackground'));
 
-// Loading fallback component
+// Loading fallback components
 const SectionSkeleton: React.FC = () => (
   <div className="py-16 px-6 md:px-12 lg:px-24 xl:px-32">
     <div className="max-w-6xl mx-auto">
@@ -54,7 +54,7 @@ const AppContent: React.FC = () => {
       {/* Custom Cursor - Highest layer */}
       <CustomCursor />
       
-      {/* Global Three.js Background - Covers entire site */}
+      {/* Global Three.js Background with Letters - Covers entire site */}
       {isActive && (
         <Suspense fallback={null}>
           <AnimatedBackground
@@ -65,7 +65,7 @@ const AppContent: React.FC = () => {
         </Suspense>
       )}
       
-      {/* Header - Always visible, minimal loading */}
+      {/* Header - Always visible */}
       <Suspense fallback={
         <div className="h-16 md:h-20 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 fixed top-0 left-0 right-0 z-50"></div>
       }>
@@ -73,12 +73,12 @@ const AppContent: React.FC = () => {
       </Suspense>
       
       <main className="relative z-10">
-        {/* Hero section - High priority, load immediately */}
+        {/* Hero section */}
         <Suspense fallback={<LoadingFallback />}>
           <Hero />
         </Suspense>
         
-        {/* Other sections - Daha transparan background */}
+        {/* Other sections with transparent background to show letters */}
         <div className="bg-slate-900/30 backdrop-blur-sm relative z-10">
           <Suspense fallback={<SectionSkeleton />}>
             <About />
@@ -102,9 +102,9 @@ const AppContent: React.FC = () => {
         </div>
       </main>
       
-      {/* Footer - Lowest priority */}
+      {/* Footer */}
       <Suspense fallback={
-        <div className="h-32 bg-gray-900 animate-pulse"></div>
+        <div className="h-32 bg-slate-900/50 animate-pulse relative z-10"></div>
       }>
         <Footer />
       </Suspense>

@@ -17,13 +17,13 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const particlesRef = useRef<THREE.Points | null>(null);
-  const geometriesRef = useRef<THREE.Mesh[]>([]);
+  const lettersRef = useRef<THREE.Mesh[]>([]);
   const linesRef = useRef<THREE.LineSegments | null>(null);
   const frameIdRef = useRef<number | undefined>();
-  const isInitializedRef = useRef(false);
+  const isInitializedRef = useRef<boolean>(false);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const scrollRef = useRef(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const scrollRef = useRef<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Mobile detection
   useEffect(() => {
@@ -54,6 +54,37 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Helper function to create text texture
+  const createTextTexture = useCallback((text: string) => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d')!;
+    canvas.width = 128;
+    canvas.height = 128;
+
+    // Clear background
+    context.fillStyle = 'rgba(0, 0, 0, 0)';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Text styling
+    context.fillStyle = '#64ffda';
+    context.font = 'bold 80px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    
+    // Add glow effect
+    context.shadowColor = '#64ffda';
+    context.shadowBlur = 15;
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+    // Second pass for more glow
+    context.shadowBlur = 5;
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
   // Cleanup function
   const cleanup = useCallback(() => {
     console.log('Cleaning up Three.js resources...');
@@ -63,34 +94,34 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       frameIdRef.current = undefined;
     }
 
-    // Dispose all geometries and materials
+    // Dispose particles
     if (particlesRef.current) {
       if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
       if (particlesRef.current.material) {
-        if (Array.isArray(particlesRef.current.material)) {
-          particlesRef.current.material.forEach(mat => mat.dispose());
-        } else {
-          (particlesRef.current.material as THREE.Material).dispose();
-        }
+        const material = particlesRef.current.material as THREE.Material;
+        material.dispose();
       }
     }
 
-    if (linesRef.current) {
-      if (linesRef.current.geometry) linesRef.current.geometry.dispose();
-      if (linesRef.current.material) (linesRef.current.material as THREE.Material).dispose();
-    }
-
-    geometriesRef.current.forEach(mesh => {
-      if (mesh.geometry) mesh.geometry.dispose();
-      if (mesh.material) {
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach(mat => mat.dispose());
-        } else {
-          (mesh.material as THREE.Material).dispose();
-        }
+    // Dispose letters
+    lettersRef.current.forEach(letter => {
+      if (letter.geometry) letter.geometry.dispose();
+      if (letter.material) {
+        const material = letter.material as THREE.MeshBasicMaterial;
+        if (material.map) material.map.dispose();
+        material.dispose();
       }
     });
 
+    // Dispose lines
+    if (linesRef.current) {
+      if (linesRef.current.geometry) linesRef.current.geometry.dispose();
+      if (linesRef.current.material) {
+        (linesRef.current.material as THREE.Material).dispose();
+      }
+    }
+
+    // Dispose renderer
     if (rendererRef.current) {
       rendererRef.current.dispose();
       rendererRef.current.forceContextLoss();
@@ -99,12 +130,13 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       }
     }
 
+    // Clear references
     sceneRef.current = null;
     rendererRef.current = null;
     cameraRef.current = null;
     particlesRef.current = null;
     linesRef.current = null;
-    geometriesRef.current = [];
+    lettersRef.current = [];
     isInitializedRef.current = false;
   }, []);
 
@@ -114,49 +146,51 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       return;
     }
 
-    console.log('Initializing Enhanced Three.js Background...');
+    console.log('Initializing Three.js with E-Y-Z-A-U-N Letters...');
     
     try {
       const container = mountRef.current;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
 
-      // Scene
+      if (screenWidth === 0 || screenHeight === 0) {
+        console.warn('Screen has no dimensions');
+        return;
+      }
+
+      // === SCENE SETUP ===
       const scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      // Camera
-      const camera = new THREE.PerspectiveCamera(75, width / height, 1, 2000);
+      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 2000);
       camera.position.z = 300;
       cameraRef.current = camera;
 
-      // Renderer
       const renderer = new THREE.WebGLRenderer({ 
         alpha: true, 
         antialias: true,
         powerPreference: "high-performance"
       });
       
-      renderer.setSize(width, height);
+      renderer.setSize(screenWidth, screenHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
       container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
       // === PARTICLES SYSTEM ===
-      const particleCount = 200; // Daha fazla particle
+      const particleCount = 200;
       const positions = new Float32Array(particleCount * 3);
       const colors = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
-      const velocities = new Float32Array(particleCount * 3);
 
       for (let i = 0; i < particleCount; i++) {
-        // Position
-        positions[i * 3] = (Math.random() - 0.5) * width * 2;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * height * 2;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
+        // Position within visible area
+        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.9;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.9;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
 
-        // Colors - Site theme colors
+        // Colors - Site theme
         const colorType = Math.random();
         if (colorType < 0.4) {
           // Green theme #64ffda
@@ -175,13 +209,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           colors[i * 3 + 2] = 1.0;  // B
         }
 
-        // Size - Daha büyük particle'lar
-        sizes[i] = Math.random() * 8 + 3; // 3-11 arasında
-
-        // Velocity
-        velocities[i * 3] = (Math.random() - 0.5) * 0.5;
-        velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
-        velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+        // Size
+        sizes[i] = Math.random() * 8 + 3;
       }
 
       const particleGeometry = new THREE.BufferGeometry();
@@ -224,7 +253,16 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * 15.0;
             modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
             
-            // Mouse repulsion/attraction
+            // Boundary wrapping
+            float maxX = 800.0;
+            float maxY = 600.0;
+            
+            if (modelPosition.x > maxX) modelPosition.x = -maxX;
+            if (modelPosition.x < -maxX) modelPosition.x = maxX;
+            if (modelPosition.y > maxY) modelPosition.y = -maxY;
+            if (modelPosition.y < -maxY) modelPosition.y = maxY;
+            
+            // Mouse repulsion
             vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 500.0);
             modelPosition.xy += mouseDirection * mouseInfluence * 80.0;
             
@@ -236,11 +274,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             
             gl_Position = projectedPosition;
             
-            // Size based on distance and mouse interaction
-            float baseSize = size * (400.0 / -viewPosition.z); // Daha büyük base size
-            gl_PointSize = baseSize * (1.5 + mouseInfluence * 3.0) * uPixelRatio; // Daha büyük multiplier
-            
-            // Alpha based on distance and mouse - Daha parlak
+            // Size and alpha
+            float baseSize = size * (400.0 / -viewPosition.z);
+            gl_PointSize = baseSize * (1.5 + mouseInfluence * 3.0) * uPixelRatio;
             vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 0.6);
           }
         `,
@@ -251,12 +287,10 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           void main() {
             float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
             float strength = 1.0 - smoothstep(0.0, 0.5, distanceToCenter);
-            
-            // Soft glow effect
             float glow = 1.0 - smoothstep(0.0, 0.8, distanceToCenter);
             
             vec3 finalColor = vColor;
-            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.4; // Daha parlak
+            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.4;
             
             gl_FragColor = vec4(finalColor, finalAlpha);
           }
@@ -267,101 +301,98 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       scene.add(particles);
       particlesRef.current = particles;
 
-      // === FLOATING GEOMETRIES ===
-      const geometryCount = 20; // Daha fazla geometri
-      const geometries: THREE.Mesh[] = [];
+      // === 3D LETTERS (E-Y-Z-A-U-N) ===
+      const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
+      const letterMeshes: THREE.Mesh[] = [];
 
-      for (let i = 0; i < geometryCount; i++) {
-        let geometry: THREE.BufferGeometry;
-        const shapeType = Math.random();
-        
-        if (shapeType < 0.33) {
-          // Triangle - Daha büyük
-          geometry = new THREE.ConeGeometry(8 + Math.random() * 15, 15 + Math.random() * 25, 3);
-        } else if (shapeType < 0.66) {
-          // Cube - Daha büyük
-          geometry = new THREE.BoxGeometry(12 + Math.random() * 18, 12 + Math.random() * 18, 12 + Math.random() * 18);
-        } else {
-          // Sphere - Daha büyük
-          geometry = new THREE.SphereGeometry(6 + Math.random() * 12, 8, 6);
-        }
-
+      letters.forEach((letter, index) => {
+        const geometry = new THREE.PlaneGeometry(30, 30);
+        const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
-          color: new THREE.Color().setHSL(0.5 + Math.random() * 0.15, 0.8, 0.7),
+          map: texture,
           transparent: true,
-          opacity: 0.15 + Math.random() * 0.25, // Daha parlak
-          wireframe: true
+          opacity: 0.8,
+          side: THREE.DoubleSide
         });
 
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(
-          (Math.random() - 0.5) * width * 1.5,
-          (Math.random() - 0.5) * height * 1.5,
-          (Math.random() - 0.5) * 300
+        const letterMesh = new THREE.Mesh(geometry, material);
+        
+        // Position letters in a circle
+        const angle = (index / letters.length) * Math.PI * 2;
+        const radiusX = Math.min(screenWidth * 0.35, 400);
+        const radiusY = Math.min(screenHeight * 0.35, 300);
+        
+        letterMesh.position.set(
+          Math.cos(angle) * radiusX,
+          Math.sin(angle) * radiusY,
+          (Math.random() - 0.5) * 150
         );
-        mesh.rotation.set(
-          Math.random() * Math.PI,
-          Math.random() * Math.PI,
-          Math.random() * Math.PI
+        
+        letterMesh.rotation.set(
+          Math.random() * 0.5,
+          Math.random() * 0.5,
+          Math.random() * 0.5
         );
 
-        scene.add(mesh);
-        geometries.push(mesh);
-      }
-      geometriesRef.current = geometries;
+        scene.add(letterMesh);
+        letterMeshes.push(letterMesh);
+      });
+
+      lettersRef.current = letterMeshes;
 
       // === CONNECTION LINES ===
       const createConnectionLines = () => {
         const linePositions: number[] = [];
         const lineColors: number[] = [];
         
-        for (let i = 0; i < particleCount; i++) {
-          for (let j = i + 1; j < particleCount; j++) {
+        for (let i = 0; i < particleCount && linePositions.length < 600; i++) {
+          for (let j = i + 1; j < particleCount && linePositions.length < 600; j++) {
             const distance = new THREE.Vector3(
               positions[i * 3] - positions[j * 3],
               positions[i * 3 + 1] - positions[j * 3 + 1],
               positions[i * 3 + 2] - positions[j * 3 + 2]
             ).length();
 
-            if (distance < 150) {
+            if (distance < 120) {
               linePositions.push(
                 positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
                 positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
               );
               
-              // Line color - green theme
-              const alpha = 1.0 - (distance / 150);
+              const alpha = 1.0 - (distance / 120);
               lineColors.push(0.39, 1.0, 0.85, alpha);
               lineColors.push(0.39, 1.0, 0.85, alpha);
             }
           }
         }
 
-        const lineGeometry = new THREE.BufferGeometry();
-        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-        lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 4));
+        if (linePositions.length > 0) {
+          const lineGeometry = new THREE.BufferGeometry();
+          lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+          lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 4));
 
-        const lineMaterial = new THREE.LineBasicMaterial({
-          vertexColors: true,
-          transparent: true,
-          opacity: 0.5, // Daha parlak çizgiler
-          blending: THREE.AdditiveBlending
-        });
+          const lineMaterial = new THREE.LineBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.5,
+            blending: THREE.AdditiveBlending
+          });
 
-        const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-        scene.add(lines);
-        linesRef.current = lines;
+          const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+          scene.add(lines);
+          linesRef.current = lines;
+        }
       };
 
       createConnectionLines();
       isInitializedRef.current = true;
-      console.log('Enhanced Three.js initialized successfully');
+      console.log('Three.js with 3D Letters initialized successfully');
 
     } catch (error) {
       console.error('Three.js initialization error:', error);
       cleanup();
     }
-  }, [isActive, isMobile, cleanup]);
+  }, [isActive, isMobile, cleanup, createTextTexture]);
 
   // Animation loop
   const animate = useCallback(() => {
@@ -371,6 +402,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
     try {
       const time = Date.now() * 0.001;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
       
       // Update particle shader uniforms
       if (particlesRef.current && particlesRef.current.material) {
@@ -383,18 +416,55 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         material.uniforms.uScrollY.value = scrollRef.current * 0.5;
       }
 
-      // Animate floating geometries
-      geometriesRef.current.forEach((mesh, index) => {
-        mesh.rotation.x += 0.005 + index * 0.001;
-        mesh.rotation.y += 0.008 + index * 0.0015;
-        mesh.rotation.z += 0.003 + index * 0.0008;
+      // Animate letters
+      lettersRef.current.forEach((letter, index) => {
+        // Rotation
+        letter.rotation.x += 0.003 + index * 0.001;
+        letter.rotation.y += 0.005 + index * 0.0015;
+        letter.rotation.z += 0.002 + index * 0.0008;
         
-        // Floating motion
-        mesh.position.y += Math.sin(time * 0.5 + index) * 0.5;
-        mesh.position.x += Math.cos(time * 0.3 + index) * 0.3;
+        // Floating motion with boundaries
+        const originalX = letter.position.x;
+        const originalY = letter.position.y;
+        
+        letter.position.y += Math.sin(time * 0.3 + index) * 0.8;
+        letter.position.x += Math.cos(time * 0.2 + index) * 0.6;
+        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * 0.4;
+        
+        // Boundary checks
+        const maxX = screenWidth * 0.4;
+        const maxY = screenHeight * 0.4;
+        
+        if (Math.abs(letter.position.x) > maxX) {
+          letter.position.x = originalX * 0.8;
+        }
+        if (Math.abs(letter.position.y) > maxY) {
+          letter.position.y = originalY * 0.8;
+        }
+        
+        if (letter.position.z > 100) letter.position.z = 100;
+        if (letter.position.z < -100) letter.position.z = -100;
+        
+        // Mouse interaction
+        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 50;
+        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 50;
+        
+        const distanceToMouse = Math.sqrt(
+          Math.pow(letter.position.x - mouseInfluenceX, 2) + 
+          Math.pow(letter.position.y - mouseInfluenceY, 2)
+        );
+        
+        if (distanceToMouse < 100) {
+          const pushForce = (100 - distanceToMouse) / 100;
+          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.02;
+          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.02;
+          
+          letter.position.x += pushX;
+          letter.position.y += pushY;
+        }
       });
 
-      // Camera movement based on mouse and scroll
+      // Camera movement
       const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 100;
       const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 100;
       const scrollInfluence = scrollRef.current * 0.1;
@@ -458,7 +528,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       ref={mountRef}
       className="fixed inset-0 pointer-events-none"
       style={{ 
-        zIndex: 5, // Biraz artırdım ama content'in altında
+        zIndex: 5,
         width: '100vw',
         height: '100vh'
       }}

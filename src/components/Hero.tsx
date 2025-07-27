@@ -20,10 +20,10 @@ const Hero: React.FC = () => {
   return (
     <section className="min-h-screen flex flex-col justify-center items-start px-4 sm:px-6 md:px-12 lg:px-24 xl:px-32 relative">
       
-      {/* Subtle overlay to enhance text readability - Daha az opak */}
+      {/* Light overlay to enhance text readability */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-slate-800/20 to-slate-900/40"></div>
       
-      {/* Decorative pattern overlay - Daha az opak */}
+      {/* Decorative pattern overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,255,218,0.04)_1px,transparent_0)] [background-size:50px_50px] opacity-30"></div>
       
       {/* Content - High z-index to be above background */}
