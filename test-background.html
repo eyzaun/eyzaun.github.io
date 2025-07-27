@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimatedBackground Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .test-content {
+            position: relative;
+            z-index: 10;
+            padding: 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            margin: 100px 0;
+            padding: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1, h2 {
+            color: #64ffda;
+        }
+        
+        .mouse-tracker {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mouse Tracker -->
+    <div class="mouse-tracker">
+        <div>Mouse X: <span id="mouseX">0</span></div>
+        <div>Mouse Y: <span id="mouseY">0</span></div>
+        <div>Scroll: <span id="scroll">0</span></div>
+    </div>
+
+    <!-- Test Content -->
+    <div class="test-content">
+        <div class="section">
+            <h1>AnimatedBackground Test</h1>
+            <p>Bu sayfa sadece AnimatedBackground component'ini test etmek için oluşturuldu.</p>
+            <ul>
+                <li>Mouse'u hareket ettir - partiküller ve geometriler tepki verecek</li>
+                <li>Sayfayı scroll et - parallax efektleri göreceksin</li>
+                <li>3D harfler (E-Y-Z-A-U-N) mouse'a tepki verir</li>
+                <li>Geometrik şekiller sürekli yüzer ve döner</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Test Section 1</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+
+        <div class="section">
+            <h2>Test Section 2</h2>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+
+        <div class="section">
+            <h2>Test Section 3</h2>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </div>
+
+        <div class="section">
+            <h2>Test Section 4</h2>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // Mouse tracking
+        let mouseX = 0, mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            document.getElementById('mouseX').textContent = mouseX;
+            document.getElementById('mouseY').textContent = mouseY;
+        });
+        
+        document.addEventListener('scroll', () => {
+            document.getElementById('scroll').textContent = window.scrollY;
+        });
+
+        // AnimatedBackground Logic (Simplified version)
+        class AnimatedBackground {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.particles = null;
+                this.geometries = [];
+                this.letters = [];
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.scrollY = 0;
+                this.isMobile = window.innerWidth < 1024;
+                
+                this.init();
+                this.animate();
+                
+                // Event listeners
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                });
+                
+                document.addEventListener('scroll', () => {
+                    this.scrollY = window.scrollY;
+                });
+            }
+            
+            init() {
+                // Scene
+                this.scene = new THREE.Scene();
+                
+                // Camera
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+                this.camera.position.z = 400;
+                
+                // Renderer
+                this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: !this.isMobile });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.isMobile ? 1.5 : 2));
+                this.renderer.setClearColor(0x000000, 0);
+                
+                // Add to DOM
+                this.renderer.domElement.style.position = 'fixed';
+                this.renderer.domElement.style.top = '0';
+                this.renderer.domElement.style.left = '0';
+                this.renderer.domElement.style.zIndex = '1';
+                this.renderer.domElement.style.pointerEvents = 'none';
+                document.body.appendChild(this.renderer.domElement);
+                
+                this.createParticles();
+                this.createGeometries();
+                this.createLetters();
+                
+                // Resize handler
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+            
+            createParticles() {
+                const count = this.isMobile ? 60 : 120;
+                const positions = new Float32Array(count * 3);
+                const colors = new Float32Array(count * 3);
+                const sizes = new Float32Array(count);
+                
+                for (let i = 0; i < count; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * 1000;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 800;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
+                    
+                    const hue = 0.5 + Math.random() * 0.15;
+                    const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+                    colors[i * 3] = color.r;
+                    colors[i * 3 + 1] = color.g;
+                    colors[i * 3 + 2] = color.b;
+                    
+                    sizes[i] = Math.random() * 4 + 2;
+                }
+                
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 4,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.particles = new THREE.Points(geometry, material);
+                this.scene.add(this.particles);
+            }
+            
+            createGeometries() {
+                const shapeCount = this.isMobile ? 8 : 12;
+                
+                for (let i = 0; i < shapeCount; i++) {
+                    let geometry;
+                    const shapeType = i % 3;
+                    
+                    if (shapeType === 0) {
+                        geometry = new THREE.BoxGeometry(30, 30, 30);
+                    } else if (shapeType === 1) {
+                        geometry = new THREE.SphereGeometry(20, 16, 12);
+                    } else {
+                        geometry = new THREE.ConeGeometry(15, 40, 6);
+                    }
+                    
+                    const material = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color().setHSL(0.52 + Math.random() * 0.1, 0.7, 0.5),
+                        wireframe: true,
+                        transparent: true,
+                        opacity: 0.3
+                    });
+                    
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(
+                        (Math.random() - 0.5) * 800,
+                        (Math.random() - 0.5) * 600,
+                        (Math.random() - 0.5) * 300
+                    );
+                    
+                    mesh.userData = {
+                        rotationSpeed: {
+                            x: (Math.random() - 0.5) * 0.02,
+                            y: (Math.random() - 0.5) * 0.02,
+                            z: (Math.random() - 0.5) * 0.02
+                        },
+                        originalY: mesh.position.y
+                    };
+                    
+                    this.scene.add(mesh);
+                    this.geometries.push(mesh);
+                }
+            }
+            
+            createLetters() {
+                const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
+                
+                letters.forEach((letter, index) => {
+                    // Create text texture
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 256;
+                    canvas.height = 256;
+                    
+                    ctx.fillStyle = '#64ffda';
+                    ctx.font = 'bold 140px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.shadowColor = '#64ffda';
+                    ctx.shadowBlur = 20;
+                    ctx.fillText(letter, 128, 128);
+                    
+                    const texture = new THREE.CanvasTexture(canvas);
+                    
+                    const geometry = new THREE.PlaneGeometry(60, 60);
+                    const material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        transparent: true,
+                        opacity: 0.9,
+                        side: THREE.DoubleSide
+                    });
+                    
+                    const mesh = new THREE.Mesh(geometry, material);
+                    const angle = (index / letters.length) * Math.PI * 2;
+                    const radius = this.isMobile ? 150 : 200;
+                    
+                    mesh.position.set(
+                        Math.cos(angle) * radius,
+                        Math.sin(angle) * radius,
+                        (Math.random() - 0.5) * 100
+                    );
+                    
+                    mesh.userData = {
+                        originalPos: mesh.position.clone(),
+                        floatOffset: index * 1.2
+                    };
+                    
+                    this.scene.add(mesh);
+                    this.letters.push(mesh);
+                });
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const time = Date.now() * 0.001;
+                const mouse = {
+                    x: this.mouseX / window.innerWidth,
+                    y: 1 - this.mouseY / window.innerHeight
+                };
+                
+                // Animate particles
+                if (this.particles) {
+                    this.particles.rotation.y = time * 0.1;
+                }
+                
+                // Animate geometries
+                this.geometries.forEach((shape, index) => {
+                    shape.rotation.x += shape.userData.rotationSpeed.x;
+                    shape.rotation.y += shape.userData.rotationSpeed.y;
+                    shape.rotation.z += shape.userData.rotationSpeed.z;
+                    
+                    const floatY = Math.sin(time + index) * 30;
+                    shape.position.y = shape.userData.originalY + floatY;
+                });
+                
+                // Animate letters
+                this.letters.forEach((letter, index) => {
+                    const data = letter.userData;
+                    const floatX = Math.cos(time * 0.5 + data.floatOffset) * 40;
+                    const floatY = Math.sin(time * 0.3 + data.floatOffset) * 30;
+                    
+                    letter.position.x = data.originalPos.x + floatX;
+                    letter.position.y = data.originalPos.y + floatY;
+                    letter.rotation.z = Math.sin(time * 0.2 + data.floatOffset) * 0.3;
+                });
+                
+                // Camera movement
+                const targetX = (mouse.x - 0.5) * 100;
+                const targetY = (mouse.y - 0.5) * 50;
+                this.camera.position.x += (targetX - this.camera.position.x) * 0.02;
+                this.camera.position.y += (targetY - this.camera.position.y) * 0.02;
+                this.camera.position.z = 400 + Math.sin(this.scrollY * 0.001) * 20;
+                
+                this.camera.lookAt(0, 0, 0);
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+        
+        // Initialize
+        new AnimatedBackground();
+    </script>
+</body>
+</html>

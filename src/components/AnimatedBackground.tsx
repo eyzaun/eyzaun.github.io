@@ -16,7 +16,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const frameIdRef = useRef<number>();
+  const frameIdRef = useRef<number | undefined>();
   const mouseRef = useRef({ x: 0, y: 0 });
   const scrollRef = useRef(0);
 
@@ -24,7 +24,6 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const particlesRef = useRef<THREE.Points | null>(null);
   const geometriesRef = useRef<THREE.Mesh[]>([]);
   const lettersRef = useRef<THREE.Mesh[]>([]);
-  const connectionsRef = useRef<THREE.LineSegments | null>(null);
 
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -89,6 +88,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         uniform vec2 mouse;
         uniform float scroll;
         attribute float size;
+        attribute vec3 color;  // Add missing color attribute
         varying vec3 vColor;
         varying float vAlpha;
 
@@ -271,13 +271,16 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
   // Animation loop
   const animate = useCallback(() => {
-    if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
+    if (!sceneRef.current || !cameraRef.current || !rendererRef.current || !isInitialized) {
+      return;
+    }
 
-    const time = Date.now() * 0.001;
-    const mouse = {
-      x: mouseRef.current.x / window.innerWidth,
-      y: 1 - mouseRef.current.y / window.innerHeight
-    };
+    try {
+      const time = Date.now() * 0.001;
+      const mouse = {
+        x: mouseRef.current.x / window.innerWidth,
+        y: 1 - mouseRef.current.y / window.innerHeight
+      };
 
     // Update particles
     if (particlesRef.current?.material) {
@@ -288,14 +291,14 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     }
 
     // Animate geometric shapes
-    geometriesRef.current.forEach((shape, index) => {
+    geometriesRef.current.forEach((shape, idx) => {
       // Rotation
       shape.rotation.x += shape.userData.rotationSpeed.x;
       shape.rotation.y += shape.userData.rotationSpeed.y;
       shape.rotation.z += shape.userData.rotationSpeed.z;
 
       // Floating motion
-      const floatY = Math.sin(time * shape.userData.floatSpeed + index) * 30;
+      const floatY = Math.sin(time * shape.userData.floatSpeed + idx) * 30;
       shape.position.y = shape.userData.originalY + floatY;
 
       // Mouse interaction
@@ -316,7 +319,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     });
 
     // Animate letters
-    lettersRef.current.forEach((letter, index) => {
+    lettersRef.current.forEach((letter) => {
       const data = letter.userData;
       
       // Gentle floating
@@ -359,44 +362,170 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     
     cameraRef.current.lookAt(0, 0, 0);
 
-    rendererRef.current.render(sceneRef.current, cameraRef.current);
-    frameIdRef.current = requestAnimationFrame(animate);
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+      frameIdRef.current = requestAnimationFrame(animate);
+    } catch (error) {
+      console.error('Animation error:', error);
+      // Stop animation on error
+      if (frameIdRef.current) {
+        cancelAnimationFrame(frameIdRef.current);
+        frameIdRef.current = undefined;
+      }
+    }
   }, []);
 
   // Initialize Three.js
   const initThreeJS = useCallback(() => {
-    if (!mountRef.current || isInitialized) return;
+    if (!mountRef.current || isInitialized || !isActive) return;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-    const renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
-      antialias: !isMobile,
-      powerPreference: isMobile ? 'low-power' : 'high-performance'
-    });
+    console.log('🚀 Initializing Modern Three.js Background...');
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
-    renderer.setClearColor(0x000000, 0);
+    try {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+      const renderer = new THREE.WebGLRenderer({ 
+        alpha: true, 
+        antialias: !isMobile,
+        powerPreference: isMobile ? 'low-power' : 'high-performance'
+      });
 
-    camera.position.z = 400;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+      renderer.setClearColor(0x000000, 0);
 
-    mountRef.current.appendChild(renderer.domElement);
+      camera.position.z = 400;
 
-    sceneRef.current = scene;
-    cameraRef.current = camera;
-    rendererRef.current = renderer;
+      mountRef.current.appendChild(renderer.domElement);
 
-    // Create all elements
-    createParticleSystem(scene);
-    createGeometries(scene);
-    createLetters(scene);
+      sceneRef.current = scene;
+      cameraRef.current = camera;
+      rendererRef.current = renderer;
 
-    setIsInitialized(true);
-    animate();
+      // Create all elements
+      createParticleSystem(scene);
+      createGeometries(scene);
+      createLetters(scene);
 
-    console.log('🚀 Modern Three.js Background Initialized');
-  }, [isMobile, isInitialized, createParticleSystem, createGeometries, createLetters, animate]);
+      setIsInitialized(true);
+      
+      // Start animation after everything is set up
+      const startAnimation = () => {
+        if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
+
+        const animateLoop = () => {
+          if (!sceneRef.current || !cameraRef.current || !rendererRef.current) {
+            return;
+          }
+
+          try {
+            const time = Date.now() * 0.001;
+            const mouse = {
+              x: mouseRef.current.x / window.innerWidth,
+              y: 1 - mouseRef.current.y / window.innerHeight
+            };
+
+            // Update particles
+            if (particlesRef.current?.material) {
+              const material = particlesRef.current.material as THREE.ShaderMaterial;
+              material.uniforms.time.value = time;
+              material.uniforms.mouse.value.set(mouse.x, mouse.y);
+              material.uniforms.scroll.value = scrollRef.current;
+            }
+
+            // Animate geometric shapes
+            geometriesRef.current.forEach((shape, idx) => {
+              // Rotation
+              shape.rotation.x += shape.userData.rotationSpeed.x;
+              shape.rotation.y += shape.userData.rotationSpeed.y;
+              shape.rotation.z += shape.userData.rotationSpeed.z;
+
+              // Floating motion
+              const floatY = Math.sin(time * shape.userData.floatSpeed + idx) * 30;
+              shape.position.y = shape.userData.originalY + floatY;
+
+              // Mouse interaction
+              const mouseWorldX = (mouse.x - 0.5) * 1000;
+              const mouseWorldY = (mouse.y - 0.5) * 800;
+              const distance = Math.sqrt(
+                Math.pow(shape.position.x - mouseWorldX, 2) +
+                Math.pow(shape.position.y - mouseWorldY, 2)
+              );
+
+              if (distance < 150) {
+                const force = (150 - distance) / 150;
+                const dirX = (shape.position.x - mouseWorldX) / distance;
+                const dirY = (shape.position.y - mouseWorldY) / distance;
+                shape.position.x += dirX * force * 40;
+                shape.position.y += dirY * force * 40;
+              }
+            });
+
+            // Animate letters
+            lettersRef.current.forEach((letter) => {
+              const data = letter.userData;
+              
+              // Gentle floating
+              const floatX = Math.cos(time * 0.5 + data.floatOffset) * 40;
+              const floatY = Math.sin(time * 0.3 + data.floatOffset) * 30;
+              const floatZ = Math.sin(time * 0.4 + data.floatOffset) * 20;
+              
+              letter.position.x = data.originalPos.x + floatX;
+              letter.position.y = data.originalPos.y + floatY;
+              letter.position.z = data.originalPos.z + floatZ;
+
+              // Subtle rotation
+              letter.rotation.z = Math.sin(time * 0.2 + data.floatOffset) * 0.3;
+
+              // Mouse interaction
+              const mouseWorldX = (mouse.x - 0.5) * 800;
+              const mouseWorldY = (mouse.y - 0.5) * 600;
+              const distance = Math.sqrt(
+                Math.pow(letter.position.x - mouseWorldX, 2) +
+                Math.pow(letter.position.y - mouseWorldY, 2)
+              );
+
+              if (distance < 100) {
+                const force = (100 - distance) / 100;
+                const dirX = (letter.position.x - mouseWorldX) / distance;
+                const dirY = (letter.position.y - mouseWorldY) / distance;
+                letter.position.x += dirX * force * 50;
+                letter.position.y += dirY * force * 50;
+              }
+            });
+
+            // Camera gentle movement
+            const targetX = (mouse.x - 0.5) * 100;
+            const targetY = (mouse.y - 0.5) * 50;
+            cameraRef.current.position.x += (targetX - cameraRef.current.position.x) * 0.02;
+            cameraRef.current.position.y += (targetY - cameraRef.current.position.y) * 0.02;
+            
+            // Subtle parallax with scroll
+            cameraRef.current.position.z = 400 + Math.sin(scrollRef.current * 0.001) * 20;
+            
+            cameraRef.current.lookAt(0, 0, 0);
+
+            rendererRef.current.render(sceneRef.current, cameraRef.current);
+            frameIdRef.current = requestAnimationFrame(animateLoop);
+          } catch (error) {
+            console.error('Animation error:', error);
+            if (frameIdRef.current) {
+              cancelAnimationFrame(frameIdRef.current);
+              frameIdRef.current = undefined;
+            }
+          }
+        };
+
+        animateLoop();
+      };
+
+      startAnimation();
+
+      console.log('✅ Modern Three.js Background Ready!');
+    } catch (error) {
+      console.error('❌ Three.js initialization failed:', error);
+      setIsInitialized(false);
+    }
+  }, [isMobile, isInitialized, isActive, createParticleSystem, createGeometries, createLetters]);
 
   // Handle resize
   const handleResize = useCallback(() => {
@@ -414,29 +543,52 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const cleanup = useCallback(() => {
     if (frameIdRef.current) {
       cancelAnimationFrame(frameIdRef.current);
+      frameIdRef.current = undefined;
     }
 
     if (rendererRef.current && mountRef.current) {
-      mountRef.current.removeChild(rendererRef.current.domElement);
+      // Safely remove DOM element
+      try {
+        if (rendererRef.current.domElement.parentNode === mountRef.current) {
+          mountRef.current.removeChild(rendererRef.current.domElement);
+        }
+      } catch (error) {
+        console.warn('DOM cleanup warning:', error);
+      }
       rendererRef.current.dispose();
     }
 
     // Dispose all materials and geometries
-    [...geometriesRef.current, ...lettersRef.current].forEach(mesh => {
+    geometriesRef.current.forEach(mesh => {
       if (mesh.geometry) mesh.geometry.dispose();
       if (mesh.material) {
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach(mat => mat.dispose());
-        } else {
-          mesh.material.dispose();
-        }
+        (mesh.material as THREE.Material).dispose();
+      }
+    });
+
+    lettersRef.current.forEach(mesh => {
+      if (mesh.geometry) mesh.geometry.dispose();
+      if (mesh.material) {
+        const material = mesh.material as THREE.MeshBasicMaterial;
+        if (material.map) material.map.dispose(); // Dispose texture
+        material.dispose();
       }
     });
 
     if (particlesRef.current) {
       if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
-      if (particlesRef.current.material) particlesRef.current.material.dispose();
+      if (particlesRef.current.material) {
+        (particlesRef.current.material as THREE.ShaderMaterial).dispose();
+      }
     }
+
+    // Clear arrays
+    geometriesRef.current = [];
+    lettersRef.current = [];
+    particlesRef.current = null;
+    sceneRef.current = null;
+    cameraRef.current = null;
+    rendererRef.current = null;
 
     setIsInitialized(false);
   }, []);
@@ -444,15 +596,29 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   // Main effect
   useEffect(() => {
     if (isActive && !isInitialized) {
-      initThreeJS();
+      const timer = setTimeout(() => {
+        initThreeJS();
+      }, 100); // Small delay to ensure DOM is ready
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [isActive, isInitialized, initThreeJS]);
+
+  // Separate effect for resize and cleanup
+  useEffect(() => {
+    if (isInitialized) {
       window.addEventListener('resize', handleResize);
     }
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      cleanup();
+      if (isInitialized) {
+        cleanup();
+      }
     };
-  }, [isActive, isInitialized, initThreeJS, handleResize, cleanup]);
+  }, [isInitialized, handleResize, cleanup]);
 
   if (!isActive) return null;
 
