@@ -65,20 +65,20 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     context.fillStyle = 'rgba(0, 0, 0, 0)';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Text styling - mobile için daha küçük font
+    // Text styling - larger fonts for better visibility
     context.fillStyle = '#64ffda';
-    context.font = `bold ${isMobile ? '60px' : '90px'} Arial`; // Mobile için daha küçük font
+    context.font = `bold ${isMobile ? '80px' : '100px'} Arial`; // Increased font sizes
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     
-    // Add glow effect - mobile için daha az glow
+    // Add glow effect - more pronounced
     context.shadowColor = '#64ffda';
-    context.shadowBlur = isMobile ? 8 : 15;
+    context.shadowBlur = isMobile ? 12 : 20; // Increased glow
     context.fillText(text, canvas.width / 2, canvas.height / 2);
     
-    // Second pass for more glow (only on desktop)
+    // Second pass for more glow
     if (!isMobile) {
-      context.shadowBlur = 5;
+      context.shadowBlur = 8;
       context.fillText(text, canvas.width / 2, canvas.height / 2);
     }
 
@@ -256,24 +256,32 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             float mouseDistance = distance(mousePos, modelPosition.xy / 400.0); // Closer detection
             float mouseInfluence = smoothstep(1.0, 0.0, mouseDistance); // Wider influence area
             
-            // Reduced wave motion for mobile performance
-            float waveIntensity = uIsMobile > 0.5 ? 10.0 : 20.0;
+            // Reduced wave motion but still dynamic
+            float waveIntensity = uIsMobile > 0.5 ? 15.0 : 25.0; // Increased for more movement
             modelPosition.x += sin(uTime * 0.7 + position.y * 0.01) * waveIntensity;
-            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * (waveIntensity * 0.75);
+            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * (waveIntensity * 0.8);
             
             if (uIsMobile < 0.5) {
-              modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
+              modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 15.0; // More Z movement
             }
             
-            // Much tighter boundary wrapping - particles stay visible
-            float maxX = uIsMobile > 0.5 ? 250.0 : 350.0; // Tighter bounds
-            float maxY = uIsMobile > 0.5 ? 180.0 : 250.0; // Tighter bounds
+            // Softer boundary wrapping - more natural movement
+            float maxX = uIsMobile > 0.5 ? 300.0 : 400.0; // Looser bounds for natural flow
+            float maxY = uIsMobile > 0.5 ? 250.0 : 350.0; // Looser bounds for natural flow
             
-            // Smooth boundary - no harsh wrapping
-            if (modelPosition.x > maxX) modelPosition.x = maxX - 10.0;
-            if (modelPosition.x < -maxX) modelPosition.x = -maxX + 10.0;
-            if (modelPosition.y > maxY) modelPosition.y = maxY - 10.0;
-            if (modelPosition.y < -maxY) modelPosition.y = -maxY + 10.0;
+            // Smooth boundary system - gradual direction change
+            if (modelPosition.x > maxX) {
+              modelPosition.x = maxX - (modelPosition.x - maxX) * 0.1; // Soft bounce
+            }
+            if (modelPosition.x < -maxX) {
+              modelPosition.x = -maxX - (modelPosition.x + maxX) * 0.1; // Soft bounce
+            }
+            if (modelPosition.y > maxY) {
+              modelPosition.y = maxY - (modelPosition.y - maxY) * 0.1; // Soft bounce
+            }
+            if (modelPosition.y < -maxY) {
+              modelPosition.y = -maxY - (modelPosition.y + maxY) * 0.1; // Soft bounce
+            }
             
             // Mouse repulsion - much stronger and wider area
             vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 400.0); // Closer reference point
@@ -321,13 +329,13 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       const letterMeshes: THREE.Mesh[] = [];
 
       letters.forEach((letter, index) => {
-        const letterSize = isMobile ? 25 : 40; // Mobile'da daha küçük harfler
+        const letterSize = isMobile ? 35 : 50; // Increased letter size for better visibility
         const geometry = new THREE.PlaneGeometry(letterSize, letterSize);
         const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
-          opacity: isMobile ? 0.7 : 0.9, // Mobile'da biraz daha transparan
+          opacity: isMobile ? 0.8 : 0.9, // Increased opacity
           side: THREE.DoubleSide
         });
 
@@ -432,7 +440,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         material.uniforms.uScrollY.value = scrollRef.current * (isMobile ? 0.1 : 0.2); // Reduced scroll effect
       }
 
-      // Animate letters - improved boundary system
+      // Animate letters - natural movement with soft boundaries
       lettersRef.current.forEach((letter, index) => {
         // Rotation - slower on mobile
         const rotationSpeed = isMobile ? 0.5 : 1;
@@ -447,16 +455,21 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           letter.userData.originalZ = letter.position.z;
         }
         
-        // Gentle floating motion around original position
-        const floatIntensity = isMobile ? 15 : 25;
-        const floatX = Math.cos(time * 0.2 + index) * floatIntensity;
-        const floatY = Math.sin(time * 0.3 + index) * floatIntensity;
-        const floatZ = Math.sin(time * 0.4 + index * 0.5) * 10;
+        // Natural floating motion - much more dynamic
+        const floatIntensity = isMobile ? 40 : 60; // Much larger movement
+        const timeX = time * 0.3 + index * 0.5;
+        const timeY = time * 0.4 + index * 0.7;
+        const timeZ = time * 0.2 + index * 0.3;
         
-        // Set position relative to original + floating
-        letter.position.x = letter.userData.originalX + floatX;
-        letter.position.y = letter.userData.originalY + floatY;
-        letter.position.z = letter.userData.originalZ + floatZ;
+        // Complex wave patterns for natural movement
+        const moveX = Math.sin(timeX) * floatIntensity + Math.cos(timeX * 1.5) * (floatIntensity * 0.3);
+        const moveY = Math.cos(timeY) * floatIntensity + Math.sin(timeY * 1.3) * (floatIntensity * 0.4);
+        const moveZ = Math.sin(timeZ) * 20 + Math.cos(timeZ * 2) * 10;
+        
+        // Apply natural movement
+        letter.position.x = letter.userData.originalX + moveX;
+        letter.position.y = letter.userData.originalY + moveY;
+        letter.position.z = letter.userData.originalZ + moveZ;
         
         // Strong mouse interaction - much more powerful
         const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 80 : 120);
@@ -467,30 +480,48 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           Math.pow(letter.position.y - mouseInfluenceY, 2)
         );
         
-        const interactionDistance = isMobile ? 120 : 180; // Increased interaction distance
+        const interactionDistance = isMobile ? 120 : 180;
         if (distanceToMouse < interactionDistance) {
           const pushForce = (interactionDistance - distanceToMouse) / interactionDistance;
-          const pushMultiplier = isMobile ? 80 : 120; // Much stronger push
           
-          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.25; // Increased force
-          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.25; // Increased force
+          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.25;
+          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.25;
           
           letter.position.x += pushX;
           letter.position.y += pushY;
         }
         
-        // Ensure letters never go too far from their original positions
-        const maxDistance = isMobile ? 100 : 150;
+        // Soft boundary system - gentle pull back when too far
+        const maxDistance = isMobile ? 200 : 300; // Generous movement area
         const currentDistance = Math.sqrt(
           Math.pow(letter.position.x - letter.userData.originalX, 2) + 
           Math.pow(letter.position.y - letter.userData.originalY, 2)
         );
         
         if (currentDistance > maxDistance) {
-          const ratio = maxDistance / currentDistance;
-          letter.position.x = letter.userData.originalX + (letter.position.x - letter.userData.originalX) * ratio;
-          letter.position.y = letter.userData.originalY + (letter.position.y - letter.userData.originalY) * ratio;
+          // Gentle pull back - not harsh snapping
+          const pullStrength = (currentDistance - maxDistance) / maxDistance * 0.1;
+          const pullX = (letter.userData.originalX - letter.position.x) * pullStrength;
+          const pullY = (letter.userData.originalY - letter.position.y) * pullStrength;
+          
+          letter.position.x += pullX;
+          letter.position.y += pullY;
         }
+        
+        // Screen boundary protection - only when absolutely necessary
+        const screenMaxX = screenWidth * 0.45;
+        const screenMaxY = screenHeight * 0.45;
+        
+        if (Math.abs(letter.position.x) > screenMaxX) {
+          letter.position.x = letter.position.x > 0 ? screenMaxX : -screenMaxX;
+        }
+        if (Math.abs(letter.position.y) > screenMaxY) {
+          letter.position.y = letter.position.y > 0 ? screenMaxY : -screenMaxY;
+        }
+        
+        // Z boundary - keep reasonable depth
+        if (letter.position.z > 80) letter.position.z = 80;
+        if (letter.position.z < -80) letter.position.z = -80;
       });
 
       // Camera movement - much more responsive to mouse
