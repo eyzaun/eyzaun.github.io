@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { LanguageProvider } from './contexts/LanguageContext';
 import SEO from './components/SEO';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -45,16 +45,31 @@ const LoadingFallback: React.FC = () => (
 // Main App Component with Global Background
 const AppContent: React.FC = () => {
   const { cursor, isActive } = useCursor();
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // Mobile detection for CustomCursor
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1024 || 'ontouchstart' in window;
+      setIsMobile(mobile);
+    };
+    
+    checkMobile();
+    const handleResize = () => checkMobile();
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900 relative">
       {/* SEO Component */}
       <SEO />
       
-      {/* Custom Cursor - Highest layer */}
-      <CustomCursor />
+      {/* Custom Cursor - Only on desktop */}
+      {!isMobile && <CustomCursor />}
       
-      {/* Global Three.js Background with Letters - Covers entire site */}
+      {/* Global Three.js Background with Letters - Desktop & Mobile */}
       {isActive && (
         <Suspense fallback={null}>
           <AnimatedBackground

@@ -25,7 +25,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const scrollRef = useRef<number>(0);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  // Mobile detection
+  // Mobile detection but still allow Three.js
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 1024 || 'ontouchstart' in window;
@@ -37,7 +37,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     window.addEventListener('resize', handleResize);
     
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isMobile]);
 
   // Update mouse and scroll position
   useEffect(() => {
@@ -65,20 +65,22 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     context.fillStyle = 'rgba(0, 0, 0, 0)';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Text styling
+    // Text styling - mobile için daha küçük font
     context.fillStyle = '#64ffda';
-    context.font = 'bold 90px Arial'; // Daha büyük font
+    context.font = `bold ${isMobile ? '60px' : '90px'} Arial`; // Mobile için daha küçük font
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     
-    // Add glow effect
+    // Add glow effect - mobile için daha az glow
     context.shadowColor = '#64ffda';
-    context.shadowBlur = 15;
+    context.shadowBlur = isMobile ? 8 : 15;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
     
-    // Second pass for more glow
-    context.shadowBlur = 5;
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    // Second pass for more glow (only on desktop)
+    if (!isMobile) {
+      context.shadowBlur = 5;
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
+    }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.needsUpdate = true;
@@ -142,11 +144,11 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
   // Initialize Three.js
   const initThreeJS = useCallback(() => {
-    if (!mountRef.current || !isActive || isMobile || isInitializedRef.current) {
+    if (!mountRef.current || !isActive || isInitializedRef.current) {
       return;
     }
 
-    console.log('Initializing Three.js with E-Y-Z-A-U-N Letters...');
+    console.log(`Initializing Three.js with E-Y-Z-A-U-N Letters... (${isMobile ? 'Mobile' : 'Desktop'} Mode)`);
     
     try {
       const container = mountRef.current;
@@ -163,32 +165,35 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       sceneRef.current = scene;
 
       const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 2000);
-      camera.position.z = 200; // Daha yakın kamera pozisyonu
+      camera.position.z = isMobile ? 150 : 200; // Mobile'da daha yakın kamera
       cameraRef.current = camera;
 
       const renderer = new THREE.WebGLRenderer({ 
         alpha: true, 
-        antialias: true,
-        powerPreference: "high-performance"
+        antialias: !isMobile, // Mobile'da antialiasing kapalı (performance)
+        powerPreference: isMobile ? "low-power" : "high-performance"
       });
       
       renderer.setSize(screenWidth, screenHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)); // Mobile'da daha düşük pixel ratio
       renderer.setClearColor(0x000000, 0);
       container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
-      // === PARTICLES SYSTEM ===
-      const particleCount = 200;
+      // === PARTICLES SYSTEM (Mobile Optimized) ===
+      const particleCount = isMobile ? 80 : 200; // Mobile'da çok daha az particle
       const positions = new Float32Array(particleCount * 3);
       const colors = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
 
       for (let i = 0; i < particleCount; i++) {
-        // Position within much smaller visible area
-        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.6; // Daha küçük alan
-        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.6; // Daha küçük alan
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 100; // Z-axis daha yakın
+        // Position within smaller visible area for mobile
+        const widthMultiplier = isMobile ? 0.5 : 0.6;
+        const heightMultiplier = isMobile ? 0.5 : 0.6;
+        
+        positions[i * 3] = (Math.random() - 0.5) * screenWidth * widthMultiplier;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * heightMultiplier;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * (isMobile ? 50 : 100);
 
         // Colors - Site theme
         const colorType = Math.random();
@@ -209,8 +214,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           colors[i * 3 + 2] = 1.0;  // B
         }
 
-        // Size
-        sizes[i] = Math.random() * 8 + 3;
+        // Size - smaller on mobile
+        sizes[i] = (Math.random() * 6 + 2) * (isMobile ? 0.8 : 1);
       }
 
       const particleGeometry = new THREE.BufferGeometry();
@@ -218,6 +223,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
       particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
+      // Mobile optimized vs Desktop full-featured shader
       const particleMaterial = new THREE.ShaderMaterial({
         transparent: true,
         blending: THREE.AdditiveBlending,
@@ -226,13 +232,15 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           uTime: { value: 0 },
           uMouse: { value: new THREE.Vector2() },
           uScrollY: { value: 0 },
-          uPixelRatio: { value: renderer.getPixelRatio() }
+          uPixelRatio: { value: renderer.getPixelRatio() },
+          uIsMobile: { value: isMobile ? 1.0 : 0.0 }
         },
         vertexShader: `
           uniform float uTime;
           uniform vec2 uMouse;
           uniform float uScrollY;
           uniform float uPixelRatio;
+          uniform float uIsMobile;
           
           attribute float size;
           varying vec3 vColor;
@@ -243,31 +251,36 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             
             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
             
-            // Mouse interaction
+            // Simplified mouse interaction for mobile
             vec2 mousePos = uMouse * 2.0 - 1.0;
             float mouseDistance = distance(mousePos, modelPosition.xy / 500.0);
             float mouseInfluence = smoothstep(0.8, 0.0, mouseDistance);
             
-            // Wave motion
-            modelPosition.x += sin(uTime * 0.7 + position.y * 0.01) * 20.0;
-            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * 15.0;
-            modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
+            // Reduced wave motion for mobile performance
+            float waveIntensity = uIsMobile > 0.5 ? 10.0 : 20.0;
+            modelPosition.x += sin(uTime * 0.7 + position.y * 0.01) * waveIntensity;
+            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * (waveIntensity * 0.75);
             
-            // Boundary wrapping - much tighter bounds
-            float maxX = 400.0; // Daha küçük sınır
-            float maxY = 300.0; // Daha küçük sınır
+            if (uIsMobile < 0.5) {
+              modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
+            }
+            
+            // Tighter boundary wrapping for mobile
+            float maxX = uIsMobile > 0.5 ? 300.0 : 400.0;
+            float maxY = uIsMobile > 0.5 ? 200.0 : 300.0;
             
             if (modelPosition.x > maxX) modelPosition.x = -maxX;
             if (modelPosition.x < -maxX) modelPosition.x = maxX;
             if (modelPosition.y > maxY) modelPosition.y = -maxY;
             if (modelPosition.y < -maxY) modelPosition.y = maxY;
             
-            // Mouse repulsion
+            // Reduced mouse repulsion for mobile
             vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 500.0);
-            modelPosition.xy += mouseDirection * mouseInfluence * 80.0;
+            float repulsionForce = uIsMobile > 0.5 ? 40.0 : 80.0;
+            modelPosition.xy += mouseDirection * mouseInfluence * repulsionForce;
             
-            // Scroll parallax
-            modelPosition.y += uScrollY * 0.3;
+            // Scroll parallax - reduced for mobile
+            modelPosition.y += uScrollY * (uIsMobile > 0.5 ? 0.2 : 0.3);
             
             vec4 viewPosition = viewMatrix * modelPosition;
             vec4 projectedPosition = projectionMatrix * viewPosition;
@@ -276,7 +289,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             
             // Size and alpha
             float baseSize = size * (400.0 / -viewPosition.z);
-            gl_PointSize = baseSize * (1.5 + mouseInfluence * 3.0) * uPixelRatio;
+            float sizeMultiplier = uIsMobile > 0.5 ? 1.2 : 1.5;
+            gl_PointSize = baseSize * (sizeMultiplier + mouseInfluence * 2.0) * uPixelRatio;
             vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 0.6);
           }
         `,
@@ -301,37 +315,38 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       scene.add(particles);
       particlesRef.current = particles;
 
-      // === 3D LETTERS (E-Y-Z-A-U-N) ===
-      const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
+      // === 3D LETTERS (E-Y-Z-A-U-N) - Mobile Optimized ===
+      const letters = isMobile ? ['E', 'Y', 'Z'] : ['E', 'Y', 'Z', 'A', 'U', 'N']; // Mobile'da daha az harf
       const letterMeshes: THREE.Mesh[] = [];
 
       letters.forEach((letter, index) => {
-        const geometry = new THREE.PlaneGeometry(40, 40); // Daha büyük harfler
+        const letterSize = isMobile ? 25 : 40; // Mobile'da daha küçük harfler
+        const geometry = new THREE.PlaneGeometry(letterSize, letterSize);
         const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
-          opacity: 0.9, // Daha opak, daha net görünür
+          opacity: isMobile ? 0.7 : 0.9, // Mobile'da biraz daha transparan
           side: THREE.DoubleSide
         });
 
         const letterMesh = new THREE.Mesh(geometry, material);
         
-        // Position letters in a much smaller circle - always visible
+        // Position letters - mobile için daha küçük radius
         const angle = (index / letters.length) * Math.PI * 2;
-        const radiusX = Math.min(screenWidth * 0.15, 200); // Çok daha küçük radius
-        const radiusY = Math.min(screenHeight * 0.15, 150); // Çok daha küçük radius
+        const radiusX = Math.min(screenWidth * (isMobile ? 0.12 : 0.15), isMobile ? 120 : 200);
+        const radiusY = Math.min(screenHeight * (isMobile ? 0.12 : 0.15), isMobile ? 100 : 150);
         
         letterMesh.position.set(
           Math.cos(angle) * radiusX,
           Math.sin(angle) * radiusY,
-          (Math.random() - 0.5) * 50 // Z-axis de daha yakın
+          (Math.random() - 0.5) * (isMobile ? 30 : 50)
         );
         
         letterMesh.rotation.set(
-          Math.random() * 0.2, // Daha az rotasyon
-          Math.random() * 0.2, // Daha az rotasyon
-          Math.random() * 0.2  // Daha az rotasyon
+          Math.random() * 0.2,
+          Math.random() * 0.2,
+          Math.random() * 0.2
         );
 
         scene.add(letterMesh);
@@ -392,7 +407,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       console.error('Three.js initialization error:', error);
       cleanup();
     }
-  }, [isActive, isMobile, cleanup, createTextTexture]);
+  }, [isActive, cleanup, createTextTexture]);
 
   // Animation loop
   const animate = useCallback(() => {
@@ -413,70 +428,77 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           mouseRef.current.x / window.innerWidth,
           1.0 - mouseRef.current.y / window.innerHeight
         );
-        material.uniforms.uScrollY.value = scrollRef.current * 0.5;
+        material.uniforms.uScrollY.value = scrollRef.current * (isMobile ? 0.3 : 0.5);
       }
 
-      // Animate letters
+      // Animate letters - simplified for mobile
       lettersRef.current.forEach((letter, index) => {
-        // Rotation
-        letter.rotation.x += 0.003 + index * 0.001;
-        letter.rotation.y += 0.005 + index * 0.0015;
-        letter.rotation.z += 0.002 + index * 0.0008;
+        // Rotation - slower on mobile
+        const rotationSpeed = isMobile ? 0.5 : 1;
+        letter.rotation.x += (0.003 + index * 0.001) * rotationSpeed;
+        letter.rotation.y += (0.005 + index * 0.0015) * rotationSpeed;
+        letter.rotation.z += (0.002 + index * 0.0008) * rotationSpeed;
         
-        // Very gentle floating motion - keep them visible
+        // Very gentle floating motion
         const baseX = letter.position.x;
         const baseY = letter.position.y;
         
-        // Much smaller floating range
-        letter.position.y += Math.sin(time * 0.3 + index) * 0.3; // Çok daha küçük hareket
-        letter.position.x += Math.cos(time * 0.2 + index) * 0.2; // Çok daha küçük hareket
-        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * 0.2; // Çok daha küçük hareket
+        // Much smaller floating range for mobile
+        const floatIntensity = isMobile ? 0.15 : 0.3;
+        letter.position.y += Math.sin(time * 0.3 + index) * floatIntensity;
+        letter.position.x += Math.cos(time * 0.2 + index) * (floatIntensity * 0.7);
+        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * (floatIntensity * 0.7);
         
-        // Strict boundary checks - keep letters ALWAYS visible
-        const maxX = screenWidth * 0.2; // Çok daha sıkı sınır
-        const maxY = screenHeight * 0.2; // Çok daha sıkı sınır
+        // Strict boundary checks
+        const maxX = screenWidth * (isMobile ? 0.15 : 0.2);
+        const maxY = screenHeight * (isMobile ? 0.15 : 0.2);
         
         if (Math.abs(letter.position.x) > maxX) {
-          letter.position.x = baseX * 0.5; // Merkeze daha yakın getir
+          letter.position.x = baseX * 0.5;
         }
         if (Math.abs(letter.position.y) > maxY) {
-          letter.position.y = baseY * 0.5; // Merkeze daha yakın getir
+          letter.position.y = baseY * 0.5;
         }
         
-        // Keep Z very close to camera
-        if (letter.position.z > 30) letter.position.z = 30;
-        if (letter.position.z < -30) letter.position.z = -30;
+        // Keep Z very close
+        const maxZ = isMobile ? 20 : 30;
+        if (letter.position.z > maxZ) letter.position.z = maxZ;
+        if (letter.position.z < -maxZ) letter.position.z = -maxZ;
         
-        // Mouse interaction - but keep within bounds
-        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30; // Daha az etki
-        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30; // Daha az etki
-        
-        const distanceToMouse = Math.sqrt(
-          Math.pow(letter.position.x - mouseInfluenceX, 2) + 
-          Math.pow(letter.position.y - mouseInfluenceY, 2)
-        );
-        
-        if (distanceToMouse < 80) { // Daha yakın mesafe
-          const pushForce = (80 - distanceToMouse) / 80;
-          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.01; // Daha az güç
-          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.01; // Daha az güç
+        // Mouse interaction - reduced for mobile
+        if (!isMobile || true) { // Keep mouse interaction on mobile but reduced
+          const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 20 : 30);
+          const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * (isMobile ? 20 : 30);
           
-          // Apply push but check bounds
-          const newX = letter.position.x + pushX;
-          const newY = letter.position.y + pushY;
+          const distanceToMouse = Math.sqrt(
+            Math.pow(letter.position.x - mouseInfluenceX, 2) + 
+            Math.pow(letter.position.y - mouseInfluenceY, 2)
+          );
           
-          if (Math.abs(newX) < maxX) letter.position.x = newX;
-          if (Math.abs(newY) < maxY) letter.position.y = newY;
+          const interactionDistance = isMobile ? 60 : 80;
+          if (distanceToMouse < interactionDistance) {
+            const pushForce = (interactionDistance - distanceToMouse) / interactionDistance;
+            const pushX = (letter.position.x - mouseInfluenceX) * pushForce * (isMobile ? 0.005 : 0.01);
+            const pushY = (letter.position.y - mouseInfluenceY) * pushForce * (isMobile ? 0.005 : 0.01);
+            
+            const newX = letter.position.x + pushX;
+            const newY = letter.position.y + pushY;
+            
+            if (Math.abs(newX) < maxX) letter.position.x = newX;
+            if (Math.abs(newY) < maxY) letter.position.y = newY;
+          }
         }
       });
 
-      // Camera movement - reduced for stability
-      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30; // Daha az kamera hareketi
-      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30; // Daha az kamera hareketi
-      const scrollInfluence = scrollRef.current * 0.05; // Daha az scroll etkisi
+      // Camera movement - reduced for mobile
+      const cameraInfluence = isMobile ? 15 : 30;
+      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * cameraInfluence;
+      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * cameraInfluence;
+      const scrollInfluence = scrollRef.current * (isMobile ? 0.03 : 0.05);
       
-      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.01; // Daha yavaş hareket
-      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.01; // Daha yavaş hareket
+      const cameraSpeed = isMobile ? 0.005 : 0.01;
+      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * cameraSpeed;
+      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * cameraSpeed;
       cameraRef.current.lookAt(0, 0, 0);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -502,7 +524,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
   // Main effect
   useEffect(() => {
-    if (isActive && !isMobile && !isInitializedRef.current) {
+    if (isActive && !isInitializedRef.current) {
       const timer = setTimeout(() => {
         initThreeJS();
         if (isInitializedRef.current) {
@@ -519,13 +541,13 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     }
 
     return cleanup;
-  }, [isActive, isMobile, initThreeJS, animate, handleResize, cleanup]);
+  }, [isActive, initThreeJS, animate, handleResize, cleanup]);
 
   useEffect(() => {
     return cleanup;
   }, [cleanup]);
 
-  if (isMobile || !isActive) {
+  if (!isActive) {
     return null;
   }
 

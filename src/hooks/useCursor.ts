@@ -91,31 +91,80 @@ export const useCursor = () => {
     setCursor(prev => ({ ...prev, isHovering: false }));
   }, []);
 
-  useEffect(() => {
-    if (isMobile) return;
-
-    // Add event listeners with capture for better performance
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseover', handleMouseOver, { passive: true });
-    document.addEventListener('mousedown', handleMouseDown, { passive: true });
-    document.addEventListener('mouseup', handleMouseUp, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
-
-    return () => {
+  // Touch handlers for mobile
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
       if (rafId.current) {
         cancelAnimationFrame(rafId.current);
       }
+      
+      rafId.current = requestAnimationFrame(() => {
+        setCursor(prev => ({
+          ...prev,
+          x: touch.clientX,
+          y: touch.clientY
+        }));
+      });
+    }
+  }, []);
 
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [isMobile, handleMouseMove, handleMouseOver, handleMouseDown, handleMouseUp, handleMouseLeave]);
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      setCursor(prev => ({
+        ...prev,
+        x: touch.clientX,
+        y: touch.clientY,
+        isClicking: true
+      }));
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    setCursor(prev => ({ ...prev, isClicking: false }));
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      // Add touch event listeners for mobile
+      document.addEventListener('touchmove', handleTouchMove, { passive: true });
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
+      document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      return () => {
+        if (rafId.current) {
+          cancelAnimationFrame(rafId.current);
+        }
+
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchstart', handleTouchStart);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
+    } else {
+      // Add mouse event listeners for desktop
+      document.addEventListener('mousemove', handleMouseMove, { passive: true });
+      document.addEventListener('mouseover', handleMouseOver, { passive: true });
+      document.addEventListener('mousedown', handleMouseDown, { passive: true });
+      document.addEventListener('mouseup', handleMouseUp, { passive: true });
+      document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+
+      return () => {
+        if (rafId.current) {
+          cancelAnimationFrame(rafId.current);
+        }
+
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseover', handleMouseOver);
+        document.removeEventListener('mousedown', handleMouseDown);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+  }, [isMobile, handleMouseMove, handleMouseOver, handleMouseDown, handleMouseUp, handleMouseLeave, handleTouchMove, handleTouchStart, handleTouchEnd]);
 
   return {
     cursor,
-    isActive: !isMobile
+    isActive: true // Mobile'da da Three.js aktif olsun
   };
 };
