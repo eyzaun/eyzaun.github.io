@@ -7,10 +7,11 @@ interface AnimatedBackgroundProps {
   isActive: boolean;
 }
 
-interface LetterPhysics {
+interface LetterObject {
   mesh: THREE.Mesh;
   velocity: THREE.Vector3;
   basePosition: THREE.Vector3;
+  letter: string;
 }
 
 const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ 
@@ -23,23 +24,14 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const particlesRef = useRef<THREE.Points | null>(null);
-  const lettersRef = useRef<LetterPhysics[]>([]);
+  const lettersRef = useRef<LetterObject[]>([]);
   const linesRef = useRef<THREE.LineSegments | null>(null);
   const frameIdRef = useRef<number | undefined>();
   const isInitializedRef = useRef<boolean>(false);
   const mouseRef = useRef({ x: 0, y: 0 });
   const scrollRef = useRef<number>(0);
+  const viewportRef = useRef({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  // Screen bounds for bouncing
-  const boundsRef = useRef({
-    left: -400,
-    right: 400,
-    top: 300,
-    bottom: -300,
-    front: 100,
-    back: -100
-  });
 
   // Mobile detection
   useEffect(() => {
@@ -49,20 +41,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     };
     
     checkMobile();
-    const handleResize = () => {
-      checkMobile();
-      // Update bounds based on screen size
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      boundsRef.current = {
-        left: -w * 0.4,
-        right: w * 0.4,
-        top: h * 0.3,
-        bottom: -h * 0.3,
-        front: 80,
-        back: -80
-      };
-    };
+    const handleResize = () => checkMobile();
     window.addEventListener('resize', handleResize);
     
     return () => window.removeEventListener('resize', handleResize);
@@ -83,7 +62,25 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Create text texture - 1.5x büyük ve parlak
+  // Calculate viewport in world space
+  const calculateViewport = useCallback((camera: THREE.PerspectiveCamera, screenWidth: number, screenHeight: number) => {
+    const fov = camera.fov * Math.PI / 180; // Convert to radians
+    const distance = camera.position.z;
+    const height = 2 * Math.tan(fov / 2) * distance;
+    const width = height * (screenWidth / screenHeight);
+    
+    viewportRef.current = { width, height };
+    return { width, height };
+  }, []);
+
+  // Convert mouse coordinates to world space
+  const mouseToWorld = useCallback((mouseX: number, mouseY: number, screenWidth: number, screenHeight: number) => {
+    const x = (mouseX / screenWidth - 0.5) * viewportRef.current.width;
+    const y = -(mouseY / screenHeight - 0.5) * viewportRef.current.height;
+    return { x, y };
+  }, []);
+
+  // Create text texture for letters
   const createTextTexture = useCallback((text: string) => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d')!;
@@ -94,24 +91,21 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     context.fillStyle = 'rgba(0, 0, 0, 0)';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Text styling - Çok büyük ve parlak
+    // Text styling
     context.fillStyle = '#64ffda';
-    context.font = 'bold 95px Arial';
+    context.font = 'bold 90px Arial';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     
-    // Triple glow for maximum visibility
+    // Strong glow effect
     context.shadowColor = '#64ffda';
     context.shadowBlur = 25;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
     
+    // Additional glow layers
     context.shadowBlur = 15;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
     
-    context.shadowBlur = 5;
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
-    
-    // Final pass without shadow for sharpness
     context.shadowBlur = 0;
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 
@@ -132,15 +126,14 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     if (particlesRef.current) {
       if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
       if (particlesRef.current.material) {
-        const material = particlesRef.current.material as THREE.Material;
-        material.dispose();
+        (particlesRef.current.material as THREE.Material).dispose();
       }
     }
 
-    lettersRef.current.forEach(letterPhysics => {
-      if (letterPhysics.mesh.geometry) letterPhysics.mesh.geometry.dispose();
-      if (letterPhysics.mesh.material) {
-        const material = letterPhysics.mesh.material as THREE.MeshBasicMaterial;
+    lettersRef.current.forEach(letterObj => {
+      if (letterObj.mesh.geometry) letterObj.mesh.geometry.dispose();
+      if (letterObj.mesh.material) {
+        const material = letterObj.mesh.material as THREE.MeshBasicMaterial;
         if (material.map) material.map.dispose();
         material.dispose();
       }
@@ -176,30 +169,25 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       return;
     }
 
-    console.log('Initializing Three.js with Bouncing E-Y-Z-A-U-N Letters...');
+    console.log('Initializing Physics-Based Three.js Letters...');
     
     try {
       const container = mountRef.current;
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      // Update bounds
-      boundsRef.current = {
-        left: -screenWidth * 0.4,
-        right: screenWidth * 0.4,
-        top: screenHeight * 0.3,
-        bottom: -screenHeight * 0.3,
-        front: 80,
-        back: -80
-      };
-
       // === SCENE SETUP ===
       const scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 1500);
-      camera.position.z = 250;
+      // Camera setup
+      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 1000);
+      camera.position.z = 150;
       cameraRef.current = camera;
+
+      // Calculate viewport in world coordinates
+      const viewport = calculateViewport(camera, screenWidth, screenHeight);
+      console.log('Viewport calculated:', viewport);
 
       const renderer = new THREE.WebGLRenderer({ 
         alpha: true, 
@@ -219,11 +207,11 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       const colors = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
 
+      // Place particles within viewport bounds
       for (let i = 0; i < particleCount; i++) {
-        // Position within visible bounds
-        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.7;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.7;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 160;
+        positions[i * 3] = (Math.random() - 0.5) * viewport.width * 0.8;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * viewport.height * 0.8;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
 
         // Colors
         const colorType = Math.random();
@@ -235,7 +223,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           colors[i * 3] = 0.6; colors[i * 3 + 1] = 0.9; colors[i * 3 + 2] = 1.0;
         }
 
-        sizes[i] = Math.random() * 5 + 3;
+        sizes[i] = Math.random() * 4 + 3;
       }
 
       const particleGeometry = new THREE.BufferGeometry();
@@ -250,14 +238,12 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         uniforms: {
           uTime: { value: 0 },
           uMouse: { value: new THREE.Vector2() },
-          uScrollY: { value: 0 },
-          uPixelRatio: { value: renderer.getPixelRatio() }
+          uScrollY: { value: 0 }
         },
         vertexShader: `
           uniform float uTime;
           uniform vec2 uMouse;
           uniform float uScrollY;
-          uniform float uPixelRatio;
           
           attribute float size;
           varying vec3 vColor;
@@ -265,30 +251,28 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           
           void main() {
             vColor = color;
+            
             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
             
-            // Wave motion
-            modelPosition.x += sin(uTime * 0.4 + position.y * 0.01) * 10.0;
-            modelPosition.y += cos(uTime * 0.3 + position.x * 0.01) * 8.0;
+            // Gentle wave motion
+            modelPosition.x += sin(uTime * 0.3 + position.y * 0.005) * 8.0;
+            modelPosition.y += cos(uTime * 0.25 + position.x * 0.005) * 6.0;
             
             // Mouse interaction
-            vec2 mousePos = uMouse * 2.0 - 1.0;
-            float mouseDistance = distance(mousePos, modelPosition.xy / 400.0);
-            float mouseInfluence = smoothstep(0.5, 0.0, mouseDistance);
+            vec2 mouseDistance = modelPosition.xy - uMouse;
+            float distance = length(mouseDistance);
+            float influence = smoothstep(100.0, 0.0, distance);
+            modelPosition.xy += normalize(mouseDistance) * influence * 20.0;
             
-            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 400.0);
-            modelPosition.xy += mouseDirection * mouseInfluence * 50.0;
-            
-            // Scroll effect
+            // Scroll parallax
             modelPosition.y += uScrollY * 0.1;
             
             vec4 viewPosition = viewMatrix * modelPosition;
             vec4 projectedPosition = projectionMatrix * viewPosition;
-            gl_Position = projectedPosition;
             
-            float baseSize = size * (250.0 / -viewPosition.z);
-            gl_PointSize = baseSize * (1.5 + mouseInfluence * 1.5) * uPixelRatio;
-            vAlpha = smoothstep(0.0, 0.5, size / 6.0) * (0.8 + mouseInfluence * 0.4);
+            gl_Position = projectedPosition;
+            gl_PointSize = size * (100.0 / -viewPosition.z);
+            vAlpha = 0.8;
           }
         `,
         fragmentShader: `
@@ -298,12 +282,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           void main() {
             float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
             float strength = 1.0 - smoothstep(0.0, 0.5, distanceToCenter);
-            float glow = 1.0 - smoothstep(0.0, 0.6, distanceToCenter);
             
-            vec3 finalColor = vColor;
-            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.5;
-            
-            gl_FragColor = vec4(finalColor, finalAlpha);
+            gl_FragColor = vec4(vColor, strength * vAlpha);
           }
         `
       });
@@ -312,112 +292,65 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       scene.add(particles);
       particlesRef.current = particles;
 
-      // === 3D LETTERS WITH PHYSICS ===
+      // === PHYSICS-BASED LETTERS ===
       const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
-      const letterPhysics: LetterPhysics[] = [];
+      const letterObjects: LetterObject[] = [];
 
       letters.forEach((letter, index) => {
-        // 1.5x büyük geometry
-        const geometry = new THREE.PlaneGeometry(50, 50); // 45x45'den 50x50'ye
+        // Create letter mesh
+        const geometry = new THREE.PlaneGeometry(50, 50);
         const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
-          opacity: 1.0, // Tam parlak
+          opacity: 0.9,
           side: THREE.DoubleSide
         });
 
-        const letterMesh = new THREE.Mesh(geometry, material);
+        const mesh = new THREE.Mesh(geometry, material);
         
-        // Fixed initial positions in circle - Garantili görünür alanda
+        // Position letters within viewport bounds with spacing
         const angle = (index / letters.length) * Math.PI * 2;
-        const radius = Math.min(screenWidth * 0.15, 180); // Küçük radius
+        const radius = Math.min(viewport.width, viewport.height) * 0.25;
         
-        const initialX = Math.cos(angle) * radius;
-        const initialY = Math.sin(angle) * radius;
-        const initialZ = (Math.random() - 0.5) * 40;
+        const basePosition = new THREE.Vector3(
+          Math.cos(angle) * radius,
+          Math.sin(angle) * radius,
+          0
+        );
         
-        letterMesh.position.set(initialX, initialY, initialZ);
+        mesh.position.copy(basePosition);
         
-        // Initial rotation
-        letterMesh.rotation.set(
-          Math.random() * 0.4,
-          Math.random() * 0.4,
-          Math.random() * 0.4
+        // Initial random velocity
+        const velocity = new THREE.Vector3(
+          (Math.random() - 0.5) * 2,
+          (Math.random() - 0.5) * 2,
+          0
         );
 
-        // Physics properties
-        const physics: LetterPhysics = {
-          mesh: letterMesh,
-          velocity: new THREE.Vector3(
-            (Math.random() - 0.5) * 2, // Initial velocity
-            (Math.random() - 0.5) * 2,
-            (Math.random() - 0.5) * 1
-          ),
-          basePosition: new THREE.Vector3(initialX, initialY, initialZ)
+        const letterObj: LetterObject = {
+          mesh,
+          velocity,
+          basePosition: basePosition.clone(),
+          letter
         };
 
-        scene.add(letterMesh);
-        letterPhysics.push(physics);
+        scene.add(mesh);
+        letterObjects.push(letterObj);
       });
 
-      lettersRef.current = letterPhysics;
+      lettersRef.current = letterObjects;
 
-      // === CONNECTION LINES ===
-      const createConnectionLines = () => {
-        const linePositions: number[] = [];
-        const lineColors: number[] = [];
-        
-        for (let i = 0; i < particleCount && linePositions.length < 300; i++) {
-          for (let j = i + 1; j < particleCount && linePositions.length < 300; j++) {
-            const distance = new THREE.Vector3(
-              positions[i * 3] - positions[j * 3],
-              positions[i * 3 + 1] - positions[j * 3 + 1],
-              positions[i * 3 + 2] - positions[j * 3 + 2]
-            ).length();
-
-            if (distance < 80) {
-              linePositions.push(
-                positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
-                positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
-              );
-              
-              const alpha = 1.0 - (distance / 80);
-              lineColors.push(0.39, 1.0, 0.85, alpha);
-              lineColors.push(0.39, 1.0, 0.85, alpha);
-            }
-          }
-        }
-
-        if (linePositions.length > 0) {
-          const lineGeometry = new THREE.BufferGeometry();
-          lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-          lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 4));
-
-          const lineMaterial = new THREE.LineBasicMaterial({
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.4,
-            blending: THREE.AdditiveBlending
-          });
-
-          const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-          scene.add(lines);
-          linesRef.current = lines;
-        }
-      };
-
-      createConnectionLines();
       isInitializedRef.current = true;
-      console.log('Three.js with Bouncing Letters initialized successfully');
+      console.log('Physics-based letters initialized successfully');
 
     } catch (error) {
       console.error('Three.js initialization error:', error);
       cleanup();
     }
-  }, [isActive, isMobile, cleanup, createTextTexture]);
+  }, [isActive, isMobile, cleanup, createTextTexture, calculateViewport]);
 
-  // Animation loop with physics
+  // Physics and animation loop
   const animate = useCallback(() => {
     if (!rendererRef.current || !sceneRef.current || !cameraRef.current) {
       return;
@@ -425,112 +358,83 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
     try {
       const time = Date.now() * 0.001;
-      const deltaTime = 0.016; // 60fps
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
       
-      // Update particle shader
+      // Update particle shader uniforms
       if (particlesRef.current && particlesRef.current.material) {
         const material = particlesRef.current.material as THREE.ShaderMaterial;
         material.uniforms.uTime.value = time;
-        material.uniforms.uMouse.value.set(
-          mouseRef.current.x / window.innerWidth,
-          1.0 - mouseRef.current.y / window.innerHeight
-        );
-        material.uniforms.uScrollY.value = scrollRef.current * 0.2;
+        
+        const mouseWorld = mouseToWorld(mouseRef.current.x, mouseRef.current.y, screenWidth, screenHeight);
+        material.uniforms.uMouse.value.set(mouseWorld.x, mouseWorld.y);
+        material.uniforms.uScrollY.value = scrollRef.current * 0.02;
       }
 
       // Physics-based letter animation
-      lettersRef.current.forEach((letterPhysics, index) => {
-        const letter = letterPhysics.mesh;
-        const velocity = letterPhysics.velocity;
-        const bounds = boundsRef.current;
+      lettersRef.current.forEach((letterObj, index) => {
+        const { mesh, velocity, basePosition } = letterObj;
         
-        // Rotation
-        letter.rotation.x += 0.01;
-        letter.rotation.y += 0.015;
-        letter.rotation.z += 0.005;
+        // Get viewport bounds
+        const bounds = {
+          left: -viewportRef.current.width * 0.45,
+          right: viewportRef.current.width * 0.45,
+          top: viewportRef.current.height * 0.45,
+          bottom: -viewportRef.current.height * 0.45
+        };
+
+        // Mouse interaction force
+        const mouseWorld = mouseToWorld(mouseRef.current.x, mouseRef.current.y, screenWidth, screenHeight);
+        const mouseDistance = mesh.position.distanceTo(new THREE.Vector3(mouseWorld.x, mouseWorld.y, 0));
         
-        // Mouse interaction - Pull/Push effect
-        const mouseWorldX = (mouseRef.current.x / window.innerWidth - 0.5) * window.innerWidth * 0.8;
-        const mouseWorldY = -(mouseRef.current.y / window.innerHeight - 0.5) * window.innerHeight * 0.6;
-        
-        const distanceToMouse = Math.sqrt(
-          Math.pow(letter.position.x - mouseWorldX, 2) + 
-          Math.pow(letter.position.y - mouseWorldY, 2)
-        );
-        
-        // Mouse influence
-        if (distanceToMouse < 120) {
-          const influence = (120 - distanceToMouse) / 120;
-          const forceX = (letter.position.x - mouseWorldX) * influence * 0.1;
-          const forceY = (letter.position.y - mouseWorldY) * influence * 0.1;
-          
-          velocity.x += forceX;
-          velocity.y += forceY;
+        if (mouseDistance < 80) {
+          const force = new THREE.Vector3()
+            .subVectors(mesh.position, new THREE.Vector3(mouseWorld.x, mouseWorld.y, 0))
+            .normalize()
+            .multiplyScalar(0.5);
+          velocity.add(force);
         }
-        
+
         // Scroll influence
-        const scrollInfluence = (scrollRef.current - (scrollRef.current % 100)) * 0.001;
-        velocity.y += scrollInfluence;
-        
-        // Gravity towards center (subtle)
-        const centerForce = 0.02;
-        velocity.x -= letter.position.x * centerForce * deltaTime;
-        velocity.y -= letter.position.y * centerForce * deltaTime;
-        velocity.z -= letter.position.z * centerForce * deltaTime;
-        
-        // Apply velocity
-        letter.position.x += velocity.x * deltaTime * 60;
-        letter.position.y += velocity.y * deltaTime * 60;
-        letter.position.z += velocity.z * deltaTime * 60;
-        
-        // Boundary bouncing
-        if (letter.position.x > bounds.right) {
-          letter.position.x = bounds.right;
-          velocity.x = -Math.abs(velocity.x) * 0.8; // Bounce with damping
-        }
-        if (letter.position.x < bounds.left) {
-          letter.position.x = bounds.left;
-          velocity.x = Math.abs(velocity.x) * 0.8;
+        velocity.y += scrollRef.current * 0.0001;
+
+        // Gentle attraction to base position
+        const attraction = new THREE.Vector3()
+          .subVectors(basePosition, mesh.position)
+          .multiplyScalar(0.001);
+        velocity.add(attraction);
+
+        // Random movement
+        velocity.x += (Math.random() - 0.5) * 0.01;
+        velocity.y += (Math.random() - 0.5) * 0.01;
+
+        // Boundary collision with bounce
+        if (mesh.position.x <= bounds.left || mesh.position.x >= bounds.right) {
+          velocity.x *= -0.8; // Bounce with energy loss
+          mesh.position.x = Math.max(bounds.left, Math.min(bounds.right, mesh.position.x));
         }
         
-        if (letter.position.y > bounds.top) {
-          letter.position.y = bounds.top;
-          velocity.y = -Math.abs(velocity.y) * 0.8;
+        if (mesh.position.y <= bounds.bottom || mesh.position.y >= bounds.top) {
+          velocity.y *= -0.8; // Bounce with energy loss
+          mesh.position.y = Math.max(bounds.bottom, Math.min(bounds.top, mesh.position.y));
         }
-        if (letter.position.y < bounds.bottom) {
-          letter.position.y = bounds.bottom;
-          velocity.y = Math.abs(velocity.y) * 0.8;
-        }
-        
-        if (letter.position.z > bounds.front) {
-          letter.position.z = bounds.front;
-          velocity.z = -Math.abs(velocity.z) * 0.8;
-        }
-        if (letter.position.z < bounds.back) {
-          letter.position.z = bounds.back;
-          velocity.z = Math.abs(velocity.z) * 0.8;
-        }
-        
-        // Friction
-        velocity.multiplyScalar(0.98);
-        
-        // Prevent getting stuck
-        if (velocity.length() < 0.1) {
-          velocity.add(new THREE.Vector3(
-            (Math.random() - 0.5) * 0.5,
-            (Math.random() - 0.5) * 0.5,
-            (Math.random() - 0.5) * 0.2
-          ));
-        }
+
+        // Apply velocity with damping
+        velocity.multiplyScalar(0.98); // Friction
+        mesh.position.add(velocity);
+
+        // Rotation
+        mesh.rotation.z += velocity.length() * 0.01;
+        mesh.rotation.x += Math.sin(time * 0.5 + index) * 0.001;
+        mesh.rotation.y += Math.cos(time * 0.3 + index) * 0.001;
       });
 
-      // Camera movement
-      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30;
-      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30;
-      const scrollInfluence = scrollRef.current * 0.03;
+      // Subtle camera movement
+      const mouseInfluenceX = (mouseRef.current.x / screenWidth - 0.5) * 20;
+      const mouseInfluenceY = -(mouseRef.current.y / screenHeight - 0.5) * 20;
       
       cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.01;
-      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.01;
+      cameraRef.current.position.y += (mouseInfluenceY - cameraRef.current.position.y) * 0.01;
       cameraRef.current.lookAt(0, 0, 0);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -540,7 +444,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       console.error('Animation error:', error);
       cleanup();
     }
-  }, [cleanup]);
+  }, [cleanup, mouseToWorld]);
 
   // Handle resize
   const handleResize = useCallback(() => {
@@ -553,16 +457,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     cameraRef.current.updateProjectionMatrix();
     rendererRef.current.setSize(width, height);
     
-    // Update bounds
-    boundsRef.current = {
-      left: -width * 0.4,
-      right: width * 0.4,
-      top: height * 0.3,
-      bottom: -height * 0.3,
-      front: 80,
-      back: -80
-    };
-  }, []);
+    // Recalculate viewport
+    calculateViewport(cameraRef.current, width, height);
+  }, [calculateViewport]);
 
   // Main effect
   useEffect(() => {
