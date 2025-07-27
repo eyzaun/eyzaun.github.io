@@ -67,7 +67,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
     // Text styling
     context.fillStyle = '#64ffda';
-    context.font = 'bold 80px Arial';
+    context.font = 'bold 90px Arial'; // Daha büyük font
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     
@@ -163,7 +163,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       sceneRef.current = scene;
 
       const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 2000);
-      camera.position.z = 300;
+      camera.position.z = 200; // Daha yakın kamera pozisyonu
       cameraRef.current = camera;
 
       const renderer = new THREE.WebGLRenderer({ 
@@ -185,10 +185,10 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       const sizes = new Float32Array(particleCount);
 
       for (let i = 0; i < particleCount; i++) {
-        // Position within visible area
-        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.9;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.9;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+        // Position within much smaller visible area
+        positions[i * 3] = (Math.random() - 0.5) * screenWidth * 0.6; // Daha küçük alan
+        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * 0.6; // Daha küçük alan
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 100; // Z-axis daha yakın
 
         // Colors - Site theme
         const colorType = Math.random();
@@ -253,9 +253,9 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * 15.0;
             modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 10.0;
             
-            // Boundary wrapping
-            float maxX = 800.0;
-            float maxY = 600.0;
+            // Boundary wrapping - much tighter bounds
+            float maxX = 400.0; // Daha küçük sınır
+            float maxY = 300.0; // Daha küçük sınır
             
             if (modelPosition.x > maxX) modelPosition.x = -maxX;
             if (modelPosition.x < -maxX) modelPosition.x = maxX;
@@ -306,32 +306,32 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       const letterMeshes: THREE.Mesh[] = [];
 
       letters.forEach((letter, index) => {
-        const geometry = new THREE.PlaneGeometry(30, 30);
+        const geometry = new THREE.PlaneGeometry(40, 40); // Daha büyük harfler
         const texture = createTextTexture(letter);
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.9, // Daha opak, daha net görünür
           side: THREE.DoubleSide
         });
 
         const letterMesh = new THREE.Mesh(geometry, material);
         
-        // Position letters in a circle
+        // Position letters in a much smaller circle - always visible
         const angle = (index / letters.length) * Math.PI * 2;
-        const radiusX = Math.min(screenWidth * 0.35, 400);
-        const radiusY = Math.min(screenHeight * 0.35, 300);
+        const radiusX = Math.min(screenWidth * 0.15, 200); // Çok daha küçük radius
+        const radiusY = Math.min(screenHeight * 0.15, 150); // Çok daha küçük radius
         
         letterMesh.position.set(
           Math.cos(angle) * radiusX,
           Math.sin(angle) * radiusY,
-          (Math.random() - 0.5) * 150
+          (Math.random() - 0.5) * 50 // Z-axis de daha yakın
         );
         
         letterMesh.rotation.set(
-          Math.random() * 0.5,
-          Math.random() * 0.5,
-          Math.random() * 0.5
+          Math.random() * 0.2, // Daha az rotasyon
+          Math.random() * 0.2, // Daha az rotasyon
+          Math.random() * 0.2  // Daha az rotasyon
         );
 
         scene.add(letterMesh);
@@ -423,54 +423,60 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         letter.rotation.y += 0.005 + index * 0.0015;
         letter.rotation.z += 0.002 + index * 0.0008;
         
-        // Floating motion with boundaries
-        const originalX = letter.position.x;
-        const originalY = letter.position.y;
+        // Very gentle floating motion - keep them visible
+        const baseX = letter.position.x;
+        const baseY = letter.position.y;
         
-        letter.position.y += Math.sin(time * 0.3 + index) * 0.8;
-        letter.position.x += Math.cos(time * 0.2 + index) * 0.6;
-        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * 0.4;
+        // Much smaller floating range
+        letter.position.y += Math.sin(time * 0.3 + index) * 0.3; // Çok daha küçük hareket
+        letter.position.x += Math.cos(time * 0.2 + index) * 0.2; // Çok daha küçük hareket
+        letter.position.z += Math.sin(time * 0.4 + index * 0.5) * 0.2; // Çok daha küçük hareket
         
-        // Boundary checks
-        const maxX = screenWidth * 0.4;
-        const maxY = screenHeight * 0.4;
+        // Strict boundary checks - keep letters ALWAYS visible
+        const maxX = screenWidth * 0.2; // Çok daha sıkı sınır
+        const maxY = screenHeight * 0.2; // Çok daha sıkı sınır
         
         if (Math.abs(letter.position.x) > maxX) {
-          letter.position.x = originalX * 0.8;
+          letter.position.x = baseX * 0.5; // Merkeze daha yakın getir
         }
         if (Math.abs(letter.position.y) > maxY) {
-          letter.position.y = originalY * 0.8;
+          letter.position.y = baseY * 0.5; // Merkeze daha yakın getir
         }
         
-        if (letter.position.z > 100) letter.position.z = 100;
-        if (letter.position.z < -100) letter.position.z = -100;
+        // Keep Z very close to camera
+        if (letter.position.z > 30) letter.position.z = 30;
+        if (letter.position.z < -30) letter.position.z = -30;
         
-        // Mouse interaction
-        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 50;
-        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 50;
+        // Mouse interaction - but keep within bounds
+        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30; // Daha az etki
+        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30; // Daha az etki
         
         const distanceToMouse = Math.sqrt(
           Math.pow(letter.position.x - mouseInfluenceX, 2) + 
           Math.pow(letter.position.y - mouseInfluenceY, 2)
         );
         
-        if (distanceToMouse < 100) {
-          const pushForce = (100 - distanceToMouse) / 100;
-          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.02;
-          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.02;
+        if (distanceToMouse < 80) { // Daha yakın mesafe
+          const pushForce = (80 - distanceToMouse) / 80;
+          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.01; // Daha az güç
+          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.01; // Daha az güç
           
-          letter.position.x += pushX;
-          letter.position.y += pushY;
+          // Apply push but check bounds
+          const newX = letter.position.x + pushX;
+          const newY = letter.position.y + pushY;
+          
+          if (Math.abs(newX) < maxX) letter.position.x = newX;
+          if (Math.abs(newY) < maxY) letter.position.y = newY;
         }
       });
 
-      // Camera movement
-      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 100;
-      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 100;
-      const scrollInfluence = scrollRef.current * 0.1;
+      // Camera movement - reduced for stability
+      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * 30; // Daha az kamera hareketi
+      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * 30; // Daha az kamera hareketi
+      const scrollInfluence = scrollRef.current * 0.05; // Daha az scroll etkisi
       
-      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.02;
-      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.02;
+      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * 0.01; // Daha yavaş hareket
+      cameraRef.current.position.y += (mouseInfluenceY + scrollInfluence - cameraRef.current.position.y) * 0.01; // Daha yavaş hareket
       cameraRef.current.lookAt(0, 0, 0);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
