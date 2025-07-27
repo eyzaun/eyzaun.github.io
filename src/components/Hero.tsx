@@ -1,22 +1,10 @@
-import React, { Suspense, useMemo } from 'react';
+import React from 'react';
 import { ArrowDown, Download } from 'lucide-react';
 import { personalInfo } from '../data/portfolio';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useCursor } from '../hooks/useCursor';
-
-// Lazy load AnimatedBackground for better performance
-const AnimatedBackground = React.lazy(() => import('./AnimatedBackground'));
 
 const Hero: React.FC = () => {
   const { t } = useLanguage();
-  const { cursor, isActive } = useCursor();
-
-  // Memoize cursor values to prevent unnecessary re-renders
-  const cursorData = useMemo(() => ({
-    x: cursor.x,
-    y: cursor.y,
-    isActive
-  }), [cursor.x, cursor.y, isActive]);
 
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
@@ -30,24 +18,16 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-start px-4 sm:px-6 md:px-12 lg:px-24 xl:px-32 relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+    <section className="min-h-screen flex flex-col justify-center items-start px-4 sm:px-6 md:px-12 lg:px-24 xl:px-32 relative">
       
-      {/* Three.js Animated Background - Only render if active */}
-      {isActive && (
-        <Suspense fallback={null}>
-          <AnimatedBackground
-            mouseX={cursorData.x}
-            mouseY={cursorData.y}
-            isActive={cursorData.isActive}
-          />
-        </Suspense>
-      )}
-
-      {/* Fallback Background Pattern - Always visible as overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,255,218,0.15)_1px,transparent_0)] [background-size:50px_50px] opacity-20 z-[2]"></div>
+      {/* Subtle overlay to enhance text readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80"></div>
       
-      {/* Content - Higher z-index to be above Three.js */}
-      <div className="max-w-6xl relative z-10">
+      {/* Decorative pattern overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,255,218,0.08)_1px,transparent_0)] [background-size:50px_50px] opacity-40"></div>
+      
+      {/* Content - High z-index to be above background */}
+      <div className="max-w-6xl relative z-20">
         {/* Greeting */}
         <p className="text-green-400 font-mono text-base sm:text-lg md:text-xl mb-4 sm:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           {t('hero.greeting')}
@@ -58,7 +38,8 @@ const Hero: React.FC = () => {
           className="font-bold leading-[0.9] mb-4 sm:mb-6 text-slate-200 animate-fade-in-up"
           style={{ 
             fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-            animationDelay: '0.2s'
+            animationDelay: '0.2s',
+            textShadow: '0 0 20px rgba(100, 255, 218, 0.3)'
           }}
         >
           {personalInfo.name}
@@ -69,7 +50,8 @@ const Hero: React.FC = () => {
           className="font-bold leading-[0.9] mb-6 sm:mb-8 text-slate-400 animate-fade-in-up"
           style={{ 
             fontSize: 'clamp(2rem, 6vw, 4rem)',
-            animationDelay: '0.3s'
+            animationDelay: '0.3s',
+            textShadow: '0 0 15px rgba(100, 255, 218, 0.2)'
           }}
         >
           {t('hero.title')}
@@ -78,7 +60,10 @@ const Hero: React.FC = () => {
         {/* Description */}
         <p 
           className="max-w-2xl text-lg sm:text-xl leading-relaxed mb-8 sm:mb-12 text-slate-400 animate-fade-in-up"
-          style={{ animationDelay: '0.4s' }}
+          style={{ 
+            animationDelay: '0.4s',
+            textShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+          }}
         >
           {t('hero.description')}
         </p>
@@ -90,7 +75,7 @@ const Hero: React.FC = () => {
         >
           <button
             onClick={scrollToProjects}
-            className="group inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-transparent border border-green-400 text-green-400 rounded-lg font-medium text-base sm:text-lg hover:bg-green-400/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-400/25 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-transparent border border-green-400 text-green-400 rounded-lg font-medium text-base sm:text-lg hover:bg-green-400/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-400/25 transition-all duration-300 backdrop-blur-sm"
           >
             {t('hero.viewProjects')}
             <ArrowDown size={18} className="group-hover:translate-y-1 transition-transform duration-300" />
@@ -99,7 +84,7 @@ const Hero: React.FC = () => {
           <a
             href="/Eyup_Zafer_UNAL_CV.pdf"
             download="Eyup_Zafer_UNAL_CV.pdf"
-            className="group inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-green-400/10 border border-green-400 text-green-400 rounded-lg font-medium text-base sm:text-lg hover:bg-green-400 hover:text-slate-900 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-400/25 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-green-400/10 border border-green-400 text-green-400 rounded-lg font-medium text-base sm:text-lg hover:bg-green-400 hover:text-slate-900 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-400/25 transition-all duration-300 backdrop-blur-sm"
           >
             <Download size={18} className="group-hover:scale-110 transition-transform duration-300" />
             {t('hero.downloadCV')}
@@ -108,12 +93,12 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Social Links - Fixed Position */}
-      <div className="fixed left-6 lg:left-8 bottom-0 hidden lg:flex flex-col items-center space-y-6 z-20">
+      <div className="fixed left-6 lg:left-8 bottom-0 hidden lg:flex flex-col items-center space-y-6 z-30">
         <a
           href={personalInfo.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 p-2"
+          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 p-2 backdrop-blur-sm rounded-full hover:bg-green-400/10"
           aria-label="GitHub"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -125,7 +110,7 @@ const Hero: React.FC = () => {
           href={personalInfo.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 p-2"
+          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 p-2 backdrop-blur-sm rounded-full hover:bg-green-400/10"
           aria-label="LinkedIn"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -134,28 +119,28 @@ const Hero: React.FC = () => {
         </a>
         
         {/* Vertical Line */}
-        <div className="w-px h-24 bg-slate-500"></div>
+        <div className="w-px h-24 bg-slate-500/50 backdrop-blur-sm"></div>
       </div>
 
       {/* Email - Fixed Position */}
-      <div className="fixed right-6 lg:right-8 bottom-0 hidden lg:flex flex-col items-center z-20">
+      <div className="fixed right-6 lg:right-8 bottom-0 hidden lg:flex flex-col items-center z-30">
         <a
           href={`mailto:${personalInfo.email}`}
-          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 text-sm font-mono tracking-widest mb-6 [writing-mode:vertical-rl] [text-orientation:mixed]"
+          className="text-slate-400 hover:text-green-400 hover:-translate-y-1 transition-all duration-300 text-sm font-mono tracking-widest mb-6 [writing-mode:vertical-rl] [text-orientation:mixed] backdrop-blur-sm hover:bg-green-400/10 px-2 py-4 rounded-lg"
           aria-label="Email"
         >
           {personalInfo.email}
         </a>
         
         {/* Vertical Line */}
-        <div className="w-px h-24 bg-slate-500"></div>
+        <div className="w-px h-24 bg-slate-500/50 backdrop-blur-sm"></div>
       </div>
 
       {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 lg:hidden">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 lg:hidden z-20">
         <button
           onClick={scrollToProjects}
-          className="animate-bounce text-green-400 hover:text-green-300 transition-colors duration-300"
+          className="animate-bounce text-green-400 hover:text-green-300 transition-colors duration-300 backdrop-blur-sm bg-slate-900/20 rounded-full p-3 hover:bg-green-400/10"
           aria-label="Scroll down"
         >
           <ArrowDown size={24} />

@@ -4,6 +4,7 @@ import SEO from './components/SEO';
 import LoadingSpinner from './components/LoadingSpinner';
 import { SkeletonCard } from './components/SkeletonLoader';
 import CustomCursor from './components/CustomCursor';
+import { useCursor } from './hooks/useCursor';
 
 // Lazy load components for better performance
 const Header = lazy(() => import('./components/Header'));
@@ -14,6 +15,9 @@ const Projects = lazy(() => import('./components/Projects'));
 const Skills = lazy(() => import('./components/Skills'));
 const Contact = lazy(() => import('./components/Contact'));
 const Footer = lazy(() => import('./components/Footer'));
+
+// Global AnimatedBackground - now covers entire site
+const AnimatedBackground = lazy(() => import('./components/AnimatedBackground'));
 
 // Loading fallback component
 const SectionSkeleton: React.FC = () => (
@@ -38,60 +42,80 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
+// Main App Component with Global Background
+const AppContent: React.FC = () => {
+  const { cursor, isActive } = useCursor();
+
+  return (
+    <div className="min-h-screen bg-slate-900 relative">
+      {/* SEO Component */}
+      <SEO />
+      
+      {/* Custom Cursor - Highest layer */}
+      <CustomCursor />
+      
+      {/* Global Three.js Background - Covers entire site */}
+      {isActive && (
+        <Suspense fallback={null}>
+          <AnimatedBackground
+            mouseX={cursor.x}
+            mouseY={cursor.y}
+            isActive={isActive}
+          />
+        </Suspense>
+      )}
+      
+      {/* Header - Always visible, minimal loading */}
+      <Suspense fallback={
+        <div className="h-16 md:h-20 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 fixed top-0 left-0 right-0 z-50"></div>
+      }>
+        <Header />
+      </Suspense>
+      
+      <main className="relative z-10">
+        {/* Hero section - High priority, load immediately */}
+        <Suspense fallback={<LoadingFallback />}>
+          <Hero />
+        </Suspense>
+        
+        {/* Other sections - Lower priority, can be lazy loaded */}
+        <div className="bg-slate-900/80 backdrop-blur-sm relative z-10">
+          <Suspense fallback={<SectionSkeleton />}>
+            <About />
+          </Suspense>
+          
+          <Suspense fallback={<SectionSkeleton />}>
+            <Experience />
+          </Suspense>
+          
+          <Suspense fallback={<SectionSkeleton />}>
+            <Projects />
+          </Suspense>
+          
+          <Suspense fallback={<SectionSkeleton />}>
+            <Skills />
+          </Suspense>
+          
+          <Suspense fallback={<SectionSkeleton />}>
+            <Contact />
+          </Suspense>
+        </div>
+      </main>
+      
+      {/* Footer - Lowest priority */}
+      <Suspense fallback={
+        <div className="h-32 bg-gray-900 animate-pulse"></div>
+      }>
+        <Footer />
+      </Suspense>
+    </div>
+  );
+};
+
 function App() {
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-slate-900">
-        {/* SEO Component */}
-        <SEO />
-        
-        {/* Custom Cursor - Highest layer */}
-        <CustomCursor />
-        
-        {/* Header - Always visible, minimal loading */}
-        <Suspense fallback={
-          <div className="h-16 md:h-20 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 fixed top-0 left-0 right-0 z-50"></div>
-        }>
-          <Header />
-        </Suspense>
-        
-        <main>
-          {/* Hero section - High priority, load immediately */}
-          <Suspense fallback={<LoadingFallback />}>
-            <Hero />
-          </Suspense>
-          
-          {/* Other sections - Lower priority, can be lazy loaded */}
-          <div className="bg-slate-900">
-            <Suspense fallback={<SectionSkeleton />}>
-              <About />
-            </Suspense>
-            
-            <Suspense fallback={<SectionSkeleton />}>
-              <Experience />
-            </Suspense>
-            
-            <Suspense fallback={<SectionSkeleton />}>
-              <Projects />
-            </Suspense>
-            
-            <Suspense fallback={<SectionSkeleton />}>
-              <Skills />
-            </Suspense>
-            
-            <Suspense fallback={<SectionSkeleton />}>
-              <Contact />
-            </Suspense>
-          </div>
-        </main>
-        
-        {/* Footer - Lowest priority */}
-        <Suspense fallback={
-          <div className="h-32 bg-gray-900 animate-pulse"></div>
-        }>
-          <Footer />
-        </Suspense>
-      </div>
+      <AppContent />
     </LanguageProvider>
   );
 }

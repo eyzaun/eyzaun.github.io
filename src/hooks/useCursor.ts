@@ -15,7 +15,7 @@ export const useCursor = () => {
     isClicking: false
   });
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const rafId = useRef<number | undefined>();
 
   // Check if device is mobile
