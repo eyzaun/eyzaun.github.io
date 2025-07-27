@@ -78,8 +78,8 @@ const AppContent: React.FC = () => {
           <Hero />
         </Suspense>
         
-        {/* Other sections - Lower priority, can be lazy loaded */}
-        <div className="bg-slate-900/80 backdrop-blur-sm relative z-10">
+        {/* Other sections - Daha transparan background */}
+        <div className="bg-slate-900/30 backdrop-blur-sm relative z-10">
           <Suspense fallback={<SectionSkeleton />}>
             <About />
           </Suspense>

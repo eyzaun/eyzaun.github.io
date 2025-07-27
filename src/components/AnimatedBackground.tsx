@@ -144,7 +144,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       rendererRef.current = renderer;
 
       // === PARTICLES SYSTEM ===
-      const particleCount = 150;
+      const particleCount = 200; // Daha fazla particle
       const positions = new Float32Array(particleCount * 3);
       const colors = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
@@ -175,8 +175,8 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           colors[i * 3 + 2] = 1.0;  // B
         }
 
-        // Size
-        sizes[i] = Math.random() * 4 + 1;
+        // Size - Daha büyük particle'lar
+        sizes[i] = Math.random() * 8 + 3; // 3-11 arasında
 
         // Velocity
         velocities[i * 3] = (Math.random() - 0.5) * 0.5;
@@ -237,11 +237,11 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             gl_Position = projectedPosition;
             
             // Size based on distance and mouse interaction
-            float baseSize = size * (300.0 / -viewPosition.z);
-            gl_PointSize = baseSize * (1.0 + mouseInfluence * 2.0) * uPixelRatio;
+            float baseSize = size * (400.0 / -viewPosition.z); // Daha büyük base size
+            gl_PointSize = baseSize * (1.5 + mouseInfluence * 3.0) * uPixelRatio; // Daha büyük multiplier
             
-            // Alpha based on distance and mouse
-            vAlpha = smoothstep(0.0, 0.3, size / 5.0) * (0.6 + mouseInfluence * 0.4);
+            // Alpha based on distance and mouse - Daha parlak
+            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 0.6);
           }
         `,
         fragmentShader: `
@@ -256,7 +256,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
             float glow = 1.0 - smoothstep(0.0, 0.8, distanceToCenter);
             
             vec3 finalColor = vColor;
-            float finalAlpha = strength * vAlpha * 0.8 + glow * vAlpha * 0.2;
+            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.4; // Daha parlak
             
             gl_FragColor = vec4(finalColor, finalAlpha);
           }
@@ -268,7 +268,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       particlesRef.current = particles;
 
       // === FLOATING GEOMETRIES ===
-      const geometryCount = 15;
+      const geometryCount = 20; // Daha fazla geometri
       const geometries: THREE.Mesh[] = [];
 
       for (let i = 0; i < geometryCount; i++) {
@@ -276,20 +276,20 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         const shapeType = Math.random();
         
         if (shapeType < 0.33) {
-          // Triangle
-          geometry = new THREE.ConeGeometry(5 + Math.random() * 10, 10 + Math.random() * 20, 3);
+          // Triangle - Daha büyük
+          geometry = new THREE.ConeGeometry(8 + Math.random() * 15, 15 + Math.random() * 25, 3);
         } else if (shapeType < 0.66) {
-          // Cube
-          geometry = new THREE.BoxGeometry(8 + Math.random() * 12, 8 + Math.random() * 12, 8 + Math.random() * 12);
+          // Cube - Daha büyük
+          geometry = new THREE.BoxGeometry(12 + Math.random() * 18, 12 + Math.random() * 18, 12 + Math.random() * 18);
         } else {
-          // Sphere
-          geometry = new THREE.SphereGeometry(4 + Math.random() * 8, 8, 6);
+          // Sphere - Daha büyük
+          geometry = new THREE.SphereGeometry(6 + Math.random() * 12, 8, 6);
         }
 
         const material = new THREE.MeshBasicMaterial({
-          color: new THREE.Color().setHSL(0.5 + Math.random() * 0.15, 0.7, 0.6),
+          color: new THREE.Color().setHSL(0.5 + Math.random() * 0.15, 0.8, 0.7),
           transparent: true,
-          opacity: 0.1 + Math.random() * 0.2,
+          opacity: 0.15 + Math.random() * 0.25, // Daha parlak
           wireframe: true
         });
 
@@ -344,7 +344,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         const lineMaterial = new THREE.LineBasicMaterial({
           vertexColors: true,
           transparent: true,
-          opacity: 0.3,
+          opacity: 0.5, // Daha parlak çizgiler
           blending: THREE.AdditiveBlending
         });
 
@@ -458,7 +458,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       ref={mountRef}
       className="fixed inset-0 pointer-events-none"
       style={{ 
-        zIndex: 1,
+        zIndex: 5, // Biraz artırdım ama content'in altında
         width: '100vw',
         height: '100vh'
       }}
