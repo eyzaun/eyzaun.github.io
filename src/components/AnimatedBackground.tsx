@@ -16,628 +16,451 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const particlesRef = useRef<THREE.Points | null>(null);
-  const lettersRef = useRef<THREE.Mesh[]>([]);
-  const linesRef = useRef<THREE.LineSegments | null>(null);
-  const frameIdRef = useRef<number | undefined>();
-  const isInitializedRef = useRef<boolean>(false);
+  const frameIdRef = useRef<number>();
   const mouseRef = useRef({ x: 0, y: 0 });
-  const scrollRef = useRef<number>(0);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const scrollRef = useRef(0);
 
-  // Mobile detection but still allow Three.js
+  // Scene objects
+  const particlesRef = useRef<THREE.Points | null>(null);
+  const geometriesRef = useRef<THREE.Mesh[]>([]);
+  const lettersRef = useRef<THREE.Mesh[]>([]);
+  const connectionsRef = useRef<THREE.LineSegments | null>(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Detect mobile
   useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 1024 || 'ontouchstart' in window;
-      setIsMobile(mobile);
-    };
-    
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
-    const handleResize = () => checkMobile();
-    window.addEventListener('resize', handleResize);
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isMobile]);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  // Update mouse and scroll position
+  // Track mouse and scroll
   useEffect(() => {
-    mouseRef.current.x = mouseX;
-    mouseRef.current.y = mouseY;
+    mouseRef.current = { x: mouseX, y: mouseY };
   }, [mouseX, mouseY]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      scrollRef.current = window.scrollY;
-    };
-    
+    const handleScroll = () => { scrollRef.current = window.scrollY; };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Helper function to create text texture
-  const createTextTexture = useCallback((text: string) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d')!;
-    canvas.width = 128;
-    canvas.height = 128;
+  // Create floating particles
+  const createParticleSystem = useCallback((scene: THREE.Scene) => {
+    const count = isMobile ? 60 : 120;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
 
-    // Clear background
-    context.fillStyle = 'rgba(0, 0, 0, 0)';
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < count; i++) {
+      // Spread particles in 3D space
+      positions[i * 3] = (Math.random() - 0.5) * 1000;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 800;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
 
-    // Text styling - larger fonts for better visibility
-    context.fillStyle = '#64ffda';
-    context.font = `bold ${isMobile ? '80px' : '100px'} Arial`; // Increased font sizes
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    
-    // Add glow effect - more pronounced
-    context.shadowColor = '#64ffda';
-    context.shadowBlur = isMobile ? 12 : 20; // Increased glow
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
-    
-    // Second pass for more glow
-    if (!isMobile) {
-      context.shadowBlur = 8;
-      context.fillText(text, canvas.width / 2, canvas.height / 2);
+      // Color variation between green and cyan
+      const hue = 0.5 + Math.random() * 0.15; // Green to cyan range
+      const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
+
+      sizes[i] = Math.random() * 4 + 2;
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-    return texture;
-  }, []);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-  // Cleanup function
-  const cleanup = useCallback(() => {
-    console.log('Cleaning up Three.js resources...');
-    
-    if (frameIdRef.current) {
-      cancelAnimationFrame(frameIdRef.current);
-      frameIdRef.current = undefined;
-    }
+    const material = new THREE.ShaderMaterial({
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        time: { value: 0 },
+        mouse: { value: new THREE.Vector2() },
+        scroll: { value: 0 }
+      },
+      vertexShader: `
+        uniform float time;
+        uniform vec2 mouse;
+        uniform float scroll;
+        attribute float size;
+        varying vec3 vColor;
+        varying float vAlpha;
 
-    // Dispose particles
-    if (particlesRef.current) {
-      if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
-      if (particlesRef.current.material) {
-        const material = particlesRef.current.material as THREE.Material;
-        material.dispose();
+        void main() {
+          vColor = color;
+          
+          vec3 pos = position;
+          
+          // Gentle floating animation
+          pos.x += sin(time * 0.5 + position.y * 0.01) * 20.0;
+          pos.y += cos(time * 0.3 + position.x * 0.01) * 15.0;
+          pos.z += sin(time * 0.4 + position.x * 0.005) * 10.0;
+          
+          // Mouse interaction
+          vec2 mouseWorld = (mouse - 0.5) * 1000.0;
+          float mouseDistance = distance(mouseWorld, pos.xy);
+          float mouseEffect = smoothstep(200.0, 0.0, mouseDistance);
+          
+          // Push away from mouse
+          if (mouseEffect > 0.0) {
+            vec2 direction = normalize(pos.xy - mouseWorld);
+            pos.xy += direction * mouseEffect * 60.0;
+          }
+          
+          // Subtle parallax with scroll
+          float depth = (position.z + 200.0) / 400.0; // 0 to 1
+          pos.y -= scroll * 0.2 * depth;
+          
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + mouseEffect);
+          
+          vAlpha = 0.8 - depth * 0.3 + mouseEffect * 0.4;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          float dist = distance(gl_PointCoord, vec2(0.5));
+          float strength = 1.0 - smoothstep(0.0, 0.5, dist);
+          float glow = 1.0 - smoothstep(0.0, 0.7, dist);
+          
+          vec3 finalColor = vColor;
+          float finalAlpha = (strength * 0.8 + glow * 0.2) * vAlpha;
+          
+          gl_FragColor = vec4(finalColor, finalAlpha);
+        }
+      `
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+    particlesRef.current = particles;
+  }, [isMobile]);
+
+  // Create floating geometric shapes
+  const createGeometries = useCallback((scene: THREE.Scene) => {
+    const shapes = [];
+    const shapeCount = isMobile ? 8 : 12;
+
+    for (let i = 0; i < shapeCount; i++) {
+      let geometry: THREE.BufferGeometry;
+      
+      // Different geometric shapes
+      const shapeType = i % 3;
+      if (shapeType === 0) {
+        geometry = new THREE.BoxGeometry(30, 30, 30);
+      } else if (shapeType === 1) {
+        geometry = new THREE.SphereGeometry(20, 16, 12);
+      } else {
+        geometry = new THREE.ConeGeometry(15, 40, 6);
       }
+
+      const material = new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(0.52 + Math.random() * 0.1, 0.7, 0.5),
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      
+      // Random position
+      mesh.position.set(
+        (Math.random() - 0.5) * 800,
+        (Math.random() - 0.5) * 600,
+        (Math.random() - 0.5) * 300
+      );
+      
+      // Random rotation
+      mesh.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      );
+
+      // Store animation data
+      mesh.userData = {
+        rotationSpeed: {
+          x: (Math.random() - 0.5) * 0.02,
+          y: (Math.random() - 0.5) * 0.02,
+          z: (Math.random() - 0.5) * 0.02
+        },
+        floatSpeed: Math.random() * 0.5 + 0.5,
+        originalY: mesh.position.y
+      };
+
+      scene.add(mesh);
+      shapes.push(mesh);
     }
 
-    // Dispose letters
-    lettersRef.current.forEach(letter => {
-      if (letter.geometry) letter.geometry.dispose();
-      if (letter.material) {
-        const material = letter.material as THREE.MeshBasicMaterial;
-        if (material.map) material.map.dispose();
-        material.dispose();
+    geometriesRef.current = shapes;
+  }, [isMobile]);
+
+  // Create floating letters
+  const createLetters = useCallback((scene: THREE.Scene) => {
+    const letters = ['E', 'Y', 'Z', 'A', 'U', 'N'];
+    const letterMeshes: THREE.Mesh[] = [];
+
+    // Create text texture
+    const createTextTexture = (text: string) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      canvas.width = 256;
+      canvas.height = 256;
+
+      // Clear canvas
+      ctx.fillStyle = 'transparent';
+      ctx.fillRect(0, 0, 256, 256);
+
+      // Draw text with glow
+      ctx.fillStyle = '#64ffda';
+      ctx.font = 'bold 140px Inter, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = '#64ffda';
+      ctx.shadowBlur = 20;
+      ctx.fillText(text, 128, 128);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    };
+
+    letters.forEach((letter, index) => {
+      const geometry = new THREE.PlaneGeometry(60, 60);
+      const material = new THREE.MeshBasicMaterial({
+        map: createTextTexture(letter),
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      
+      // Arrange in a circle
+      const angle = (index / letters.length) * Math.PI * 2;
+      const radius = isMobile ? 150 : 200;
+      mesh.position.set(
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        (Math.random() - 0.5) * 100
+      );
+
+      // Store animation data
+      mesh.userData = {
+        originalPos: mesh.position.clone(),
+        floatOffset: index * 1.2,
+        angle: angle
+      };
+
+      scene.add(mesh);
+      letterMeshes.push(mesh);
+    });
+
+    lettersRef.current = letterMeshes;
+  }, [isMobile]);
+
+  // Animation loop
+  const animate = useCallback(() => {
+    if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
+
+    const time = Date.now() * 0.001;
+    const mouse = {
+      x: mouseRef.current.x / window.innerWidth,
+      y: 1 - mouseRef.current.y / window.innerHeight
+    };
+
+    // Update particles
+    if (particlesRef.current?.material) {
+      const material = particlesRef.current.material as THREE.ShaderMaterial;
+      material.uniforms.time.value = time;
+      material.uniforms.mouse.value.set(mouse.x, mouse.y);
+      material.uniforms.scroll.value = scrollRef.current;
+    }
+
+    // Animate geometric shapes
+    geometriesRef.current.forEach((shape, index) => {
+      // Rotation
+      shape.rotation.x += shape.userData.rotationSpeed.x;
+      shape.rotation.y += shape.userData.rotationSpeed.y;
+      shape.rotation.z += shape.userData.rotationSpeed.z;
+
+      // Floating motion
+      const floatY = Math.sin(time * shape.userData.floatSpeed + index) * 30;
+      shape.position.y = shape.userData.originalY + floatY;
+
+      // Mouse interaction
+      const mouseWorldX = (mouse.x - 0.5) * 1000;
+      const mouseWorldY = (mouse.y - 0.5) * 800;
+      const distance = Math.sqrt(
+        Math.pow(shape.position.x - mouseWorldX, 2) +
+        Math.pow(shape.position.y - mouseWorldY, 2)
+      );
+
+      if (distance < 150) {
+        const force = (150 - distance) / 150;
+        const dirX = (shape.position.x - mouseWorldX) / distance;
+        const dirY = (shape.position.y - mouseWorldY) / distance;
+        shape.position.x += dirX * force * 40;
+        shape.position.y += dirY * force * 40;
       }
     });
 
-    // Dispose lines
-    if (linesRef.current) {
-      if (linesRef.current.geometry) linesRef.current.geometry.dispose();
-      if (linesRef.current.material) {
-        (linesRef.current.material as THREE.Material).dispose();
-      }
-    }
+    // Animate letters
+    lettersRef.current.forEach((letter, index) => {
+      const data = letter.userData;
+      
+      // Gentle floating
+      const floatX = Math.cos(time * 0.5 + data.floatOffset) * 40;
+      const floatY = Math.sin(time * 0.3 + data.floatOffset) * 30;
+      const floatZ = Math.sin(time * 0.4 + data.floatOffset) * 20;
+      
+      letter.position.x = data.originalPos.x + floatX;
+      letter.position.y = data.originalPos.y + floatY;
+      letter.position.z = data.originalPos.z + floatZ;
 
-    // Dispose renderer
-    if (rendererRef.current) {
-      rendererRef.current.dispose();
-      rendererRef.current.forceContextLoss();
-      if (mountRef.current && rendererRef.current.domElement.parentNode) {
-        mountRef.current.removeChild(rendererRef.current.domElement);
-      }
-    }
+      // Subtle rotation
+      letter.rotation.z = Math.sin(time * 0.2 + data.floatOffset) * 0.3;
 
-    // Clear references
-    sceneRef.current = null;
-    rendererRef.current = null;
-    cameraRef.current = null;
-    particlesRef.current = null;
-    linesRef.current = null;
-    lettersRef.current = [];
-    isInitializedRef.current = false;
+      // Mouse interaction
+      const mouseWorldX = (mouse.x - 0.5) * 800;
+      const mouseWorldY = (mouse.y - 0.5) * 600;
+      const distance = Math.sqrt(
+        Math.pow(letter.position.x - mouseWorldX, 2) +
+        Math.pow(letter.position.y - mouseWorldY, 2)
+      );
+
+      if (distance < 100) {
+        const force = (100 - distance) / 100;
+        const dirX = (letter.position.x - mouseWorldX) / distance;
+        const dirY = (letter.position.y - mouseWorldY) / distance;
+        letter.position.x += dirX * force * 50;
+        letter.position.y += dirY * force * 50;
+      }
+    });
+
+    // Camera gentle movement
+    const targetX = (mouse.x - 0.5) * 100;
+    const targetY = (mouse.y - 0.5) * 50;
+    cameraRef.current.position.x += (targetX - cameraRef.current.position.x) * 0.02;
+    cameraRef.current.position.y += (targetY - cameraRef.current.position.y) * 0.02;
+    
+    // Subtle parallax with scroll
+    cameraRef.current.position.z = 400 + Math.sin(scrollRef.current * 0.001) * 20;
+    
+    cameraRef.current.lookAt(0, 0, 0);
+
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+    frameIdRef.current = requestAnimationFrame(animate);
   }, []);
 
   // Initialize Three.js
   const initThreeJS = useCallback(() => {
-    if (!mountRef.current || !isActive || isInitializedRef.current) {
-      return;
-    }
+    if (!mountRef.current || isInitialized) return;
 
-    console.log(`Initializing Three.js with E-Y-Z-A-U-N Letters... (${isMobile ? 'Mobile' : 'Desktop'} Mode)`);
-    
-    try {
-      const container = mountRef.current;
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: !isMobile,
+      powerPreference: isMobile ? 'low-power' : 'high-performance'
+    });
 
-      if (screenWidth === 0 || screenHeight === 0) {
-        console.warn('Screen has no dimensions');
-        return;
-      }
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setClearColor(0x000000, 0);
 
-      // === SCENE SETUP ===
-      const scene = new THREE.Scene();
-      sceneRef.current = scene;
+    camera.position.z = 400;
 
-      const camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 1, 2000);
-      camera.position.z = isMobile ? 150 : 200; // Mobile'da daha yakın kamera
-      cameraRef.current = camera;
+    mountRef.current.appendChild(renderer.domElement);
 
-      const renderer = new THREE.WebGLRenderer({ 
-        alpha: true, 
-        antialias: !isMobile, // Mobile'da antialiasing kapalı (performance)
-        powerPreference: isMobile ? "low-power" : "high-performance"
-      });
-      
-      renderer.setSize(screenWidth, screenHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)); // Mobile'da daha düşük pixel ratio
-      renderer.setClearColor(0x000000, 0);
-      container.appendChild(renderer.domElement);
-      rendererRef.current = renderer;
+    sceneRef.current = scene;
+    cameraRef.current = camera;
+    rendererRef.current = renderer;
 
-      // === PARTICLES SYSTEM (Mobile Optimized) ===
-      const particleCount = isMobile ? 80 : 200; // Mobile'da çok daha az particle
-      const positions = new Float32Array(particleCount * 3);
-      const colors = new Float32Array(particleCount * 3);
-      const sizes = new Float32Array(particleCount);
+    // Create all elements
+    createParticleSystem(scene);
+    createGeometries(scene);
+    createLetters(scene);
 
-      for (let i = 0; i < particleCount; i++) {
-        // Position within smaller visible area for mobile
-        const widthMultiplier = isMobile ? 0.5 : 0.6;
-        const heightMultiplier = isMobile ? 0.5 : 0.6;
-        
-        positions[i * 3] = (Math.random() - 0.5) * screenWidth * widthMultiplier;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * screenHeight * heightMultiplier;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * (isMobile ? 50 : 100);
+    setIsInitialized(true);
+    animate();
 
-        // Colors - Site theme
-        const colorType = Math.random();
-        if (colorType < 0.4) {
-          // Green theme #64ffda
-          colors[i * 3] = 0.39;     // R
-          colors[i * 3 + 1] = 1.0;  // G  
-          colors[i * 3 + 2] = 0.85; // B
-        } else if (colorType < 0.7) {
-          // Cyan
-          colors[i * 3] = 0.2;      // R
-          colors[i * 3 + 1] = 0.8;  // G  
-          colors[i * 3 + 2] = 1.0;  // B
-        } else {
-          // Light blue
-          colors[i * 3] = 0.6;      // R
-          colors[i * 3 + 1] = 0.9;  // G  
-          colors[i * 3 + 2] = 1.0;  // B
-        }
+    console.log('🚀 Modern Three.js Background Initialized');
+  }, [isMobile, isInitialized, createParticleSystem, createGeometries, createLetters, animate]);
 
-        // Size - smaller on mobile
-        sizes[i] = (Math.random() * 6 + 2) * (isMobile ? 0.8 : 1);
-      }
-
-      const particleGeometry = new THREE.BufferGeometry();
-      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-      // Mobile optimized vs Desktop full-featured shader
-      const particleMaterial = new THREE.ShaderMaterial({
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        uniforms: {
-          uTime: { value: 0 },
-          uMouse: { value: new THREE.Vector2() },
-          uScrollY: { value: 0 },
-          uPixelRatio: { value: renderer.getPixelRatio() },
-          uIsMobile: { value: isMobile ? 1.0 : 0.0 }
-        },
-        vertexShader: `
-          uniform float uTime;
-          uniform vec2 uMouse;
-          uniform float uScrollY;
-          uniform float uPixelRatio;
-          uniform float uIsMobile;
-          
-          attribute float size;
-          varying vec3 vColor;
-          varying float vAlpha;
-          
-          void main() {
-            vColor = color;
-            
-            vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-            
-            // More sensitive mouse interaction
-            vec2 mousePos = uMouse * 2.0 - 1.0;
-            float mouseDistance = distance(mousePos, modelPosition.xy / 400.0); // Closer detection
-            float mouseInfluence = smoothstep(1.0, 0.0, mouseDistance); // Wider influence area
-            
-            // Reduced wave motion but still dynamic
-            float waveIntensity = uIsMobile > 0.5 ? 15.0 : 25.0; // Increased for more movement
-            modelPosition.x += sin(uTime * 0.7 + position.y * 0.01) * waveIntensity;
-            modelPosition.y += cos(uTime * 0.5 + position.x * 0.01) * (waveIntensity * 0.8);
-            
-            if (uIsMobile < 0.5) {
-              modelPosition.z += sin(uTime * 0.3 + position.x * 0.005) * 15.0; // More Z movement
-            }
-            
-            // Softer boundary wrapping - more natural movement
-            float maxX = uIsMobile > 0.5 ? 300.0 : 400.0; // Looser bounds for natural flow
-            float maxY = uIsMobile > 0.5 ? 250.0 : 350.0; // Looser bounds for natural flow
-            
-            // Smooth boundary system - gradual direction change
-            if (modelPosition.x > maxX) {
-              modelPosition.x = maxX - (modelPosition.x - maxX) * 0.1; // Soft bounce
-            }
-            if (modelPosition.x < -maxX) {
-              modelPosition.x = -maxX - (modelPosition.x + maxX) * 0.1; // Soft bounce
-            }
-            if (modelPosition.y > maxY) {
-              modelPosition.y = maxY - (modelPosition.y - maxY) * 0.1; // Soft bounce
-            }
-            if (modelPosition.y < -maxY) {
-              modelPosition.y = -maxY - (modelPosition.y + maxY) * 0.1; // Soft bounce
-            }
-            
-            // Mouse repulsion - much stronger and wider area
-            vec2 mouseDirection = normalize(modelPosition.xy - mousePos * 400.0); // Closer reference point
-            float repulsionForce = uIsMobile > 0.5 ? 120.0 : 180.0; // Even stronger
-            modelPosition.xy += mouseDirection * mouseInfluence * repulsionForce;
-            
-            // Natural parallax scroll effect - different layers move at different speeds
-            float parallaxFactor = (position.z + 100.0) / 200.0; // Depth-based parallax (0.0 to 1.0)
-            float scrollInfluence = uScrollY * 0.3 * parallaxFactor; // Closer objects move faster
-            
-            // Gentle drift with scroll - not zoom
-            modelPosition.y -= scrollInfluence; // Smooth drift in scroll direction
-            
-            // Add subtle rotation based on scroll for 3D feel
-            float scrollRotation = uScrollY * 0.001;
-            modelPosition.x += sin(scrollRotation + position.y * 0.01) * 10.0;
-            modelPosition.z += cos(scrollRotation) * parallaxFactor * 15.0;
-            
-            vec4 viewPosition = viewMatrix * modelPosition;
-            vec4 projectedPosition = projectionMatrix * viewPosition;
-            
-            gl_Position = projectedPosition;
-            
-            // Size and alpha - more responsive to mouse
-            float baseSize = size * (400.0 / -viewPosition.z);
-            float sizeMultiplier = uIsMobile > 0.5 ? 1.5 : 2.0; // Larger particles
-            gl_PointSize = baseSize * (sizeMultiplier + mouseInfluence * 4.0) * uPixelRatio; // Stronger mouse effect
-            vAlpha = smoothstep(0.0, 0.5, size / 8.0) * (0.8 + mouseInfluence * 1.0); // More visible with mouse
-          }
-        `,
-        fragmentShader: `
-          varying vec3 vColor;
-          varying float vAlpha;
-          
-          void main() {
-            float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
-            float strength = 1.0 - smoothstep(0.0, 0.5, distanceToCenter);
-            float glow = 1.0 - smoothstep(0.0, 0.8, distanceToCenter);
-            
-            vec3 finalColor = vColor;
-            float finalAlpha = strength * vAlpha * 1.2 + glow * vAlpha * 0.4;
-            
-            gl_FragColor = vec4(finalColor, finalAlpha);
-          }
-        `
-      });
-
-      const particles = new THREE.Points(particleGeometry, particleMaterial);
-      scene.add(particles);
-      particlesRef.current = particles;
-
-      // === 3D LETTERS (E-Y-Z-A-U-N) - Mobile Optimized ===
-      const letters = isMobile ? ['E', 'Y', 'Z'] : ['E', 'Y', 'Z', 'A', 'U', 'N']; // Mobile'da daha az harf
-      const letterMeshes: THREE.Mesh[] = [];
-
-      letters.forEach((letter, index) => {
-        const letterSize = isMobile ? 35 : 50; // Increased letter size for better visibility
-        const geometry = new THREE.PlaneGeometry(letterSize, letterSize);
-        const texture = createTextTexture(letter);
-        const material = new THREE.MeshBasicMaterial({
-          map: texture,
-          transparent: true,
-          opacity: isMobile ? 0.8 : 0.9, // Increased opacity
-          side: THREE.DoubleSide
-        });
-
-        const letterMesh = new THREE.Mesh(geometry, material);
-        
-        // Position letters - mobile için daha küçük radius
-        const angle = (index / letters.length) * Math.PI * 2;
-        const radiusX = Math.min(screenWidth * (isMobile ? 0.12 : 0.15), isMobile ? 120 : 200);
-        const radiusY = Math.min(screenHeight * (isMobile ? 0.12 : 0.15), isMobile ? 100 : 150);
-        
-        letterMesh.position.set(
-          Math.cos(angle) * radiusX,
-          Math.sin(angle) * radiusY,
-          (Math.random() - 0.5) * (isMobile ? 30 : 50)
-        );
-        
-        letterMesh.rotation.set(
-          Math.random() * 0.2,
-          Math.random() * 0.2,
-          Math.random() * 0.2
-        );
-
-        scene.add(letterMesh);
-        letterMeshes.push(letterMesh);
-      });
-
-      lettersRef.current = letterMeshes;
-
-      // === CONNECTION LINES ===
-      const createConnectionLines = () => {
-        const linePositions: number[] = [];
-        const lineColors: number[] = [];
-        
-        for (let i = 0; i < particleCount && linePositions.length < 600; i++) {
-          for (let j = i + 1; j < particleCount && linePositions.length < 600; j++) {
-            const distance = new THREE.Vector3(
-              positions[i * 3] - positions[j * 3],
-              positions[i * 3 + 1] - positions[j * 3 + 1],
-              positions[i * 3 + 2] - positions[j * 3 + 2]
-            ).length();
-
-            if (distance < 120) {
-              linePositions.push(
-                positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
-                positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
-              );
-              
-              const alpha = 1.0 - (distance / 120);
-              lineColors.push(0.39, 1.0, 0.85, alpha);
-              lineColors.push(0.39, 1.0, 0.85, alpha);
-            }
-          }
-        }
-
-        if (linePositions.length > 0) {
-          const lineGeometry = new THREE.BufferGeometry();
-          lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-          lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 4));
-
-          const lineMaterial = new THREE.LineBasicMaterial({
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.5,
-            blending: THREE.AdditiveBlending
-          });
-
-          const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-          scene.add(lines);
-          linesRef.current = lines;
-        }
-      };
-
-      createConnectionLines();
-      isInitializedRef.current = true;
-      console.log('Three.js with Natural Parallax Scroll Effect initialized successfully');
-
-    } catch (error) {
-      console.error('Three.js initialization error:', error);
-      cleanup();
-    }
-  }, [isActive, cleanup, createTextTexture]);
-
-  // Animation loop
-  const animate = useCallback(() => {
-    if (!rendererRef.current || !sceneRef.current || !cameraRef.current) {
-      return;
-    }
-
-    try {
-      const time = Date.now() * 0.001;
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-      
-      // Update particle shader uniforms
-      if (particlesRef.current && particlesRef.current.material) {
-        const material = particlesRef.current.material as THREE.ShaderMaterial;
-        material.uniforms.uTime.value = time;
-        material.uniforms.uMouse.value.set(
-          mouseRef.current.x / window.innerWidth,
-          1.0 - mouseRef.current.y / window.innerHeight
-        );
-        material.uniforms.uScrollY.value = scrollRef.current; // Pass raw scroll value
-      }
-
-      // Animate letters - natural movement with soft boundaries
-      lettersRef.current.forEach((letter, index) => {
-        // Rotation - slower on mobile
-        const rotationSpeed = isMobile ? 0.5 : 1;
-        letter.rotation.x += (0.003 + index * 0.001) * rotationSpeed;
-        letter.rotation.y += (0.005 + index * 0.0015) * rotationSpeed;
-        letter.rotation.z += (0.002 + index * 0.0008) * rotationSpeed;
-        
-        // Store original position and depth factor for parallax
-        if (!letter.userData.originalX) {
-          letter.userData.originalX = letter.position.x;
-          letter.userData.originalY = letter.position.y;
-          letter.userData.originalZ = letter.position.z;
-          // Assign depth factor for parallax (0.3 to 1.0)
-          letter.userData.parallaxFactor = 0.3 + (index / lettersRef.current.length) * 0.7;
-        }
-        
-        // Natural floating motion - much more dynamic
-        const floatIntensity = isMobile ? 40 : 60;
-        const timeX = time * 0.3 + index * 0.5;
-        const timeY = time * 0.4 + index * 0.7;
-        const timeZ = time * 0.2 + index * 0.3;
-        
-        // Complex wave patterns for natural movement
-        const moveX = Math.sin(timeX) * floatIntensity + Math.cos(timeX * 1.5) * (floatIntensity * 0.3);
-        const moveY = Math.cos(timeY) * floatIntensity + Math.sin(timeY * 1.3) * (floatIntensity * 0.4);
-        const moveZ = Math.sin(timeZ) * 20 + Math.cos(timeZ * 2) * 10;
-        
-        // Natural parallax scroll effect for letters
-        const parallaxFactor = letter.userData.parallaxFactor;
-        const scrollDrift = scrollRef.current * 0.4 * parallaxFactor; // Different letters move at different speeds
-        
-        // Subtle perspective shift with scroll
-        const scrollPerspective = scrollRef.current * 0.001;
-        const perspectiveX = Math.sin(scrollPerspective + index) * 20 * parallaxFactor;
-        const perspectiveZ = Math.cos(scrollPerspective) * 30 * parallaxFactor;
-        
-        // Apply all movements
-        letter.position.x = letter.userData.originalX + moveX + perspectiveX;
-        letter.position.y = letter.userData.originalY + moveY - scrollDrift; // Drift down with scroll
-        letter.position.z = letter.userData.originalZ + moveZ + perspectiveZ;
-        
-        // Strong mouse interaction - much more powerful
-        const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * (isMobile ? 80 : 120);
-        const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * (isMobile ? 80 : 120);
-        
-        const distanceToMouse = Math.sqrt(
-          Math.pow(letter.position.x - mouseInfluenceX, 2) + 
-          Math.pow(letter.position.y - mouseInfluenceY, 2)
-        );
-        
-        const interactionDistance = isMobile ? 120 : 180;
-        if (distanceToMouse < interactionDistance) {
-          const pushForce = (interactionDistance - distanceToMouse) / interactionDistance;
-          
-          const pushX = (letter.position.x - mouseInfluenceX) * pushForce * 0.25;
-          const pushY = (letter.position.y - mouseInfluenceY) * pushForce * 0.25;
-          
-          letter.position.x += pushX;
-          letter.position.y += pushY;
-        }
-        
-        // Soft boundary system - considers current scroll position
-        const baseMaxDistance = isMobile ? 200 : 300;
-        const scrollOffset = Math.abs(scrollRef.current * 0.1); // Account for scroll drift
-        const maxDistance = baseMaxDistance + scrollOffset;
-        
-        const currentDistance = Math.sqrt(
-          Math.pow(letter.position.x - letter.userData.originalX, 2) + 
-          Math.pow((letter.position.y + scrollDrift) - letter.userData.originalY, 2) // Account for scroll drift in distance calc
-        );
-        
-        if (currentDistance > maxDistance) {
-          // Gentle pull back - not harsh snapping
-          const pullStrength = (currentDistance - maxDistance) / maxDistance * 0.08;
-          const pullX = (letter.userData.originalX - letter.position.x) * pullStrength;
-          const pullY = ((letter.userData.originalY - scrollDrift) - letter.position.y) * pullStrength;
-          
-          letter.position.x += pullX;
-          letter.position.y += pullY;
-        }
-        
-        // Dynamic screen boundary protection based on scroll
-        const scrollBasedMaxX = screenWidth * 0.45 + Math.abs(scrollRef.current * 0.05);
-        const scrollBasedMaxY = screenHeight * 0.45 + Math.abs(scrollRef.current * 0.05);
-        
-        if (Math.abs(letter.position.x) > scrollBasedMaxX) {
-          letter.position.x = letter.position.x > 0 ? scrollBasedMaxX : -scrollBasedMaxX;
-        }
-        if (Math.abs(letter.position.y) > scrollBasedMaxY) {
-          letter.position.y = letter.position.y > 0 ? scrollBasedMaxY : -scrollBasedMaxY;
-        }
-        
-        // Z boundary - keep reasonable depth
-        if (letter.position.z > 80) letter.position.z = 80;
-        if (letter.position.z < -80) letter.position.z = -80;
-      });
-
-      // Camera movement - natural scroll response without zoom
-      const cameraInfluence = isMobile ? 60 : 100;
-      const mouseInfluenceX = (mouseRef.current.x / window.innerWidth - 0.5) * cameraInfluence;
-      const mouseInfluenceY = -(mouseRef.current.y / window.innerHeight - 0.5) * cameraInfluence;
-      
-      // Subtle camera perspective shift with scroll - not position change
-      const scrollRotationX = scrollRef.current * 0.0001; // Very subtle rotation
-      const scrollRotationY = scrollRef.current * 0.00005;
-      
-      // Apply mouse movement
-      const cameraSpeed = isMobile ? 0.03 : 0.05;
-      cameraRef.current.position.x += (mouseInfluenceX - cameraRef.current.position.x) * cameraSpeed;
-      cameraRef.current.position.y += (mouseInfluenceY - cameraRef.current.position.y) * cameraSpeed;
-      
-      // Apply subtle scroll-based rotation instead of position change
-      cameraRef.current.rotation.x = scrollRotationX;
-      cameraRef.current.rotation.y = scrollRotationY;
-      
-      cameraRef.current.lookAt(0, 0, 0);
-
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-      frameIdRef.current = requestAnimationFrame(animate);
-
-    } catch (error) {
-      console.error('Animation error:', error);
-      cleanup();
-    }
-  }, [cleanup]);
-
-  // Handle resize with better mobile support
+  // Handle resize
   const handleResize = useCallback(() => {
-    if (!rendererRef.current || !cameraRef.current) return;
-
+    if (!cameraRef.current || !rendererRef.current) return;
+    
     const width = window.innerWidth;
     const height = window.innerHeight;
     
-    // Ensure minimum height for mobile
-    const adjustedHeight = isMobile ? Math.max(height, 600) : height;
-    
-    cameraRef.current.aspect = width / adjustedHeight;
+    cameraRef.current.aspect = width / height;
     cameraRef.current.updateProjectionMatrix();
-    rendererRef.current.setSize(width, adjustedHeight);
-    
-    // Also update camera position to prevent shrinking on mobile
-    if (isMobile) {
-      cameraRef.current.position.z = Math.max(150, 150 * (height / 600));
+    rendererRef.current.setSize(width, height);
+  }, []);
+
+  // Cleanup
+  const cleanup = useCallback(() => {
+    if (frameIdRef.current) {
+      cancelAnimationFrame(frameIdRef.current);
     }
-  }, [isMobile]);
+
+    if (rendererRef.current && mountRef.current) {
+      mountRef.current.removeChild(rendererRef.current.domElement);
+      rendererRef.current.dispose();
+    }
+
+    // Dispose all materials and geometries
+    [...geometriesRef.current, ...lettersRef.current].forEach(mesh => {
+      if (mesh.geometry) mesh.geometry.dispose();
+      if (mesh.material) {
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach(mat => mat.dispose());
+        } else {
+          mesh.material.dispose();
+        }
+      }
+    });
+
+    if (particlesRef.current) {
+      if (particlesRef.current.geometry) particlesRef.current.geometry.dispose();
+      if (particlesRef.current.material) particlesRef.current.material.dispose();
+    }
+
+    setIsInitialized(false);
+  }, []);
 
   // Main effect
   useEffect(() => {
-    if (isActive && !isInitializedRef.current) {
-      const timer = setTimeout(() => {
-        initThreeJS();
-        if (isInitializedRef.current) {
-          animate();
-          window.addEventListener('resize', handleResize);
-        }
-      }, 100);
-
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('resize', handleResize);
-        cleanup();
-      };
+    if (isActive && !isInitialized) {
+      initThreeJS();
+      window.addEventListener('resize', handleResize);
     }
 
-    return cleanup;
-  }, [isActive, initThreeJS, animate, handleResize, cleanup]);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cleanup();
+    };
+  }, [isActive, isInitialized, initThreeJS, handleResize, cleanup]);
 
-  useEffect(() => {
-    return cleanup;
-  }, [cleanup]);
-
-  if (!isActive) {
-    return null;
-  }
+  if (!isActive) return null;
 
   return (
     <div 
       ref={mountRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ 
-        zIndex: 5,
-        width: '100vw',
-        height: '100vh',
-        minHeight: isMobile ? '100vh' : 'auto', // Ensure full height on mobile
-        position: 'fixed',
-        top: 0,
-        left: 0
-      }}
+      style={{ zIndex: 1 }}
     />
   );
 };
