@@ -126,11 +126,11 @@ const Hero: React.FC = () => {
         <div className="w-px h-24 bg-slate-500"></div>
       </div>
 
-      {/* Scroll Down Indicator */}
+      {/* Scroll Down Indicator - Removed bounce animation */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 lg:hidden">
         <button
           onClick={scrollToProjects}
-          className="animate-bounce text-green-400 hover:text-green-300 transition-colors duration-300"
+          className="text-green-400 hover:text-green-300 transition-colors duration-300"
           aria-label="Scroll down"
         >
           <ArrowDown size={24} />
